@@ -1,0 +1,191 @@
+# config/example.yaml
+
+# Serial port configuration
+port: "/dev/ttyUSB0"  # Adjust for your system
+baud_rate: 115200
+
+# TinyG configuration parameters
+tinyg_config:
+  # Motor configurations (1,2,3,4)
+  1ma: 0    # Motor 1 map to axis (0=X, 1=Y, 2=Z, 3=A, 4=B, 5=C)
+  1sa: 1.8  # Motor 1 step angle (degrees)
+  1tr: 4.0  # Motor 1 travel per revolution (mm)
+  1mi: 8    # Motor 1 microstep resolution (1,2,4,8)
+  1po: 0    # Motor 1 polarity (0=normal, 1=reversed)
+  1pm: 1    # Motor 1 power management (0=disabled, 1=always on, 2=in cycle, 3=when moving)
+  
+  2ma: 1    # Motor 2 map to axis
+  2sa: 1.8  # Motor 2 step angle
+  2tr: 4.0  # Motor 2 travel per revolution
+  2mi: 8    # Motor 2 microstep resolution
+  2po: 0    # Motor 2 polarity
+  2pm: 1    # Motor 2 power management
+  
+  3ma: 2    # Motor 3 map to axis
+  3sa: 1.8  # Motor 3 step angle
+  3tr: 4.0  # Motor 3 travel per revolution
+  3mi: 8    # Motor 3 microstep resolution
+  3po: 0    # Motor 3 polarity
+  3pm: 1    # Motor 3 power management
+  
+  # Axis settings (x,y,z,a,b,c)
+  xam: 1     # X axis mode (0=disabled, 1=standard, 2=inhibited, 3=radius)
+  xvm: 20000 # X maximum velocity (mm/min)
+  xfr: 20000 # X maximum feed rate (mm/min)
+  xtm: 500   # X travel maximum (mm)
+  xjm: 2000  # X maximum jerk (mm/min^3 * 1 million)
+  xjh: 2000  # X jerk homing (mm/min^3 * 1 million)
+  xhi: 1     # X homing input (1=disabled, 2-8 input switch)
+  xhd: 0     # X homing direction (0=search towards negative, 1=search towards positive)
+  xsv: 3000  # X search velocity (mm/min)
+  xlv: 100   # X latch velocity (mm/min)
+  xlb: 4     # X latch backoff (mm)
+  xzb: 2     # X zero backoff (mm)
+  
+  yam: 1     # Y axis mode
+  yvm: 20000 # Y maximum velocity
+  yfr: 20000 # Y maximum feed rate
+  ytm: 500   # Y travel maximum
+  yjm: 2000  # Y maximum jerk
+  yjh: 2000  # Y jerk homing
+  yhi: 2     # Y homing input
+  yhd: 0     # Y homing direction
+  ysv: 3000  # Y search velocity
+  ylv: 100   # Y latch velocity
+  ylb: 4     # Y latch backoff
+  yzb: 2     # Y zero backoff
+  
+  zam: 1     # Z axis mode
+  zvm: 1000  # Z maximum velocity
+  zfr: 1000  # Z maximum feed rate
+  ztm: 100   # Z travel maximum
+  zjm: 500   # Z maximum jerk
+  zjh: 500   # Z jerk homing
+  zhi: 3     # Z homing input
+  zhd: 1     # Z homing direction
+  zsv: 800   # Z search velocity
+  zlv: 100   # Z latch velocity
+  zlb: 4     # Z latch backoff
+  zzb: 2     # Z zero backoff
+  
+  # System settings
+  sys:
+    fb: 1        # Footer boot (0=no footer, 1=return footer)
+    fv: 1        # Footer verbosity (0=no footer, 1=tagged, 2=verbose)
+    ja: 50000    # Junction acceleration (sets abc_jerk_max)
+    ct: 0.1      # Chordal tolerance (mm)
+    sl: 0        # Status report minimum length
+    st: 0        # Switch type (0=normally open, 1=normally closed)
+    mt: 300.000  # Motor idle timeout (seconds)
+    ej: 1        # Enable JSON mode (0=text mode, 1=JSON mode)
+    jv: 5        # JSON verbosity (1=silent ... 5=verbose)
+    tv: 1        # Text verbosity (0=silent, 1=verbose)
+    qv: 2        # Queue report verbosity (0=off, 1=single, 2=triple)
+    sv: 1        # Status report verbosity (0=off, 1=filtered, 2=verbose)
+    si: 100      # Status interval (ms)
+    gun: 1       # Gcode units mode (0=inches, 1=mm)
+    gpl: 0       # Gcode plane select (0=XY, 1=XZ, 2=YZ)
+    gpa: 0       # Gcode path control (0=exact path, 1=exact stop, 2=continuous)
+    gdi: 0       # Gcode distance mode (0=absolute, 1=incremental)
+  
+  # config/example.yaml
+
+# Serial port configuration
+port: "/dev/ttyUSB0"  # Adjust for your system
+baud_rate: 115200
+
+# TinyG configuration parameters
+tinyg_config:
+  # Motor configurations (1,2,3,4)
+  1ma: 0    # Motor 1 map to axis (0=X, 1=Y, 2=Z, 3=A, 4=B, 5=C)
+  1sa: 1.8  # Motor 1 step angle (degrees)
+  1tr: 4.0  # Motor 1 travel per revolution (mm)
+  1mi: 8    # Motor 1 microstep resolution (1,2,4,8)
+  1po: 0    # Motor 1 polarity (0=normal, 1=reversed)
+  1pm: 1    # Motor 1 power management (0=disabled, 1=always on, 2=in cycle, 3=when moving)
+  
+  2ma: 1    # Motor 2 map to axis
+  2sa: 1.8  # Motor 2 step angle
+  2tr: 4.0  # Motor 2 travel per revolution
+  2mi: 8    # Motor 2 microstep resolution
+  2po: 0    # Motor 2 polarity
+  2pm: 1    # Motor 2 power management
+  
+  3ma: 2    # Motor 3 map to axis
+  3sa: 1.8  # Motor 3 step angle
+  3tr: 4.0  # Motor 3 travel per revolution
+  3mi: 8    # Motor 3 microstep resolution
+  3po: 0    # Motor 3 polarity
+  3pm: 1    # Motor 3 power management
+  
+  # Axis settings (x,y,z,a,b,c)
+  xam: 1     # X axis mode (0=disabled, 1=standard, 2=inhibited, 3=radius)
+  xvm: 20000 # X maximum velocity (mm/min)
+  xfr: 20000 # X maximum feed rate (mm/min)
+  xtm: 500   # X travel maximum (mm)
+  xjm: 2000  # X maximum jerk (mm/min^3 * 1 million)
+  xjh: 2000  # X jerk homing (mm/min^3 * 1 million)
+  xhi: 1     # X homing input (1=disabled, 2-8 input switch)
+  xhd: 0     # X homing direction (0=search towards negative, 1=search towards positive)
+  xsv: 3000  # X search velocity (mm/min)
+  xlv: 100   # X latch velocity (mm/min)
+  xlb: 4     # X latch backoff (mm)
+  xzb: 2     # X zero backoff (mm)
+  
+  yam: 1     # Y axis mode
+  yvm: 20000 # Y maximum velocity
+  yfr: 20000 # Y maximum feed rate
+  ytm: 500   # Y travel maximum
+  yjm: 2000  # Y maximum jerk
+  yjh: 2000  # Y jerk homing
+  yhi: 2     # Y homing input
+  yhd: 0     # Y homing direction
+  ysv: 3000  # Y search velocity
+  ylv: 100   # Y latch velocity
+  ylb: 4     # Y latch backoff
+  yzb: 2     # Y zero backoff
+  
+  zam: 1     # Z axis mode
+  zvm: 1000  # Z maximum velocity
+  zfr: 1000  # Z maximum feed rate
+  ztm: 100   # Z travel maximum
+  zjm: 500   # Z maximum jerk
+  zjh: 500   # Z jerk homing
+  zhi: 3     # Z homing input
+  zhd: 1     # Z homing direction
+  zsv: 800   # Z search velocity
+  zlv: 100   # Z latch velocity
+  zlb: 4     # Z latch backoff
+  zzb: 2     # Z zero backoff
+  
+  # System settings
+  sys:
+    fb: 1        # Footer boot (0=no footer, 1=return footer)
+    fv: 1        # Footer verbosity (0=no footer, 1=tagged, 2=verbose)
+    ja: 50000    # Junction acceleration (sets abc_jerk_max)
+    ct: 0.1      # Chordal tolerance (mm)
+    sl: 0        # Status report minimum length
+    st: 0        # Switch type (0=normally open, 1=normally closed)
+    mt: 300.000  # Motor idle timeout (seconds)
+    ej: 1        # Enable JSON mode (0=text mode, 1=JSON mode)
+    jv: 5        # JSON verbosity (1=silent ... 5=verbose)
+    tv: 1        # Text verbosity (0=silent, 1=verbose)
+    qv: 2        # Queue report verbosity (0=off, 1=single, 2=triple)
+    sv: 1        # Status report verbosity (0=off, 1=filtered, 2=verbose)
+    si: 100      # Status interval (ms)
+    gun: 1       # Gcode units mode (0=inches, 1=mm)
+    gpl: 0       # Gcode plane select (0=XY, 1=XZ, 2=YZ)
+    gpa: 0       # Gcode path control (0=exact path, 1=exact stop, 2=continuous)
+    gdi: 0       # Gcode distance mode (0=absolute, 1=incremental)
+  
+  # PWM servo control
+  p1frq: 333     # PWM frequency in Hz (333Hz for Spektrum A6380)
+  p1csl: 0       # Servo 1 minimum angle (mapped from 0 degrees)
+  p1csh: 1580    # Servo 1 maximum angle (mapped from 15.8 degrees)
+  p1cpl: 0       # Phase settings unused for servo
+  p1cph: 0       # Phase settings unused for servo
+  p1wsl: 0       # Servo 2 minimum angle (mapped from 0 degrees)
+  p1wsh: 1580    # Servo 2 maximum angle (mapped from 15.8 degrees)
+  p1wpl: 0       # Phase settings unused for servo
+  p1wph: 0       # Phase settings unused for servo
+  p1pof: 0       # PWM value when disabled
