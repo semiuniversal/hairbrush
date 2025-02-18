@@ -1,6 +1,6 @@
 # TinyG Tester
 
-A testing and configuration tool for TinyG CNC controllers, specifically designed for dual airbrush control systems.
+A testing and configuration tool for TinyG CNC controllers, specifically designed for dual airbrush control systems. This code is highly specific to my custom hardware and may not be suitable for other applications.
 
 ## Installation
 
