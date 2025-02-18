@@ -10,6 +10,13 @@ cd <directory where you want to install tinyg_tester>
 git clone <https://github.com/semiuniversal/hairbrush.git>
 ```
 
+# Install poetry
+```bash
+pip install poetry # if you don't have poetry installed
+```
+The iinstallation process of poetry can vary based on your operating system and existing setup. Please refer to the official Poetry documentation for detailed instructions. See [Poetry -Python packaging and dependency management made easy ](https://python-poetry.org/)
+
+
 # Install dependencies using poetry
 ```bash
 cd <directory that contains tinyg_tester>
