@@ -6,7 +6,8 @@ A testing and configuration tool for TinyG CNC controllers, specifically designe
 
 # Clone the repository
 ```bash
-git clone <your-repo-url>
+cd <directory where you want to install tinyg_tester>
+git clone <https://github.com/semiuniversal/hairbrush.git>
 ```
 
 # Install dependencies using poetry
