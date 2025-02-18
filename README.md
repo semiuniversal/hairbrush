@@ -16,8 +16,8 @@ poetry install
 ```
 
 # Edit your config file
-The most critical part is getting the config file correct. The config file is a yaml file that contains the settings for the application. The config file is located in the config directory. There is a sample congig file, example.yaml, that you can use as a template.
-You need to determine what settings you want to use foir your setup. In particular, you need to select the proper serial port for the TinyG controller. The method for determining the serial port is specific to your operating system.
+The most critical part is getting the config file correct. The config file is a yaml file that contains the settings for the application. The config file is located in the config directory. There is a sample config file, example.yaml, that you can use as a template.
+You need to determine what settings you want to use for your setup. In particular, you need to select the proper serial port for the TinyG controller. The method for determining the serial port is specific to your operating system.
 
 ## Usage
 
