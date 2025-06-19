@@ -13,8 +13,9 @@ authors = [
     { name = "Your Name", email = "your.email@example.com" }
 ]
 dependencies = [
-    "pyyaml>=6.0",
     "lxml>=4.9.0",  # For XML/SVG processing
+    "pyyaml>=6.0",  # For configuration files
+    # inkex is provided by Inkscape runtime, don't add here
 ]
 
 [project.optional-dependencies]
@@ -24,11 +25,17 @@ dev = [
     "isort>=5.12.0",
 ]
 
+# Note: inkex is not included as a dependency because it's provided by Inkscape
+# when the extension is run within Inkscape's environment
+
 [tool.hatch.build.targets.wheel]
-packages = ["src/hairbrush", "inkscape_extension", "gcode_backend"]
+packages = ["src/hairbrush"]
 
 [tool.black]
 line-length = 88
 
 [tool.isort]
 profile = "black"
+
+[project.scripts]
+hairbrush-install = "hairbrush.tools.install:main"

@@ -1,21 +1,44 @@
 #!/usr/bin/env python3
-import inkex
+# Dual Airbrush Export - Inkscape extension for exporting SVG layers to G-code
+# for a dual-airbrush plotter with a Duet 2 WiFi board
+#
+# Copyright (C) 2024 Your Name
+# Released under MIT License
+
 import os
 import sys
+import logging
 from lxml import etree
 
+# Set up logging
+logger = logging.getLogger(__name__)
+
 # Add the parent directory to the path so we can import the hairbrush package
+# when installed as an Inkscape extension
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Import inkex - this will work when run from within Inkscape
+try:
+    import inkex
+except ImportError:
+    sys.stderr.write("Error: This extension requires the inkex module from Inkscape.\n")
+    sys.stderr.write("This extension is meant to be run from within Inkscape.\n")
+    sys.exit(1)
+
+# Import hairbrush modules
 try:
     from hairbrush.svg_parser import SVGParser
     from hairbrush.gcode_generator import GCodeGenerator
     from hairbrush.config import load_command_template
 except ImportError:
-    inkex.utils.debug("Error: Could not import hairbrush package. Make sure it's installed.")
+    inkex.utils.debug("Error: Could not import hairbrush package. Make sure it's installed or in the parent directory.")
     sys.exit(1)
 
 class DualAirbrushExport(inkex.EffectExtension):
+    """
+    Inkscape extension for exporting SVG layers to G-code for a dual-airbrush plotter.
+    """
+    
     def add_arguments(self, pars):
         # Layers tab
         pars.add_argument("--tab", type=str, default="layers")
@@ -36,6 +59,9 @@ class DualAirbrushExport(inkex.EffectExtension):
         pars.add_argument("--preview_gcode", type=inkex.Boolean, default=False)
 
     def effect(self):
+        """
+        Main entry point for the extension.
+        """
         # Create a temporary SVG file to process
         tmp_svg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp_output.svg")
         self.document.write(tmp_svg)

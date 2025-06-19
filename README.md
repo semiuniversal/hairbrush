@@ -1,51 +1,104 @@
-# Dual Airbrush Plotter
+# Hairbrush - Dual Airbrush Plotter Controller
 
-This is a prototype Inkscape extension and G-code backend for a custom CoreXY dual-airbrush plotter powered by Duet 2 WiFi.
+A Python package and Inkscape extension for controlling a dual-airbrush plotter with a Duet 2 WiFi board.
 
-## Structure
-- `inkscape_extension/` - Inkscape export tool
-- `gcode_backend/` - Generates G-code from path instructions
-- `controller/` - Telnet sender for real-time operation (optional)
+## Features
 
-## Development Setup
+- SVG parsing with layer support
+- Path processing and simplification
+- G-code generation for dual-airbrush control
+- Inkscape extension for direct export
+
+## Installation
 
 ### Prerequisites
-- WSL with Ubuntu 22.04 or later
-- Python 3.8 or later
-- [uv](https://github.com/astral-sh/uv) for virtual environment management
-- Inkscape (for extension development and testing)
 
-### Setting up the Development Environment
+- Python 3.8 or newer
+- Inkscape 1.0 or newer (for the extension)
 
-1. Clone the repository:
-   ```bash
-   git clone [repository_url]
-   cd hairbrush
-   ```
+### Install from Source
 
-2. Create and activate the virtual environment:
-   ```bash
-   uv venv
-   source .venv/bin/activate
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/hairbrush.git
+cd hairbrush
 
-3. Install dependencies:
-   ```bash
-   uv pip install -e .
-   ```
+# Create a virtual environment and install dependencies
+python -m uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+python -m uv pip install -e .
+```
 
-4. For development tools:
-   ```bash
-   uv pip install -e ".[dev]"
-   ```
+### Install the Inkscape Extension
 
-### Project Organization
-- `inkscape_extension/`: Inkscape extension files (.inx and .py)
-- `gcode_backend/`: G-code generation library and command templates
-- `docs/`: Documentation and reference materials
-- `tests/`: Test cases and fixtures (to be added)
+```bash
+python -m hairbrush.tools.install
+```
 
-### Contributing
-1. Make sure your code follows the project's style guidelines (using Black and isort)
-2. Add appropriate tests for new functionality
-3. Update documentation as needed
+## Usage
+
+### Command Line Tools
+
+#### Analyze SVG Files
+
+```bash
+python analyze_svg.py path/to/file.svg
+```
+
+#### Convert SVG to G-code
+
+```bash
+python path_to_gcode.py path/to/file.svg --output output.gcode
+```
+
+Options:
+- `--layer LAYER_NAME`: Process only a specific layer
+- `--simplify`: Simplify paths for smoother output
+- `--tolerance VALUE`: Tolerance for path simplification (default: 0.5)
+- `--z-height VALUE`: Z height for the brush (default: 2.0)
+- `--feedrate VALUE`: Feedrate for movements (default: 1500)
+- `--brush BRUSH_ID`: Brush to use (brush_a or brush_b)
+
+### Inkscape Extension
+
+1. Open your SVG file in Inkscape
+2. Go to Extensions → Export → Dual Airbrush Export
+3. Configure the settings and click Apply
+
+## Project Structure
+
+```
+hairbrush/
+├── src/
+│   └── hairbrush/
+│       ├── __init__.py
+│       ├── svg_parser.py      # SVG parsing utilities
+│       ├── path_processor.py  # Path processing and simplification
+│       ├── gcode_generator.py # G-code generation
+│       ├── config.py          # Configuration handling
+│       └── tools/             # Command-line tools
+├── inkscape_extension/        # Inkscape extension files
+├── tests/                     # Test files
+├── gcode_backend/             # G-code command templates
+└── assets/                    # Example files
+```
+
+## Development
+
+### Setup Development Environment
+
+```bash
+python -m uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+python -m uv pip install -e ".[dev]"
+```
+
+### Run Tests
+
+```bash
+pytest
+```
+
+## License
+
+MIT License
