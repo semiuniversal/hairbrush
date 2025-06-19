@@ -16,7 +16,7 @@
   - [x] Create .gitignore file
   - [ ] Make initial commit
 - [ ] Research key technologies
-  - [ ] Research Inkscape extension development
+  - [x] Research Inkscape extension development
   - [ ] Research Duet 2 WiFi G-code command structure
   - [x] Document findings for future reference
 - [x] Document environment setup process
@@ -26,9 +26,9 @@
 ## Next Steps
 - [ ] Install basic dependencies (PyYAML, lxml) using uv
 - [ ] Make initial git commit
-- [ ] Research Inkscape extension development
+- [x] Research Inkscape extension development
 - [ ] Research Duet 2 WiFi G-code command structure
-- [ ] Update research_notes.md with findings
+- [x] Update research_notes.md with findings
 
 ## Backlog
 ### Stage 2: Core Library Development
@@ -100,6 +100,10 @@
 - [x] Create test directory structure - Completed: [Current date]
 - [x] Create sample SVG for testing - Completed: [Current date]
 - [x] Set up basic test files - Completed: [Current date]
+- [x] Research Inkscape extension development - Completed: [Current date]
+- [x] Update research_notes.md with Inkscape extension findings - Completed: [Current date]
+- [x] Enhance Inkscape extension structure based on AxiDraw reference - Completed: [Current date]
+- [x] Improve SVG path parsing and G-code generation - Completed: [Current date]
 
 ## Notes
 - Focus on completing Stage 1 before moving to other stages

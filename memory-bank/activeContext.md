@@ -1,7 +1,41 @@
 # Active Context
 
 ## Current Focus
-Completing Stage 1 (Environment Setup and Research) for the dual-airbrush plotter software. Environment setup is largely complete, now focusing on research and dependency installation.
+We are currently focused on researching and implementing the Inkscape extension component of the dual-airbrush plotter software. This is part of Stage 1 (Environment Setup and Research) and beginning work on Stage 4 (Inkscape Extension Development) of our implementation plan.
+
+## Recent Progress
+- Completed research on Inkscape extension development, with a focus on understanding the extension architecture, INX file structure, and Python implementation patterns
+- Updated research_notes.md with detailed information about Inkscape extension development
+- Enhanced the existing dual_airbrush_export.inx file with a more sophisticated UI using tabs and additional parameters
+- Improved the dual_airbrush_export.py implementation to properly handle the new parameters and integrate with the hairbrush library
+- Enhanced the GCodeGenerator class to properly parse and process SVG path data into G-code commands
+- Studied the AxiDraw extension as a reference implementation for our project
+
+## Current Challenges
+- Need to implement proper SVG path parsing and transformation for complex paths
+- Need to test the extension with actual SVG files to verify functionality
+- Need to ensure proper integration between the Inkscape extension and the core hairbrush library
+- Need to complete research on Duet 2 WiFi G-code command structure
+
+## Next Actions
+1. Install required dependencies (PyYAML, lxml) using uv
+2. Make initial git commit to preserve current progress
+3. Complete research on Duet 2 WiFi G-code command structure
+4. Create test SVG files with different layer configurations
+5. Test the Inkscape extension with sample SVG files
+6. Refine the SVG path parsing logic to handle more complex paths
+7. Implement proper error handling and validation in the extension
+
+## Dependencies
+- Inkscape 1.0+ for testing the extension
+- Python 3.x with lxml and PyYAML packages
+- WSL environment for development and testing
+
+## Notes
+- The current extension implementation is based on the AxiDraw extension architecture
+- We are focusing on a layer-based approach where different brushes are assigned to different layers
+- The extension currently supports basic path commands (M, L, H, V, Z) with simplified handling of curves
+- Future work will include more sophisticated curve handling and optimization
 
 ## Recent Changes
 - Initial memory bank setup - [Current date]

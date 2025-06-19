@@ -2,6 +2,8 @@
 G-code generation utilities for the hairbrush package.
 """
 
+import re
+import math
 from .config import load_command_template
 
 
@@ -17,6 +19,10 @@ class GCodeGenerator:
         """
         self.template = load_command_template(template_name)
         self.output_lines = []
+        self.current_x = 0
+        self.current_y = 0
+        self.current_z = 0
+        self.brush_config = {}
         
     def add_header(self):
         """Add header G-code commands."""
@@ -39,6 +45,16 @@ class GCodeGenerator:
             "G0 X0 Y0 ; Return to origin",
             "M84 ; Disable motors"
         ])
+        
+    def configure_brush(self, brush_id, config):
+        """
+        Configure a brush with specific settings.
+        
+        Args:
+            brush_id (str): Brush identifier
+            config (dict): Configuration for the brush
+        """
+        self.brush_config[brush_id] = config
         
     def add_brush_command(self, brush, command_type):
         """
@@ -65,18 +81,52 @@ class GCodeGenerator:
         command = "G0" if is_rapid else "G1"
         
         coords = []
-        if x is not None:
+        if x is not None and x != self.current_x:
             coords.append(f"X{x:.3f}")
-        if y is not None:
+            self.current_x = x
+        if y is not None and y != self.current_y:
             coords.append(f"Y{y:.3f}")
-        if z is not None:
+            self.current_y = y
+        if z is not None and z != self.current_z:
             coords.append(f"Z{z:.3f}")
+            self.current_z = z
             
         if feedrate is not None:
             coords.append(f"F{feedrate}")
             
         if coords:
             self.output_lines.append(f"{command} {' '.join(coords)}")
+    
+    def parse_path_commands(self, path_data):
+        """
+        Parse SVG path data into a list of commands.
+        
+        Args:
+            path_data (str): SVG path data
+            
+        Returns:
+            list: List of (command, [params]) tuples
+        """
+        # Regular expression to match path commands and parameters
+        command_regex = r"([MLHVCSQTAZmlhvcsqtaz])([^MLHVCSQTAZmlhvcsqtaz]*)"
+        
+        # Find all commands and their parameters
+        commands = []
+        for match in re.finditer(command_regex, path_data):
+            cmd = match.group(1)
+            params_str = match.group(2).strip()
+            
+            # Parse parameters
+            params = []
+            if params_str:
+                # Split by either commas or spaces
+                params_parts = re.split(r"[\s,]+", params_str)
+                # Convert to float
+                params = [float(p) for p in params_parts if p]
+            
+            commands.append((cmd, params))
+            
+        return commands
     
     def add_path(self, path_data, brush, z_height, feedrate):
         """
@@ -88,21 +138,150 @@ class GCodeGenerator:
             z_height (float): Z height for the path
             feedrate (float): Feedrate in mm/min
         """
-        # This is a placeholder for path processing
-        # In a real implementation, this would parse the SVG path data
-        # and convert it to a series of G-code movements
-        self.output_lines.append(f"; Path: {path_data[:20]}...")
-        self.output_lines.append(f"; Using brush: {brush}")
-        self.output_lines.append(f"; Z height: {z_height}")
-        self.output_lines.append(f"; Feedrate: {feedrate}")
+        # Parse the path data
+        commands = self.parse_path_commands(path_data)
         
-        # Example implementation for a simple path
-        # In reality, this would need to parse the SVG path commands
-        self.add_brush_command(brush, "air_on")
-        self.add_move(100, 100, z_height, feedrate)
-        self.add_brush_command(brush, "paint_on")
-        self.add_move(150, 150, z_height, feedrate)
+        # Skip if no commands
+        if not commands:
+            return
+        
+        # Apply brush offset if configured
+        offset_x = 0
+        offset_y = 0
+        if brush in self.template and "offset" in self.template[brush]:
+            offset_x, offset_y = self.template[brush]["offset"]
+        
+        # Start with brush raised
+        self.add_move(None, None, z_height + 5, feedrate, is_rapid=True)
+        
+        # Initialize position tracking
+        current_x = 0
+        current_y = 0
+        path_start_x = None
+        path_start_y = None
+        
+        # Process each command
+        for cmd, params in commands:
+            # Handle different command types
+            if cmd == 'M' or cmd == 'm':  # Move to
+                # Move to with pen up
+                is_relative = (cmd == 'm')
+                
+                for i in range(0, len(params), 2):
+                    if i + 1 < len(params):
+                        x, y = params[i], params[i+1]
+                        
+                        if is_relative:
+                            current_x += x
+                            current_y += y
+                        else:
+                            current_x = x
+                            current_y = y
+                        
+                        # Record the start position of the path
+                        if path_start_x is None:
+                            path_start_x = current_x
+                            path_start_y = current_y
+                            
+                            # Move to the start position with brush up
+                            self.add_move(current_x + offset_x, current_y + offset_y, z_height + 5, feedrate, is_rapid=True)
+                            
+                            # Turn on air and lower brush
+                            self.add_brush_command(brush, "air_on")
+                            self.add_move(None, None, z_height, feedrate)
+                            self.add_brush_command(brush, "paint_on")
+                        else:
+                            # Move to the next position with brush down
+                            self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+            
+            elif cmd == 'L' or cmd == 'l':  # Line to
+                is_relative = (cmd == 'l')
+                
+                for i in range(0, len(params), 2):
+                    if i + 1 < len(params):
+                        x, y = params[i], params[i+1]
+                        
+                        if is_relative:
+                            current_x += x
+                            current_y += y
+                        else:
+                            current_x = x
+                            current_y = y
+                        
+                        # Draw line to this point
+                        self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+            
+            elif cmd == 'H' or cmd == 'h':  # Horizontal line
+                is_relative = (cmd == 'h')
+                
+                for x in params:
+                    if is_relative:
+                        current_x += x
+                    else:
+                        current_x = x
+                    
+                    # Draw horizontal line
+                    self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+            
+            elif cmd == 'V' or cmd == 'v':  # Vertical line
+                is_relative = (cmd == 'v')
+                
+                for y in params:
+                    if is_relative:
+                        current_y += y
+                    else:
+                        current_y = y
+                    
+                    # Draw vertical line
+                    self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+            
+            elif cmd == 'Z' or cmd == 'z':  # Close path
+                if path_start_x is not None and path_start_y is not None:
+                    # Return to the start point
+                    current_x = path_start_x
+                    current_y = path_start_y
+                    self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+            
+            # Note: For simplicity, we're approximating curves (C, S, Q, T, A) as straight lines
+            # between their endpoints. A more accurate implementation would use
+            # interpolation to approximate the curves.
+            
+            # For now, we'll handle the endpoint of curves
+            elif cmd in ['C', 'c', 'S', 's', 'Q', 'q', 'T', 't', 'A', 'a']:
+                is_relative = cmd.islower()
+                
+                # Get the endpoint of the curve
+                if cmd in ['C', 'c']:  # Cubic Bezier
+                    if len(params) >= 6:
+                        x, y = params[-2], params[-1]
+                elif cmd in ['S', 's']:  # Smooth cubic Bezier
+                    if len(params) >= 4:
+                        x, y = params[-2], params[-1]
+                elif cmd in ['Q', 'q']:  # Quadratic Bezier
+                    if len(params) >= 4:
+                        x, y = params[-2], params[-1]
+                elif cmd in ['T', 't']:  # Smooth quadratic Bezier
+                    if len(params) >= 2:
+                        x, y = params[-2], params[-1]
+                elif cmd in ['A', 'a']:  # Arc
+                    if len(params) >= 7:
+                        x, y = params[-2], params[-1]
+                else:
+                    continue
+                
+                if is_relative:
+                    current_x += x
+                    current_y += y
+                else:
+                    current_x = x
+                    current_y = y
+                
+                # Draw to the endpoint
+                self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+        
+        # End with brush raised
         self.add_brush_command(brush, "paint_off")
+        self.add_move(None, None, z_height + 5, feedrate, is_rapid=True)
         self.add_brush_command(brush, "air_off")
     
     def get_output(self):

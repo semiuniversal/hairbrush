@@ -6,6 +6,8 @@
 - [Inkscape Extension Documentation](https://inkscape.org/develop/extensions/)
 - [inkex Python Module Documentation](https://inkscape.gitlab.io/extensions/documentation/inkex.html)
 - [Inkscape Extensions Repository](https://gitlab.com/inkscape/extensions)
+- [Inkscape Extension Tutorial](https://inkscape.gitlab.io/extensions/documentation/tutorial/index.html)
+- [AxiDraw Extension GitHub](https://github.com/evil-mad/axidraw)
 
 ### Key Concepts
 - Extension types: Effect, Output, Input, etc.
@@ -13,6 +15,64 @@
 - inkex module for SVG manipulation
 - Path data representation and transformation
 - Layer management and selection
+
+### Extension Structure
+- Two main files required:
+  - `.inx` file: XML file that defines the UI and extension parameters
+  - `.py` file: Python script that implements the extension functionality
+- Extensions inherit from classes like `inkex.EffectExtension` or `inkex.OutputExtension`
+- Parameters defined in the INX file are passed to the Python script
+
+### INX File Structure
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Extension Name</name>
+  <id>unique.id.for.extension</id>
+  
+  <!-- Parameters -->
+  <param name="param_name" type="float" _gui-text="Parameter Label">default_value</param>
+  
+  <!-- Extension type definition -->
+  <effect>
+    <effects-menu>
+      <submenu name="Submenu Name"/>
+    </effects-menu>
+  </effect>
+  
+  <!-- Script reference -->
+  <script>
+    <command reldir="extensions" interpreter="python">script_name.py</command>
+  </script>
+</inkscape-extension>
+```
+
+### Python Extension Implementation
+```python
+#!/usr/bin/env python3
+import inkex
+
+class MyExtension(inkex.EffectExtension):
+    def add_arguments(self, pars):
+        # Define parameters matching INX file
+        pars.add_argument("--param_name", type=float, default=0.0)
+    
+    def effect(self):
+        # Access parameters with self.options.param_name
+        # Access selected elements with self.svg.selection
+        # Implement extension functionality here
+        pass
+
+if __name__ == '__main__':
+    MyExtension().run()
+```
+
+### AxiDraw Extension Insights
+- Uses a main control class that handles different operations (plot, setup, manual control)
+- Implements tab-based UI with different parameter sets
+- Handles layer-based plotting with options for specific layers
+- Manages machine-specific settings through configuration files
+- Implements SVG path processing for conversion to plotter movements
 
 ### Questions to Explore
 - How to extract paths from specific layers?
@@ -71,4 +131,10 @@ brush_a:
 
 ## Notes from Research
 
-[This section will be populated as research progresses] 
+### Inkscape Extension Development
+- Inkscape 1.0+ uses Python 3, older versions use Python 2
+- Extensions can be installed in the user extensions directory (Edit > Preferences > System: User extensions)
+- The `inkex` module provides classes for SVG manipulation and extension development
+- Extensions can be invoked from the Inkscape UI or via command line
+- Path data can be accessed and modified using `inkex.Path` objects
+- Layer information is stored in SVG groups with specific attributes 
