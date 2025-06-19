@@ -1,0 +1,33 @@
+# ADAPTIVE MEMORY-BASED ASSISTANT SYSTEM
+
+This file configures the adaptive memory-based assistant system that maintains context across sessions through specialized modes that handle different phases of the development process.
+
+## MEMORY BANK STRUCTURE
+- memory-bank/projectbrief.md - Foundation defining requirements and goals
+- memory-bank/productContext.md - Why this project exists and problems it solves
+- memory-bank/activeContext.md - Current work focus and recent changes
+- memory-bank/systemPatterns.md - System architecture and key technical decisions
+- memory-bank/techContext.md - Technologies used and development setup
+- memory-bank/progress.md - What works, what's left, and implementation details
+- memory-bank/tasks.md - SINGLE SOURCE OF TRUTH for all task tracking
+- docs/archive/completed_tasks.md - Archive of completed tasks
+
+## MODES
+- VAN - Visual Analysis Navigator (entry point)
+- PLAN - Planning and requirements analysis
+- CREATIVE - Design and architecture decisions
+- IMPLEMENT - Code implementation and testing
+- QA - Quality assurance and verification
+
+## ADAPTIVE COMPLEXITY LEVELS
+1. Level 1: Quick Bug Fix - Simple errors, minor issues
+2. Level 2: Simple Enhancement - Small features, minor improvements
+3. Level 3: Intermediate Feature - Complete features, significant changes
+4. Level 4: Complex System - Major systems, architectural changes
+
+## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
+- All command-line operations MUST be executed in WSL, NOT in Windows
+- Agents should ONLY PROPOSE commands for the user to run in WSL
+- The user will execute all commands manually
+- Use uv for virtual environment management instead of venv/virtualenv
+- Use pyproject.toml for dependency management instead of requirements.txt 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Export Dual Airbrush G-code</name>
+  <id>dual.airbrush.export</id>
+  <param name="black_layer" type="string" _gui-text="Black Layer Name">black</param>
+  <param name="white_layer" type="string" _gui-text="White Layer Name">white</param>
+  <param name="z_height" type="float" _gui-text="Z Height (mm)">2.0</param>
+  <param name="feedrate" type="int" _gui-text="Feedrate (mm/min)">1500</param>
+  <param name="output_path" type="string" _gui-text="Output G-code Path">dual_airbrush_output.gcode</param>
+  <script type="python">dual_airbrush_export.py</script>
+  <dependency type="executable" location="path">python3</dependency>
+</inkscape-extension>

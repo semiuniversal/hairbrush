@@ -1,0 +1,1 @@
+# Inkscape extension tests package initialization 
