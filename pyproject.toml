@@ -15,6 +15,7 @@ authors = [
 dependencies = [
     "lxml>=4.9.0",  # For XML/SVG processing
     "pyyaml>=6.0",  # For configuration files
+    "numpy>=1.22.0",  # For numerical operations and path processing
     # inkex is provided by Inkscape runtime, don't add here
 ]
 

@@ -11,28 +11,39 @@ from typing import Dict, List, Tuple, Optional, Any, Union
 class SVGParser:
     """Parser for SVG files that extracts paths by layer."""
     
-    def __init__(self, svg_path):
+    def __init__(self, svg_file):
         """
         Initialize the SVG parser.
         
         Args:
-            svg_path (str): Path to the SVG file
+            svg_file: Path to the SVG file
         """
-        self.svg_path = svg_path
+        self.svg_file = svg_file
         self.tree = None
         self.root = None
         self.namespaces = {
             'svg': 'http://www.w3.org/2000/svg',
-            'inkscape': 'http://www.inkscape.org/namespaces/inkscape',
-            'sodipodi': 'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd'
+            'sodipodi': 'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+            'inkscape': 'http://www.inkscape.org/namespaces/inkscape'
         }
-        self._load()
+        self._parse()
         self._parse_document_properties()
     
-    def _load(self):
-        """Load the SVG file."""
-        self.tree = etree.parse(self.svg_path)
-        self.root = self.tree.getroot()
+    def _parse(self):
+        """Parse the SVG file."""
+        try:
+            # Create a parser that can recover from errors
+            parser = etree.XMLParser(recover=True, remove_blank_text=True)
+            self.tree = etree.parse(self.svg_file, parser)
+            self.root = self.tree.getroot()
+            
+            # Add missing namespace declarations if needed
+            if self.root.nsmap.get('inkscape') is None:
+                # We can't modify nsmap directly, so we need to create a new root element
+                # For now, we'll just ensure our namespace dict is used for queries
+                print("Warning: SVG file is missing inkscape namespace declaration. Using default namespace.")
+        except Exception as e:
+            raise Exception(f"Error parsing SVG file: {e}")
     
     def _parse_document_properties(self):
         """Parse SVG document properties like width, height, and viewBox."""
@@ -99,11 +110,31 @@ class SVGParser:
         """
         # Find all group elements that might be layers
         groups = self.root.findall(".//svg:g", namespaces=self.namespaces)
+        if not groups:
+            # Try without namespace if the first attempt fails
+            groups = self.root.findall(".//g")
         
         # Filter for those that have a label attribute or inkscape:label
         layers = []
         for group in groups:
-            label = group.get("label") or group.get("{{{0}}}label".format(self.namespaces['inkscape']))
+            # Try multiple approaches to get the layer label
+            label = None
+            
+            # 1. Try standard "label" attribute
+            if group.get("label"):
+                label = group.get("label")
+            
+            # 2. Try with explicit inkscape namespace
+            elif group.get("{{{0}}}label".format(self.namespaces['inkscape'])):
+                label = group.get("{{{0}}}label".format(self.namespaces['inkscape']))
+            
+            # 3. Try with attribute that might have inkscape:label format
+            else:
+                for attr_name, attr_value in group.attrib.items():
+                    if attr_name.endswith('}label') or attr_name == 'inkscape:label':
+                        label = attr_value
+                        break
+            
             if label:
                 layers.append((group, label))
         
@@ -123,7 +154,12 @@ class SVGParser:
         
         for layer, label in layers:
             if label == layer_name:
-                return layer.findall(".//svg:path", namespaces=self.namespaces)
+                # Try with namespace first
+                paths = layer.findall(".//svg:path", namespaces=self.namespaces)
+                if not paths:
+                    # Try without namespace if the first attempt fails
+                    paths = layer.findall(".//path")
+                return paths
         
         return []
     
@@ -134,7 +170,12 @@ class SVGParser:
         Returns:
             list: List of path elements
         """
-        return self.root.findall(".//svg:path", namespaces=self.namespaces)
+        # Try with namespace first
+        paths = self.root.findall(".//svg:path", namespaces=self.namespaces)
+        if not paths:
+            # Try without namespace if the first attempt fails
+            paths = self.root.findall(".//path")
+        return paths
     
     def get_path_data(self, path_element):
         """
@@ -275,4 +316,88 @@ class SVGParser:
                 'width': max_x - min_x,
                 'height': max_y - min_y
             }
-        } 
+        }
+    
+    def get_viewbox(self):
+        """
+        Get the viewBox attribute of the SVG.
+        
+        Returns:
+            tuple: (min_x, min_y, width, height) or None if not defined
+        """
+        if self.root is None:
+            return None
+            
+        viewbox = self.root.get('viewBox')
+        if viewbox:
+            try:
+                # Parse viewBox="min_x min_y width height"
+                values = viewbox.split()
+                if len(values) == 4:
+                    return tuple(float(v) for v in values)
+            except ValueError:
+                pass
+                
+        return None
+    
+    def get_width(self):
+        """
+        Get the width of the SVG.
+        
+        Returns:
+            float: Width in SVG units or None if not defined
+        """
+        if self.root is None:
+            return None
+            
+        width = self.root.get('width')
+        if width:
+            try:
+                # Handle units (px, mm, cm, etc.)
+                if width.endswith('px'):
+                    return float(width[:-2])
+                elif width.endswith('mm'):
+                    return float(width[:-2]) * 3.543307  # Convert mm to px (96dpi)
+                elif width.endswith('cm'):
+                    return float(width[:-2]) * 35.43307  # Convert cm to px (96dpi)
+                elif width.endswith('in'):
+                    return float(width[:-2]) * 96  # Convert in to px (96dpi)
+                elif width.endswith('pt'):
+                    return float(width[:-2]) * 1.333333  # Convert pt to px (96dpi)
+                else:
+                    return float(width)
+            except ValueError:
+                pass
+                
+        return None
+    
+    def get_height(self):
+        """
+        Get the height of the SVG.
+        
+        Returns:
+            float: Height in SVG units or None if not defined
+        """
+        if self.root is None:
+            return None
+            
+        height = self.root.get('height')
+        if height:
+            try:
+                # Handle units (px, mm, cm, etc.)
+                if height.endswith('px'):
+                    return float(height[:-2])
+                elif height.endswith('mm'):
+                    return float(height[:-2]) * 3.543307  # Convert mm to px (96dpi)
+                elif height.endswith('cm'):
+                    return float(height[:-2]) * 35.43307  # Convert cm to px (96dpi)
+                elif height.endswith('in'):
+                    return float(height[:-2]) * 96  # Convert in to px (96dpi)
+                elif height.endswith('pt'):
+                    return float(height[:-2]) * 1.333333  # Convert pt to px (96dpi)
+                else:
+                    return float(height)
+            except ValueError:
+                pass
+                
+        return None 

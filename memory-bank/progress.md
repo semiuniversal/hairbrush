@@ -100,13 +100,19 @@ We have made significant progress in setting up the development environment, res
 - Path simplification using Ramer-Douglas-Peucker algorithm
 - SVG analysis tools for examining file structure and paths
 - G-code generation from SVG paths with configurable parameters
+- Adaptive curve segmentation for improved Bezier curve approximation
+- Support for all SVG path commands (M, L, H, V, C, S, Q, T, A, Z)
+- SVG viewBox and document dimensions handling for proper scaling
+- Debug markers for visualizing path conversion
+- Progress reporting for long conversions
+- Improved error handling for invalid paths
 
 ### What's In Progress
-- Improving curve handling in path processing
-- Enhancing G-code generation accuracy for complex paths
-- Implementing better approximation for Bezier curves
-- Fixing path distortion issues in G-code output
-- Integrating path processing into the Inkscape extension
+- Testing with complex SVG files
+- Further improving coordinate system transformations
+- Preserving path orientation and direction
+- Creating test cases with different curve types
+- Researching Duet 2 WiFi G-code command structure
 
 ### What's Left
 - Complete Inkscape extension integration

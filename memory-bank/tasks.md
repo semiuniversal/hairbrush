@@ -201,35 +201,59 @@
 ## Current Tasks
 
 ### High Priority
-- [ ] Improve curve handling in path processing:
-  - [ ] Increase curve resolution for better approximation
-  - [ ] Implement adaptive segmentation for Bezier curves
-  - [ ] Fix coordinate system transformation issues
-  - [ ] Add path smoothing options
-- [ ] Fix path distortion issues in G-code output:
-  - [ ] Ensure proper scaling between SVG and G-code coordinates
-  - [ ] Add debugging markers to visualize path conversion
-  - [ ] Preserve path orientation and direction
-- [ ] Enhance the SVG to G-code conversion process:
-  - [ ] Add more configuration options for curve resolution
-  - [ ] Implement better error handling for invalid paths
-  - [ ] Add progress reporting for long conversions
-- [ ] Test with more complex SVG files:
-  - [ ] Create test cases with different curve types
-  - [ ] Validate G-code output with visualization tools
-  - [ ] Compare output with reference implementations
+- [ ] Improve SVG parsing based on AxiDraw analysis:
+  - [ ] Enhance namespace handling for Inkscape SVGs
+  - [ ] Implement fallback mechanisms for undefined namespaces
+  - [ ] Improve document properties extraction (viewBox, width, height)
+  - [ ] Add proper unit conversion support
+
+- [ ] Enhance path processing with complete SVG command support:
+  - [ ] Implement all SVG path commands (M, L, H, V, C, S, Q, T, A, Z)
+  - [ ] Add support for relative and absolute coordinates
+  - [ ] Implement adaptive segmentation for Bezier curves based on curvature
+  - [ ] Add proper arc command (A) handling with elliptical arc approximation
+
+- [ ] Implement proper coordinate system transformation:
+  - [ ] Add support for SVG coordinate system (origin at top-left)
+  - [ ] Implement mapping from SVG space to machine space
+  - [ ] Handle viewBox transformations correctly
+  - [ ] Support different unit systems and conversions
+
+- [ ] Improve G-code generation for dual-airbrush control:
+  - [ ] Research optimal G-code commands for Duet 2 WiFi
+  - [ ] Implement channel separation based on fill/stroke colors
+  - [ ] Add support for varying opacity levels to control airbrush pressure
+  - [ ] Add proper formatting and comments in G-code output
+
+- [ ] Create test SVGs and validation tools:
+  - [ ] Create test SVGs with various path types (lines, curves, arcs)
+  - [ ] Implement G-code visualization for preview
+  - [ ] Add debug visualization options to show path approximations
 
 ### Medium Priority
+- [ ] Implement transformation support:
+  - [ ] Add support for SVG transformation matrices
+  - [ ] Handle nested transformations correctly
+  - [ ] Implement proper scaling, rotation, translation, and skewing
+
+- [ ] Add path optimization features:
+  - [ ] Implement path sorting to minimize travel moves
+  - [ ] Add path simplification options for complex SVGs
+  - [ ] Implement travel move optimization
+
 - [ ] Improve the Inkscape extension interface:
   - [ ] Add options for curve resolution and path simplification
   - [ ] Implement preview functionality
   - [ ] Add error reporting and logging
+
 - [ ] Enhance documentation:
-  - [ ] Document path processing algorithms
+  - [ ] Document SVG parsing and path processing algorithms
   - [ ] Create user guide for the extension
   - [ ] Add examples and tutorials
+  - [ ] Create troubleshooting guide
 
 ### Low Priority
 - [ ] Optimize performance for large SVG files
 - [ ] Add support for more SVG features (text, images, etc.)
-- [ ] Implement advanced color separation techniques 
+- [ ] Implement advanced color separation techniques
+- [ ] Add boundary and clipping support 

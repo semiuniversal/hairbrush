@@ -23,6 +23,11 @@ class GCodeGenerator:
         self.current_y = 0
         self.current_z = 0
         self.brush_config = {}
+        self.svg_viewbox = None
+        self.svg_width = None
+        self.svg_height = None
+        self.scale_factor = 1.0
+        self.debug_markers = False
         
     def add_header(self):
         """Add header G-code commands."""
@@ -128,9 +133,107 @@ class GCodeGenerator:
             
         return commands
     
+    def set_svg_document_properties(self, viewbox=None, width=None, height=None):
+        """
+        Set SVG document properties for proper scaling.
+        
+        Args:
+            viewbox (tuple): SVG viewBox as (min_x, min_y, width, height)
+            width (float): SVG document width
+            height (float): SVG document height
+        """
+        self.svg_viewbox = viewbox
+        self.svg_width = width
+        self.svg_height = height
+        
+        # Calculate scale factor if we have both viewBox and dimensions
+        if viewbox and (width is not None or height is not None):
+            if width is not None:
+                self.scale_factor = width / viewbox[2]
+            else:
+                self.scale_factor = height / viewbox[3]
+                
+        # Add info to output
+        if viewbox:
+            self.output_lines.append(f"; SVG viewBox: {viewbox}")
+        if width is not None:
+            self.output_lines.append(f"; SVG width: {width}")
+        if height is not None:
+            self.output_lines.append(f"; SVG height: {height}")
+        if self.scale_factor != 1.0:
+            self.output_lines.append(f"; Scale factor: {self.scale_factor}")
+    
+    def enable_debug_markers(self, enable=True):
+        """
+        Enable or disable debug markers in the G-code.
+        
+        Args:
+            enable (bool): Whether to enable debug markers
+        """
+        self.debug_markers = enable
+    
+    def transform_coordinates(self, x, y):
+        """
+        Transform SVG coordinates to G-code coordinates.
+        
+        This method handles the conversion from SVG coordinate space (origin at top-left)
+        to G-code coordinate space (origin at bottom-left or machine origin).
+        It applies viewBox transformations, SVG units conversion, and coordinate system flipping.
+        
+        Args:
+            x (float): SVG X coordinate
+            y (float): SVG Y coordinate
+            
+        Returns:
+            tuple: (x, y) in G-code coordinate space
+        """
+        # Apply viewBox transformation if available
+        if self.svg_viewbox:
+            min_x, min_y, vb_width, vb_height = self.svg_viewbox
+            
+            # First, adjust for viewBox origin
+            x = x - min_x
+            y = y - min_y
+        
+        # Apply document scaling if we have dimensions
+        if self.svg_width is not None and self.svg_height is not None:
+            # Calculate scaling factors
+            if self.svg_viewbox:
+                # If we have a viewBox, scale from viewBox to document dimensions
+                scale_x = self.svg_width / self.svg_viewbox[2]
+                scale_y = self.svg_height / self.svg_viewbox[3]
+            else:
+                # If no viewBox, use the scale factor directly
+                scale_x = self.scale_factor
+                scale_y = self.scale_factor
+                
+            # Apply scaling
+            x = x * scale_x
+            y = y * scale_y
+            
+            # SVG has Y axis pointing down, G-code has Y axis pointing up
+            # Invert Y coordinate
+            y = self.svg_height - y
+        
+        # Apply user-defined scale factor (for unit conversion or resizing)
+        if hasattr(self, 'user_scale_factor') and self.user_scale_factor != 1.0:
+            x = x * self.user_scale_factor
+            y = y * self.user_scale_factor
+            
+        # Apply user-defined offset (for positioning on the machine)
+        if hasattr(self, 'user_offset_x') and hasattr(self, 'user_offset_y'):
+            x = x + self.user_offset_x
+            y = y + self.user_offset_y
+            
+        return x, y
+    
     def add_path(self, path_data, brush, z_height, feedrate):
         """
         Add G-code for a path.
+        
+        This method uses the improved path processor to convert SVG path data
+        to a series of G-code movements. It handles all SVG path commands and
+        properly transforms coordinates from SVG space to G-code space.
         
         Args:
             path_data (str): SVG path data
@@ -138,151 +241,56 @@ class GCodeGenerator:
             z_height (float): Z height for the path
             feedrate (float): Feedrate in mm/min
         """
-        # Parse the path data
-        commands = self.parse_path_commands(path_data)
+        from .path_processor import PathProcessor
         
-        # Skip if no commands
-        if not commands:
+        # Parse the path data using the improved path processor
+        path_segments = PathProcessor.parse_path(path_data)
+        if not path_segments:
             return
-        
+            
+        # Convert path to polyline with adaptive curve segmentation
+        polyline = PathProcessor.path_to_polyline(path_segments, curve_resolution=20)
+        if not polyline:
+            return
+            
         # Apply brush offset if configured
         offset_x = 0
         offset_y = 0
-        if brush in self.template and "offset" in self.template[brush]:
-            offset_x, offset_y = self.template[brush]["offset"]
+        if brush in self.brush_config and "offset" in self.brush_config[brush]:
+            offset_x, offset_y = self.brush_config[brush]["offset"]
         
         # Start with brush raised
         self.add_move(None, None, z_height + 5, feedrate, is_rapid=True)
         
-        # Initialize position tracking
-        current_x = 0
-        current_y = 0
-        path_start_x = None
-        path_start_y = None
+        # Add debug marker for path start if enabled
+        if self.debug_markers:
+            self.output_lines.append("; Path start")
         
-        # Process each command
-        for cmd, params in commands:
-            # Handle different command types
-            if cmd == 'M' or cmd == 'm':  # Move to
-                # Move to with pen up
-                is_relative = (cmd == 'm')
-                
-                for i in range(0, len(params), 2):
-                    if i + 1 < len(params):
-                        x, y = params[i], params[i+1]
-                        
-                        if is_relative:
-                            current_x += x
-                            current_y += y
-                        else:
-                            current_x = x
-                            current_y = y
-                        
-                        # Record the start position of the path
-                        if path_start_x is None:
-                            path_start_x = current_x
-                            path_start_y = current_y
-                            
-                            # Move to the start position with brush up
-                            self.add_move(current_x + offset_x, current_y + offset_y, z_height + 5, feedrate, is_rapid=True)
-                            
-                            # Turn on air and lower brush
-                            self.add_brush_command(brush, "air_on")
-                            self.add_move(None, None, z_height, feedrate)
-                            self.add_brush_command(brush, "paint_on")
-                        else:
-                            # Move to the next position with brush down
-                            self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
-            
-            elif cmd == 'L' or cmd == 'l':  # Line to
-                is_relative = (cmd == 'l')
-                
-                for i in range(0, len(params), 2):
-                    if i + 1 < len(params):
-                        x, y = params[i], params[i+1]
-                        
-                        if is_relative:
-                            current_x += x
-                            current_y += y
-                        else:
-                            current_x = x
-                            current_y = y
-                        
-                        # Draw line to this point
-                        self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
-            
-            elif cmd == 'H' or cmd == 'h':  # Horizontal line
-                is_relative = (cmd == 'h')
-                
-                for x in params:
-                    if is_relative:
-                        current_x += x
-                    else:
-                        current_x = x
-                    
-                    # Draw horizontal line
-                    self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
-            
-            elif cmd == 'V' or cmd == 'v':  # Vertical line
-                is_relative = (cmd == 'v')
-                
-                for y in params:
-                    if is_relative:
-                        current_y += y
-                    else:
-                        current_y = y
-                    
-                    # Draw vertical line
-                    self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
-            
-            elif cmd == 'Z' or cmd == 'z':  # Close path
-                if path_start_x is not None and path_start_y is not None:
-                    # Return to the start point
-                    current_x = path_start_x
-                    current_y = path_start_y
-                    self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
-            
-            # Note: For simplicity, we're approximating curves (C, S, Q, T, A) as straight lines
-            # between their endpoints. A more accurate implementation would use
-            # interpolation to approximate the curves.
-            
-            # For now, we'll handle the endpoint of curves
-            elif cmd in ['C', 'c', 'S', 's', 'Q', 'q', 'T', 't', 'A', 'a']:
-                is_relative = cmd.islower()
-                
-                # Get the endpoint of the curve
-                if cmd in ['C', 'c']:  # Cubic Bezier
-                    if len(params) >= 6:
-                        x, y = params[-2], params[-1]
-                elif cmd in ['S', 's']:  # Smooth cubic Bezier
-                    if len(params) >= 4:
-                        x, y = params[-2], params[-1]
-                elif cmd in ['Q', 'q']:  # Quadratic Bezier
-                    if len(params) >= 4:
-                        x, y = params[-2], params[-1]
-                elif cmd in ['T', 't']:  # Smooth quadratic Bezier
-                    if len(params) >= 2:
-                        x, y = params[-2], params[-1]
-                elif cmd in ['A', 'a']:  # Arc
-                    if len(params) >= 7:
-                        x, y = params[-2], params[-1]
-                else:
-                    continue
-                
-                if is_relative:
-                    current_x += x
-                    current_y += y
-                else:
-                    current_x = x
-                    current_y = y
-                
-                # Draw to the endpoint
-                self.add_move(current_x + offset_x, current_y + offset_y, z_height, feedrate)
+        # Process the first point - move to it with pen up
+        first_point = polyline[0]
+        x, y = self.transform_coordinates(first_point[0], first_point[1])
+        self.add_move(x + offset_x, y + offset_y, z_height + 5, feedrate, is_rapid=True)
         
-        # End with brush raised
+        # Lower the brush
+        self.add_move(None, None, z_height, feedrate, is_rapid=False)
+        
+        # Add brush on command
+        self.add_brush_command(brush, "paint_on")
+        
+        # Process remaining points
+        for point in polyline[1:]:
+            x, y = self.transform_coordinates(point[0], point[1])
+            self.add_move(x + offset_x, y + offset_y, z_height, feedrate, is_rapid=False)
+            
+            # Add debug marker for significant points if enabled
+            if self.debug_markers and point == polyline[-1]:
+                self.output_lines.append("; Path end")
+        
+        # Turn off the brush
         self.add_brush_command(brush, "paint_off")
+        
+        # Raise the brush
         self.add_move(None, None, z_height + 5, feedrate, is_rapid=True)
-        self.add_brush_command(brush, "air_off")
     
     def get_output(self):
         """
@@ -301,4 +309,109 @@ class GCodeGenerator:
             filename (str): Output filename
         """
         with open(filename, "w") as f:
-            f.write(self.get_output()) 
+            f.write(self.get_output())
+    
+    def set_user_transform(self, scale_factor=1.0, offset_x=0.0, offset_y=0.0):
+        """
+        Set user-defined transformation parameters.
+        
+        These parameters allow for additional scaling and positioning of the output.
+        
+        Args:
+            scale_factor (float): Additional scaling factor to apply
+            offset_x (float): X offset to apply after all other transformations
+            offset_y (float): Y offset to apply after all other transformations
+        """
+        self.user_scale_factor = scale_factor
+        self.user_offset_x = offset_x
+        self.user_offset_y = offset_y
+        
+        # Add info to output
+        self.output_lines.append(f"; User scale factor: {scale_factor}")
+        self.output_lines.append(f"; User offset: X{offset_x:.3f} Y{offset_y:.3f}")
+    
+    def calculate_airbrush_parameters(self, stroke_width, stroke_opacity):
+        """
+        Calculate optimal Z-height, paint flow, and feedrate based on stroke width and opacity.
+        
+        This model accounts for the conical spray pattern where:
+        - Higher Z = Wider but less dense spray
+        - Lower Z = Narrower but more dense spray
+        
+        Args:
+            stroke_width (float): Stroke width in mm
+            stroke_opacity (float): Stroke opacity (0.0-1.0)
+            
+        Returns:
+            tuple: (z_height, paint_flow, feedrate_factor)
+        """
+        # Base parameters
+        z_min, z_max = 1.0, 15.0  # Z height range in mm
+        flow_min, flow_max = 0.1, 1.0  # Normalized paint flow range
+        speed_min, speed_max = 0.2, 1.0  # Normalized speed factor range
+        
+        # Calculate optimal Z height based on desired width
+        # Assuming a spray cone angle of approximately 15 degrees (tan(15°) ≈ 0.27)
+        spray_cone_factor = 0.27
+        
+        # Z = width / (2 * tan(cone_angle/2))
+        # For small angles, tan(angle) ≈ angle in radians, so we use the simplified factor
+        z_from_width = stroke_width / (2 * spray_cone_factor)
+        
+        # Clamp Z to our allowed range
+        z_height = min(max(z_from_width, z_min), z_max)
+        
+        # Calculate actual width at this Z height
+        actual_width = 2 * z_height * spray_cone_factor
+        
+        # Compensate for Z height's effect on opacity
+        # Higher Z = less opacity, so we need to adjust paint flow and speed
+        
+        # Calculate Z's effect on opacity (inverse square law approximation)
+        # At z_min, factor = 1.0; at z_max, factor = (z_min/z_max)²
+        z_opacity_factor = (z_min / z_height) ** 2
+        
+        # Calculate required opacity compensation
+        required_opacity = stroke_opacity / z_opacity_factor
+        # Clamp to valid range
+        required_opacity = min(max(required_opacity, 0.0), 1.0)
+        
+        # Calculate paint flow based on required opacity
+        # Use non-linear mapping for more natural response
+        paint_flow = flow_min + (math.sqrt(required_opacity) * (flow_max - flow_min))
+        
+        # Calculate speed factor - slower for higher opacity needs
+        # Invert opacity for speed (higher opacity = slower movement)
+        speed_factor = speed_max - (required_opacity**2 * (speed_max - speed_min))
+        
+        return z_height, paint_flow, speed_factor
+    
+    def add_path_with_attributes(self, path_data, stroke_color, stroke_width, stroke_opacity, base_feedrate=1500):
+        """
+        Add G-code for a stroke path with artistic parameters.
+        
+        Args:
+            path_data (str): SVG path data
+            stroke_color (str): Stroke color (e.g., "black", "white")
+            stroke_width (float): Stroke width in mm
+            stroke_opacity (float): Stroke opacity (0.0-1.0)
+            base_feedrate (float): Base feedrate in mm/min
+        """
+        # Select tool based on stroke color
+        brush = "brush_a"  # Default to brush_a (black)
+        if stroke_color.lower() in ["#ffffff", "white"]:
+            brush = "brush_b"  # Use brush_b for white
+            
+        # Calculate parameters for airbrush
+        z_height, paint_flow, speed_factor = self.calculate_airbrush_parameters(stroke_width, stroke_opacity)
+        feedrate = base_feedrate * speed_factor
+        
+        # Add control parameters as comments
+        self.output_lines.append(f"; STROKE: color={stroke_color}, width={stroke_width:.2f}mm, opacity={stroke_opacity:.2f}")
+        self.output_lines.append(f"; AIRBRUSH: z={z_height:.2f}mm, flow={paint_flow:.2f}, feedrate={feedrate:.0f}mm/min")
+        
+        # Add paint flow control comment (for interpreter)
+        self.output_lines.append(f"; PAINT_FLOW:{paint_flow:.2f}")
+        
+        # Process the path with calculated parameters
+        self.add_path(path_data, brush, z_height, feedrate) 

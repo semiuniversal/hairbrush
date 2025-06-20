@@ -1,7 +1,13 @@
 # Active Context
 
 ## Current Focus
-We are currently working on the SVG handling and G-code generation components of the hairbrush extension for Inkscape. This is part of Stage 1 (Environment Setup and Research) and Stage 4 (Inkscape Extension Development) of our implementation plan.
+We are currently working on improving the SVG parsing and path processing components of the hairbrush extension for Inkscape, based on our analysis of the AxiDraw extension code. Our goal is to adapt the proven approaches from AxiDraw's SVG processing while changing the output to generate proper G-code for the dual-airbrush plotter.
+
+The main focus areas are:
+1. Enhancing SVG parsing to handle all SVG elements and namespaces correctly
+2. Implementing sophisticated path processing that accurately handles all SVG path commands
+3. Ensuring accurate transformation from SVG coordinate space to machine coordinate space
+4. Generating optimized G-code that correctly represents SVG paths and supports dual-airbrush control
 
 ## Recent Progress
 1. **Enhanced SVG Parser**
@@ -29,17 +35,48 @@ We are currently working on the SVG handling and G-code generation components of
    - Added Z-height and feedrate control
    - Added brush selection
 
+5. **AxiDraw Code Analysis**
+   - Studied AxiDraw extension code structure and approach
+   - Identified key differences with our current implementation
+   - Created detailed implementation plan based on findings
+   - Updated tasks to incorporate lessons from AxiDraw code
+
 ## Current Issues
-- **Path Distortion**: G-code visualization shows that SVG paths are being simplified and distorted during conversion
-- **Curve Handling**: Complex curves (especially Bezier paths) aren't being properly approximated
-- **Segmentation**: Need to break curves into smaller linear segments for better approximation
+- **Namespace Handling**: Current SVG parser doesn't handle Inkscape namespaces properly
+- **Path Command Support**: Limited support for all SVG path commands
+- **Curve Approximation**: Complex curves aren't being properly approximated
+- **Coordinate Transformation**: Incorrect mapping from SVG space to machine space
+- **Path Distortion**: G-code visualization shows that SVG paths are being distorted during conversion
 
 ## Next Steps
-1. Improve curve resolution in the `path_to_polyline` method
-2. Implement adaptive segmentation for Bezier curves and arcs
-3. Ensure proper scaling between SVG and G-code coordinates
-4. Add better debugging output to help diagnose conversion issues
-5. Integrate improved path processing into the Inkscape extension
+1. **Improve SVG Parsing**:
+   - Enhance namespace handling for Inkscape SVGs
+   - Implement fallback mechanisms for undefined namespaces
+   - Improve document properties extraction (viewBox, width, height)
+   - Add proper unit conversion support
+
+2. **Enhance Path Processing**:
+   - Implement all SVG path commands (M, L, H, V, C, S, Q, T, A, Z)
+   - Add support for relative and absolute coordinates
+   - Implement adaptive segmentation for Bezier curves based on curvature
+   - Add proper arc command (A) handling with elliptical arc approximation
+
+3. **Fix Coordinate System Transformation**:
+   - Add support for SVG coordinate system (origin at top-left)
+   - Implement mapping from SVG space to machine space
+   - Handle viewBox transformations correctly
+   - Support different unit systems and conversions
+
+4. **Improve G-code Generation**:
+   - Research optimal G-code commands for Duet 2 WiFi
+   - Implement channel separation based on fill/stroke colors
+   - Add support for varying opacity levels to control airbrush pressure
+   - Add proper formatting and comments in G-code output
+
+5. **Create Test SVGs and Validation Tools**:
+   - Create test SVGs with various path types (lines, curves, arcs)
+   - Implement G-code visualization for preview
+   - Add debug visualization options to show path approximations
 
 ## Testing
 - Successfully parsed the sample SVG file (`drawing_test.svg`)
@@ -82,6 +119,16 @@ We are currently working on the SVG handling and G-code generation components of
 - Studied AxiDraw extension codebase for best practices - [Current date]
 - Created installation tools for the extension - [Current date]
 - Optimized dependency management approach - [Current date]
+- Implemented path processing improvements - [Current date]
+  - Added adaptive curve segmentation for Bezier curves
+  - Implemented support for all SVG path commands (C, S, Q, T, A)
+  - Added helper methods for calculating control points and approximating arcs
+  - Improved curve resolution with curvature-based segmentation
+- Enhanced G-code generation - [Current date]
+  - Added SVG viewBox and document dimensions handling
+  - Implemented coordinate transformation between SVG and G-code space
+  - Added debug markers for visualizing path conversion
+  - Improved error handling and progress reporting
 
 ## Open Questions
 - What is the current state of the hardware (dual-airbrush CoreXY plotter)?
