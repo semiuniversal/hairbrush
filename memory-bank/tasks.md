@@ -188,6 +188,9 @@
 - [x] Update research_notes.md with Inkscape extension findings - Completed: [Current date]
 - [x] Enhance Inkscape extension structure based on AxiDraw reference - Completed: [Current date]
 - [x] Improve SVG path parsing and G-code generation - Completed: [Current date]
+- [x] Create implementation plan for fixing extension not showing in Inkscape - Completed: [Current date]
+- [x] Create diagnostic tools for extension troubleshooting - Completed: [Current date]
+- [x] Update documentation with clear installation instructions - Completed: [Current date]
 
 ## Notes
 - Focus on completing Stage 1 before moving to other stages
@@ -201,59 +204,62 @@
 ## Current Tasks
 
 ### High Priority
-- [ ] Improve SVG parsing based on AxiDraw analysis:
-  - [ ] Enhance namespace handling for Inkscape SVGs
-  - [ ] Implement fallback mechanisms for undefined namespaces
-  - [ ] Improve document properties extraction (viewBox, width, height)
-  - [ ] Add proper unit conversion support
+- [x] Redesign Inkscape extension structure:
+  - [x] Create simplified extension structure based on AxiDraw model
+  - [x] Create comprehensive implementation plan
+  - [x] Update documentation with clear installation instructions
+  - [x] Implement diagnostic tools for troubleshooting
 
-- [ ] Enhance path processing with complete SVG command support:
-  - [ ] Implement all SVG path commands (M, L, H, V, C, S, Q, T, A, Z)
-  - [ ] Add support for relative and absolute coordinates
-  - [ ] Implement adaptive segmentation for Bezier curves based on curvature
-  - [ ] Add proper arc command (A) handling with elliptical arc approximation
+- [x] Implement improved Inkscape extension:
+  - [x] Create main hairbrush_control.py implementation
+  - [x] Create core hairbrush.py module
+  - [x] Ensure proper module imports and error handling
+  - [x] Implement extension UI with multiple tabs and options
 
-- [ ] Implement proper coordinate system transformation:
-  - [ ] Add support for SVG coordinate system (origin at top-left)
-  - [ ] Implement mapping from SVG space to machine space
-  - [ ] Handle viewBox transformations correctly
-  - [ ] Support different unit systems and conversions
+- [x] Improve SVG parsing based on AxiDraw analysis:
+  - [x] Enhance namespace handling for Inkscape SVGs
+  - [x] Implement fallback mechanisms for undefined namespaces
+  - [x] Improve document properties extraction (viewBox, width, height)
+  - [x] Add support for all SVG path commands
 
-- [ ] Improve G-code generation for dual-airbrush control:
-  - [ ] Research optimal G-code commands for Duet 2 WiFi
-  - [ ] Implement channel separation based on fill/stroke colors
-  - [ ] Add support for varying opacity levels to control airbrush pressure
-  - [ ] Add proper formatting and comments in G-code output
+- [x] Implement path processing:
+  - [x] Create path processor module with support for all path commands
+  - [x] Implement path simplification algorithms
+  - [x] Add support for converting paths to points
+  - [x] Implement G-code generation for dual-airbrush system
 
-- [ ] Create test SVGs and validation tools:
-  - [ ] Create test SVGs with various path types (lines, curves, arcs)
-  - [ ] Implement G-code visualization for preview
-  - [ ] Add debug visualization options to show path approximations
+- [x] Create installation script:
+  - [x] Implement robust installation script for Windows
+  - [x] Add automatic detection of Inkscape extensions directory
+  - [x] Add proper error handling and user feedback
+  - [x] Support copying all required directories and files
 
 ### Medium Priority
-- [ ] Implement transformation support:
-  - [ ] Add support for SVG transformation matrices
-  - [ ] Handle nested transformations correctly
-  - [ ] Implement proper scaling, rotation, translation, and skewing
+- [ ] Test the extension:
+  - [ ] Test installation on Windows Inkscape
+  - [ ] Verify extension appears in Inkscape UI
+  - [ ] Test SVG to G-code conversion
+  - [ ] Test with different SVG files and path types
 
-- [ ] Add path optimization features:
-  - [ ] Implement path sorting to minimize travel moves
-  - [ ] Add path simplification options for complex SVGs
-  - [ ] Implement travel move optimization
-
-- [ ] Improve the Inkscape extension interface:
-  - [ ] Add options for curve resolution and path simplification
-  - [ ] Implement preview functionality
-  - [ ] Add error reporting and logging
-
-- [ ] Enhance documentation:
-  - [ ] Document SVG parsing and path processing algorithms
-  - [ ] Create user guide for the extension
-  - [ ] Add examples and tutorials
+- [ ] Create documentation:
+  - [ ] Write comprehensive user guide
+  - [ ] Document installation process
+  - [ ] Add examples of usage
   - [ ] Create troubleshooting guide
 
+- [ ] Implement additional features:
+  - [ ] Add preview functionality
+  - [ ] Implement custom brush configurations
+  - [ ] Add advanced path optimization
+  - [ ] Implement G-code visualization
+
 ### Low Priority
-- [ ] Optimize performance for large SVG files
-- [ ] Add support for more SVG features (text, images, etc.)
-- [ ] Implement advanced color separation techniques
-- [ ] Add boundary and clipping support 
+- [ ] Create example SVG files:
+  - [ ] Create simple test patterns
+  - [ ] Create complex artwork examples
+  - [ ] Create calibration patterns
+  - [ ] Create documentation examples
+  - [ ] Optimize performance for large SVG files
+  - [ ] Add support for more SVG features (text, images, etc.)
+  - [ ] Implement advanced color separation techniques
+  - [ ] Add boundary and clipping support 

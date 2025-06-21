@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>H.Airbrush Control</name>
+    <id>org.inkscape.effect.hairbrush</id>
+    <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
+    <dependency type="executable" location="extensions">hairbrush_control.py</dependency>
+    
+    <param name="mode" type="notebook">
+        <page name="plot" gui-text="Plot">
+            <label indent="0" appearance="header">H.Airbrush Control</label>
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <label xml:space="preserve">Press "Apply" to begin plotting. Use other tabs to adjust
+settings and access additional H.Airbrush functions.</label>
+                    <spacer />
+                    <label xml:space="preserve">H.Airbrush is a dual-airbrush plotting system for creating
+artwork using two airbrushed colors.</label>
+                </vbox>
+            </hbox>
+            
+            <image width="10" height="5">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            <image>hairbrush_deps/inx_img/hr.svg</image>
+            <image width="10" height="5">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            
+            <hbox indent="0">
+                <image width="10" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox indent="3">
+                    <label appearance="header">Copies:</label>
+                    <image width="10" height="33">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                </vbox>
+                <vbox indent="4">
+                    <param name="copies" type="int" min="0" max="9999" gui-text="Copies to Plot:">1</param>	
+                    <param name="page_delay" type="int" min="0" max="3600" gui-text="Page Delay (s):">15</param>	
+                </vbox>
+                <image width="10" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+            
+            <image width="10" height="3">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            <label indent="13">Tip: Select 0 copies to plot continuously.</label>
+            
+            <image width="10" height="5">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            <image>hairbrush_deps/inx_img/hr.svg</image>
+            <image width="10" height="5">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            
+            <label indent="6">Version 1.0.0</label>
+        </page>
+        
+        <page name="setup" gui-text="Setup">
+            <label appearance="header">Brush Setup</label>
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <param name="brush_a_height" type="int" min="0" max="100" appearance="full" 
+                    gui-text="Brush A height (%):">60</param>
+                    <param name="brush_b_height" type="int" min="0" max="100" appearance="full"
+                    gui-text="Brush B height (%):">60</param>
+                </vbox>
+                <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+            
+            <spacer />
+            
+            <hbox>
+                <vbox indent="8">
+                    <param name="setup_type" type="optiongroup"
+                    appearance="radio" gui-text='Action on "Apply": '>
+                        <option value="home">Home position</option>
+                        <option value="align">Disable motors</option>
+                        <option value="test">Test pattern</option>
+                    </param>
+                </vbox>
+            </hbox>
+            
+            <spacer />
+            <label indent="3">
+            - Home position will move the carriage to the home corner (back left).
+            </label>
+            <label indent="3">
+            - Disable motors will turn off stepper motors for manual positioning.
+            </label>
+        </page>
+        
+        <page name="options" gui-text="Options">
+            <param name="submode" type="notebook">
+                <page name="Speed" gui-text="Speed">
+                    <label appearance="header">Movement speeds:</label>
+                    
+                    <hbox>
+                        <image width="80" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                        <vbox>
+                            <param name="speed_drawing" type="int" min="1" max="110" 
+                            gui-text="Drawing speed (%):">25</param>
+                            <param name="speed_travel" type="int" min="1" max="110" 
+                            gui-text="Travel speed (%):">75</param>
+                            
+                            <param name="accel" type="optiongroup" appearance="combo" gui-text="Acceleration:">
+                                <option value="50">Standard</option>
+                                <option value="100">Maximum</option>
+                                <option value="75">High</option>
+                                <option value="35">Slow</option>
+                                <option value="10">Very slow</option>
+                            </param>
+                            <spacer />
+                            <param name="const_speed" type="bool" gui-text="Use constant speed when drawing">false</param>	
+                        </vbox>
+                        <image width="10" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                    </hbox>
+                </page>
+                
+                <page name="brush_timing" gui-text="Brush timing">
+                    <label appearance="header">Brush switching and activation rates:</label>
+                    
+                    <hbox>
+                        <image width="70" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                        <vbox>
+                            <param name="brush_switch_rate" type="optiongroup" appearance="combo" gui-text="Brush switching speed:">
+                                <option value="50">Standard</option>
+                                <option value="100">Maximum</option>
+                                <option value="25">Slow</option>
+                                <option value="12">Very slow</option>
+                            </param>
+                            
+                            <param name="brush_activate_rate" type="optiongroup" appearance="combo" gui-text="Brush activation speed:">
+                                <option value="50">Standard</option>
+                                <option value="100">Maximum</option>
+                                <option value="25">Slow</option>
+                                <option value="12">Very slow</option>
+                            </param>
+                            <spacer />
+                            <param name="brush_delay_switch" type="int" min="0" max="1000" gui-text="Delay after switching brushes (ms):">500</param>
+                            <param name="brush_delay_activate" type="int" min="0" max="1000" gui-text="Delay after activating brush (ms):">250</param>
+                        </vbox>
+                        <image width="10" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                    </hbox>
+                </page>
+                
+                <page name="preview" gui-text="Notifications">
+                    <label appearance="header">Rendering and reporting:</label>
+                    
+                    <hbox>
+                        <image width="50" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                        <vbox>
+                            <param name="report_time" type="bool" gui-text="Report time elapsed">false</param> 
+                            
+                            <param name="rendering" type="optiongroup" appearance="combo" gui-text="Preview mode rendering:">
+                                <option value="3">All movement</option>
+                                <option value="1">Drawing movement</option>
+                                <option value="2">Travel movement</option>
+                                <option value="0">None</option>
+                            </param>
+                        </vbox>
+                        <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                    </hbox>
+                </page>
+                
+                <page name="advanced" gui-text="Advanced">
+                    <label appearance="header">Advanced Options:</label>
+                    
+                    <hbox>
+                        <image width="50" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                        <vbox>
+                            <param name="auto_rotate" type="bool" gui-text="Auto-rotate page when printing">true</param>	
+                            <param name="random_start" type="bool" gui-text="Randomize starts of closed paths">false</param>
+                            
+                            <image width="10" height="5">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                            
+                            <param name="reordering" type="optiongroup" appearance="combo" gui-text="Path optimization:">
+                                <option value="0">Least; Only connect adjoining paths</option>
+                                <option value="1">Basic; Also reorder paths for speed</option>
+                                <option value="2">Full; Also allow path reversal</option>
+                                <option value="4">None; Strictly preserve file order</option>
+                            </param>
+                            
+                            <param name="resolution" type="optiongroup" appearance="combo" gui-text="Motor Resolution:">
+                                <option value="1">High Resolution (Smoother)</option>
+                                <option value="2">Standard Resolution (Faster)</option>
+                            </param>
+                        </vbox>
+                        <image width="10" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                    </hbox>
+                </page>
+            </param>
+            
+            <page name="sysinfo" gui-text="Config">
+                <label appearance="header">Hardware configuration</label>
+                
+                <hbox>
+                    <image width="60" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                    <vbox>
+                        <param name="model" type="optiongroup" appearance="combo" gui-text="H.Airbrush model:">
+                            <option value="1">Standard Dual Airbrush</option>
+                            <option value="2">Custom Configuration</option>
+                        </param>
+                        
+                        <param name="port_config" type="optiongroup" appearance="combo" gui-text="Machine selection:">
+                            <option value="1">Use First H.Airbrush located</option>
+                            <option value="2">Use H.Airbrush named below</option>
+                        </param>
+                        
+                        <param name="port" type="string" gui-text="H.Airbrush name or port: "></param>
+                        
+                    </vbox>
+                </hbox>
+                <image width="50" height="2">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                
+                <label appearance="header" indent="2">
+                Press "Apply" with this tab selected to check online for updates.</label>
+            </page>
+        </page>
+        
+        <page name="manual" gui-text="Manual">
+            <label appearance="header">Manual Control</label>
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <label>
+                    Press "Apply" with this tab selected to execute various "manual"
+                    H.Airbrush commands. For example, you can move the carriage,
+                    activate or deactivate brushes, enable or disable the motors.
+                    </label>
+                </vbox>
+                <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+            
+            <spacer />
+            
+            <hbox>
+                <image width="80" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <param name="manual_cmd" type="optiongroup" appearance="combo"
+                    gui-text="Command: ">
+                        <option value="none"       >- Select -</option>
+                        <option value="walk_x"     >Move Carriage (X, inches)</option>
+                        <option value="walk_y"     >Move Carriage (Y, inches)</option>
+                        <option value="walk_mmx"   >Move Carriage (X, mm)</option>
+                        <option value="walk_mmy"   >Move Carriage (Y, mm)</option>
+                        <option value="walk_home"  >Move Home</option>
+                        <option value="activate_a" >Activate Brush A</option>
+                        <option value="activate_b" >Activate Brush B</option>
+                        <option value="deactivate" >Deactivate Brushes</option>
+                        <option value="enable_xy"  >Enable XY Motors</option>
+                        <option value="disable_xy" >Disable XY Motors</option>
+                        <option value="strip_data" >Strip plotter data from file</option>
+                    </param>
+                    <param name="dist" indent="1" type="float" precision="3" min="-100000" max="100000"
+                        gui-text="Move distance:">1.000</param>
+                </vbox>
+                <image width="10" height="10">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+            
+            <spacer />
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <label>
+                    Caution: The manual "move" commands will move the carriage as
+                    requested, without regard to the current position. Moving too
+                    far or in the wrong direction may cause H.Airbrush to try and
+                    move beyond its physical limits of travel.
+                    </label>
+                </vbox>
+                <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+        </page>
+        
+        <page name="layers" gui-text="Layers">
+            <label appearance="header">Plot Individual Layers </label>
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <label>
+                    Normally, all paths, from all visible layers will be plotted.
+                    </label><label>
+                    You can also choose to plot a single layer or group of layers,
+                    for example to plot only a single color of ink.
+                    </label>
+                    <spacer />
+                    <label>
+                    Press "Apply" with this tab selected to plot only the visible
+                    layers whose names begin with the selected number, which can
+                    be in the range 0 to 1000.
+                    </label><label>
+                    For example, a layer named "5-black" will be plotted if the
+                    number 5 is selected, but layers named "guide lines", "55",
+                    or "2-white" will be skipped.
+                    </label>
+                </vbox>
+                <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+            
+            <spacer />
+            <hbox>
+                <vbox indent="7">
+                    <param name="layer" type="int" min="0" max="1000"
+                    gui-text="Plot only layers beginning with: ">1</param>
+                </vbox>
+            </hbox>
+            <spacer />
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <label>
+                    Tip: Number of copies to plot and the time delay between them
+                    are given by parameters in the "Plot" tab.
+                    </label>
+                </vbox>
+                <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+        </page>
+        
+        <page name="resume" gui-text="Resume">
+            <label appearance="header">Pause and Resume</label>
+            
+            <hbox>
+                <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+                <vbox>
+                    <label> 
+                    To pause a plot in progress, press the pause button on the
+                    H.Airbrush controller. After pausing, you can change
+                    settings or perform any manual adjustments that are needed.
+                    </label>
+                    <label>
+                    To resume plotting, or to simply cancel and return the
+                    carriage to the Home Corner, press "Apply" with this tab
+                    selected.
+                    </label>
+                    <spacer />
+                    <label>
+                    Plot progress is stored in the SVG file itself. If you plan
+                    to quit Inkscape and resume later, save the document first.
+                    </label>
+                    <label>
+                    You can resume directly where you paused, or after using
+                    the Return to Home Corner command.
+                    </label>
+                </vbox>
+                <image width="10" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
+            </hbox>
+            
+            <spacer />
+            
+            <hbox>
+                <vbox indent="3">
+                    <param name="resume_type" type="optiongroup" appearance="radio"
+                    indent="2" gui-text='Action on "Apply": '>
+                        <option value="ResumeNow" >Resume (From Home or where paused)</option>
+                        <option value="home">Return to Home Corner (only)</option>
+                    </param>
+                </vbox>
+            </hbox>
+        </page>
+    </param>
+    
+    <param name="preview" type="bool" indent="4" 
+        gui-text="Preview mode (Simulate plotting only)">false</param>
+
+    <effect needs-live-preview="false">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="H.Airbrush"/>
+        </effects-menu>
+    </effect>
+    
+    <script>
+        <command location="extensions" interpreter="python">hairbrush_control.py</command>
+    </script>
+</inkscape-extension> 

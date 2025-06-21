@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Test G-code Export</name>
+    <id>org.inkscape.effect.test_gcode_export</id>
+    
+    <dependency type="executable" location="extensions">test_export_effect.py</dependency>
+    
+    <param name="tab" type="notebook">
+        <page name="options" gui-text="Options">
+            <param name="feedrate" type="int" min="100" max="5000" gui-text="Feedrate (mm/min):">1500</param>
+            <param name="z_height" type="float" min="0.1" max="20" precision="1" gui-text="Z Height (mm):">2.0</param>
+            <param name="add_comments" type="bool" gui-text="Add comments to G-code">true</param>
+            <param name="output_path" type="string" gui-text="Output file (leave empty for auto):"></param>
+        </page>
+        <page name="help" gui-text="Help">
+            <label>This extension exports the current document to G-code.</label>
+            <label>It will create a simple square regardless of the actual content.</label>
+            <label>If no output file is specified, it will use the SVG filename with .gcode extension.</label>
+            <label>This is just a test extension to verify functionality.</label>
+        </page>
+    </param>
+    
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="Export"/>
+        </effects-menu>
+    </effect>
+    
+    <script>
+        <command location="extensions" interpreter="python">test_export_effect.py</command>
+    </script>
+</inkscape-extension> 

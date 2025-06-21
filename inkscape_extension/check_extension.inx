@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Check Hairbrush Extension</name>
+  <id>hairbrush.check.extension</id>
+  
+  <param name="info" type="description">This extension checks if the Hairbrush extension is properly installed and can be loaded by Inkscape.</param>
+  
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+      <submenu name="Export"/>
+    </effects-menu>
+  </effect>
+  
+  <script>
+    <command location="inx" interpreter="python">check_extension.py</command>
+  </script>
+  
+  <dependency type="executable" location="path">python3</dependency>
+</inkscape-extension> 

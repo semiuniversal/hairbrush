@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Check Installation</name>
+    <id>org.inkscape.hairbrush.check_installation</id>
+    <dependency type="executable" location="extensions">check_installation.py</dependency>
+    
+    <label>This extension checks if the H.Airbrush extension is properly installed and can be loaded by Inkscape.</label>
+    
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="H.Airbrush"/>
+        </effects-menu>
+    </effect>
+    
+    <script>
+        <command location="extensions" interpreter="python">check_installation.py</command>
+    </script>
+</inkscape-extension> 

@@ -1,0 +1,386 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+H.Airbrush - Main module for the H.Airbrush Inkscape extension
+
+This module implements the core functionality for the H.Airbrush dual-airbrush plotter system.
+It is called by hairbrush_control.py which handles the Inkscape UI integration.
+"""
+
+import os
+import sys
+import time
+import math
+import logging
+import tempfile
+from lxml import etree
+
+# Setup logging
+log_file = os.path.join(tempfile.gettempdir(), 'hairbrush_debug.log')
+logging.basicConfig(level=logging.DEBUG, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    filename=log_file)
+logger = logging.getLogger('hairbrush')
+
+# Add the extensions directory to sys.path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Try to import our modules
+try:
+    from hairbrush_lib import svg_parser, path_processor
+    logger.info("Successfully imported hairbrush_lib modules")
+except ImportError:
+    logger.error("Failed to import hairbrush_lib modules")
+    sys.stderr.write("Error: Could not import hairbrush_lib modules. Make sure they are installed correctly.\n")
+
+# Constants
+VERSION = "1.0.0"
+
+class HairbrushPlotter:
+    """
+    Main class for the H.Airbrush plotter
+    """
+    
+    def __init__(self, document, options):
+        """Initialize the plotter with document and options"""
+        self.document = document
+        self.options = options
+        self.svg_parser = None
+        self.path_processor = None
+        self.gcode_generator = None
+        self.preview_renderer = None
+        
+        # Initialize the components
+        self._initialize_components()
+    
+    def _initialize_components(self):
+        """Initialize the SVG parser, path processor, and G-code generator"""
+        try:
+            # Import here to avoid errors if modules are missing
+            from hairbrush_lib.svg_parser import SVGParser
+            from hairbrush_lib.path_processor import PathProcessor
+            
+            # Create instances
+            self.svg_parser = SVGParser(self.document)
+            self.path_processor = PathProcessor(
+                curve_tolerance=1.0,  # Default value, can be overridden
+                path_handling=1       # Default value, can be overridden
+            )
+            
+            logger.info("Components initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing components: {str(e)}", exc_info=True)
+            raise
+    
+    def plot(self):
+        """Execute the plotting operation"""
+        logger.info("Starting plot operation")
+        
+        # Extract paths from SVG
+        paths = self._extract_paths()
+        if not paths:
+            logger.warning("No paths found to plot")
+            return False
+        
+        # Process paths
+        processed_paths = self._process_paths(paths)
+        
+        # Generate G-code
+        gcode = self._generate_gcode(processed_paths)
+        
+        # Output G-code
+        self._output_gcode(gcode)
+        
+        # If multiple copies requested, handle them
+        copies = int(self.options.get('copies', 1))
+        if copies > 1:
+            page_delay = int(self.options.get('page_delay', 15))
+            for i in range(1, copies):
+                logger.info(f"Plotting copy {i+1} of {copies}")
+                time.sleep(page_delay)
+                self._output_gcode(gcode)
+        
+        return True
+    
+    def _extract_paths(self):
+        """Extract paths from the SVG document"""
+        try:
+            logger.info("Extracting paths from SVG")
+            
+            # Extract paths
+            paths = self.svg_parser.extract_paths()
+            logger.info(f"Extracted {len(paths)} paths")
+            
+            return paths
+        except Exception as e:
+            logger.error(f"Error extracting paths: {str(e)}", exc_info=True)
+            return []
+    
+    def _process_paths(self, paths):
+        """Process the extracted paths"""
+        try:
+            logger.info("Processing paths")
+            
+            # Process paths
+            processed_paths = self.path_processor.process_paths(paths)
+            logger.info(f"Processed {len(processed_paths)} paths")
+            
+            return processed_paths
+        except Exception as e:
+            logger.error(f"Error processing paths: {str(e)}", exc_info=True)
+            return []
+    
+    def _generate_gcode(self, paths):
+        """Generate G-code from the processed paths"""
+        try:
+            logger.info("Generating G-code")
+            
+            # For now, just return a placeholder
+            gcode = "G28 ; Home all axes\n"
+            gcode += "G90 ; Absolute positioning\n"
+            gcode += "G21 ; Set units to millimeters\n\n"
+            
+            gcode += "; H.Airbrush G-code\n"
+            gcode += f"; Generated by H.Airbrush Extension v{VERSION}\n\n"
+            
+            gcode += f"; Number of paths: {len(paths)}\n"
+            gcode += f"; Drawing speed: {self.options.get('speed_drawing', 25)}%\n"
+            gcode += f"; Travel speed: {self.options.get('speed_travel', 75)}%\n\n"
+            
+            # TODO: Implement actual path to G-code conversion
+            gcode += "; Placeholder for actual path G-code\n"
+            gcode += "G0 X10 Y10 F3000\n"
+            gcode += "G0 X100 Y100 F3000\n\n"
+            
+            gcode += "G28 ; Return to home position\n"
+            
+            return gcode
+        except Exception as e:
+            logger.error(f"Error generating G-code: {str(e)}", exc_info=True)
+            return ""
+    
+    def _output_gcode(self, gcode):
+        """Output the generated G-code"""
+        try:
+            logger.info("Outputting G-code")
+            
+            # For now, just print to console
+            print(gcode)
+            
+            # In a real implementation, we would save to a file or send to the machine
+            # filename = os.path.splitext(self.options.get('input_file', 'output'))[0] + '.gcode'
+            # with open(filename, 'w') as f:
+            #     f.write(gcode)
+            
+            logger.info("G-code output complete")
+            return True
+        except Exception as e:
+            logger.error(f"Error outputting G-code: {str(e)}", exc_info=True)
+            return False
+    
+    def setup(self):
+        """Execute the setup operation"""
+        logger.info("Starting setup operation")
+        
+        setup_type = self.options.get('setup_type', 'home')
+        logger.info(f"Setup type: {setup_type}")
+        
+        if setup_type == "home":
+            print("Homing the machine...")
+            # Code to home the machine would go here
+        elif setup_type == "align":
+            print("Disabling motors for manual alignment...")
+            # Code to disable motors would go here
+        elif setup_type == "test":
+            print("Running test pattern...")
+            # Code to run test pattern would go here
+        else:
+            logger.warning(f"Unknown setup type: {setup_type}")
+            print(f"Unknown setup type: {setup_type}")
+        
+        return True
+    
+    def manual(self):
+        """Execute the manual operation"""
+        logger.info("Starting manual operation")
+        
+        cmd = self.options.get('manual_cmd', 'none')
+        logger.info(f"Manual command: {cmd}")
+        
+        if cmd == "none":
+            print("No command selected")
+            return True
+        
+        if cmd == "walk_home":
+            print("Moving to home position...")
+            # Code to move to home position would go here
+        elif cmd in ["walk_x", "walk_y", "walk_mmx", "walk_mmy"]:
+            dist = self.options.get('dist', 1.0)
+            print(f"Moving {dist} units in {cmd[5:]} direction...")
+            # Code to move the carriage would go here
+        elif cmd == "activate_a":
+            print("Activating Brush A...")
+            # Code to activate brush A would go here
+        elif cmd == "activate_b":
+            print("Activating Brush B...")
+            # Code to activate brush B would go here
+        elif cmd == "deactivate":
+            print("Deactivating brushes...")
+            # Code to deactivate brushes would go here
+        elif cmd == "enable_xy":
+            print("Enabling XY motors...")
+            # Code to enable motors would go here
+        elif cmd == "disable_xy":
+            print("Disabling XY motors...")
+            # Code to disable motors would go here
+        elif cmd == "strip_data":
+            print("Stripping plotter data from file...")
+            # Code to strip plotter data would go here
+        else:
+            logger.warning(f"Unknown manual command: {cmd}")
+            print(f"Unknown manual command: {cmd}")
+        
+        return True
+    
+    def layers(self):
+        """Execute the layers operation"""
+        logger.info("Starting layers operation")
+        
+        layer_number = self.options.get('layer', 1)
+        logger.info(f"Layer number: {layer_number}")
+        
+        # Extract paths from the specified layer
+        paths = self._extract_paths_from_layer(layer_number)
+        if not paths:
+            logger.warning(f"No paths found in layer {layer_number}")
+            print(f"No paths found in layer {layer_number}")
+            return False
+        
+        # Process paths
+        processed_paths = self._process_paths(paths)
+        
+        # Generate G-code
+        gcode = self._generate_gcode(processed_paths)
+        
+        # Output G-code
+        self._output_gcode(gcode)
+        
+        return True
+    
+    def _extract_paths_from_layer(self, layer_number):
+        """Extract paths from the specified layer"""
+        try:
+            logger.info(f"Extracting paths from layer {layer_number}")
+            
+            # Extract paths from the specified layer
+            paths = self.svg_parser.extract_paths_from_layer(layer_number)
+            logger.info(f"Extracted {len(paths)} paths from layer {layer_number}")
+            
+            return paths
+        except Exception as e:
+            logger.error(f"Error extracting paths from layer: {str(e)}", exc_info=True)
+            return []
+    
+    def resume(self):
+        """Execute the resume operation"""
+        logger.info("Starting resume operation")
+        
+        resume_type = self.options.get('resume_type', 'ResumeNow')
+        logger.info(f"Resume type: {resume_type}")
+        
+        if resume_type == "ResumeNow":
+            print("Resuming plot...")
+            # Code to resume plotting would go here
+        elif resume_type == "home":
+            print("Returning to home corner...")
+            # Code to return to home corner would go here
+        else:
+            logger.warning(f"Unknown resume type: {resume_type}")
+            print(f"Unknown resume type: {resume_type}")
+        
+        return True
+    
+    def options(self):
+        """Execute the options operation"""
+        logger.info("Starting options operation")
+        
+        submode = self.options.get('submode', 'Speed')
+        logger.info(f"Options submode: {submode}")
+        
+        if submode == "sysinfo":
+            print("Checking for updates...")
+            # Code to check for updates would go here
+        
+        return True
+    
+    def preview(self):
+        """Execute the preview operation"""
+        logger.info("Starting preview operation")
+        
+        # Extract paths from SVG
+        paths = self._extract_paths()
+        if not paths:
+            logger.warning("No paths found to preview")
+            return False
+        
+        # Process paths
+        processed_paths = self._process_paths(paths)
+        
+        # Generate preview
+        self._generate_preview(processed_paths)
+        
+        return True
+    
+    def _generate_preview(self, paths):
+        """Generate a preview of the plotting operation"""
+        try:
+            logger.info("Generating preview")
+            
+            # For now, just print a message
+            print("Preview generated")
+            print(f"Number of paths: {len(paths)}")
+            
+            # In a real implementation, we would generate a visual preview
+            
+            logger.info("Preview complete")
+            return True
+        except Exception as e:
+            logger.error(f"Error generating preview: {str(e)}", exc_info=True)
+            return False
+
+# Module-level functions that are called by hairbrush_control.py
+
+def plot(document, options):
+    """Plot the document with the specified options"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.plot()
+
+def setup(document, options):
+    """Execute the setup operation"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.setup()
+
+def manual(document, options):
+    """Execute the manual operation"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.manual()
+
+def layers(document, options):
+    """Execute the layers operation"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.layers()
+
+def resume(document, options):
+    """Execute the resume operation"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.resume()
+
+def options(document, options):
+    """Execute the options operation"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.options()
+
+def preview(document, options):
+    """Execute the preview operation"""
+    plotter = HairbrushPlotter(document, options)
+    return plotter.preview() 

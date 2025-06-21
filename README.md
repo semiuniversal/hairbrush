@@ -39,8 +39,10 @@ python -m uv pip install -e .
 ### Install the Inkscape Extension
 
 ```bash
-python -m hairbrush.tools.install
+python inkscape_extension/install.py
 ```
+
+This will copy the necessary files to your Inkscape extensions directory.
 
 ## Usage
 
@@ -73,9 +75,34 @@ Options:
 
 ### Inkscape Extension
 
-1. Open your SVG file in Inkscape
-2. Go to Extensions → Export → Dual Airbrush Export
-3. Configure the settings and click Apply
+#### Using the Extension
+
+1. Create or open an SVG file in Inkscape
+2. Design your artwork using paths, shapes, or objects converted to paths
+3. Use stroke colors to specify which airbrush to use:
+   - Black strokes will use Brush A (Black)
+   - White strokes will use Brush B (White)
+4. Adjust stroke width to control airbrush height (thicker strokes = greater height)
+5. Adjust stroke opacity to control paint flow and speed (lower opacity = less paint and faster movement)
+6. Go to `File > Save As...` and select "G-code (*.gcode)" from the file type dropdown
+7. Configure the export options in the dialog that appears
+8. Click "Save" to export the G-code file
+
+#### Export Options
+
+- **Default Brush**: Select the default brush to use (A=Black, B=White)
+- **Base Z Height**: Base height for the airbrush (mm)
+- **Base Feedrate**: Base movement speed (mm/min)
+- **Curve Resolution**: Higher values give smoother curves but larger files
+- **Simplify Paths**: Reduce the number of points in paths
+- **Simplification Tolerance**: Higher values simplify more aggressively
+- **Add Debug Markers**: Add comments in G-code for debugging
+- **Scale Factor**: Scale the output by this factor
+- **X/Y Offset**: Move the output by this amount (mm)
+
+### Visualizing G-code
+
+You can visualize the generated G-code using online tools like [NC Viewer](https://ncviewer.com/), which provides an interactive 3D visualization of the toolpaths.
 
 ## Project Structure
 
@@ -90,6 +117,10 @@ hairbrush/
 │       ├── config.py          # Configuration handling
 │       └── tools/             # Command-line tools
 ├── inkscape_extension/        # Inkscape extension files
+│   ├── hairbrush_export.inx   # Inkscape extension XML definition
+│   ├── hairbrush_export.py    # Extension Python script
+│   ├── install.py             # Installation script
+│   └── README.md              # Extension documentation
 ├── tests/                     # Test files and examples
 │   ├── svg_samples/           # Sample SVG files for testing
 │   ├── test_path_processing.py # Test script for path processing

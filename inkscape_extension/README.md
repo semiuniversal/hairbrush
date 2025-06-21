@@ -1,89 +1,85 @@
-# Dual Airbrush Export Extension for Inkscape
+# H.Airbrush - Inkscape Extension
 
-This Inkscape extension allows you to export SVG layers as G-code for a dual-airbrush plotter with a Duet 2 WiFi board.
+This Inkscape extension allows you to export SVG paths to G-code for a dual-airbrush plotter system.
+
+## Features
+
+- Exports SVG paths to G-code for dual-airbrush plotter
+- Supports all SVG path commands and basic shapes
+- Converts stroke color to airbrush selection (black/white)
+- Uses stroke width to control airbrush height
+- Uses stroke opacity to control paint flow and speed
+- Configurable options for scaling, offsets, and simplification
 
 ## Installation
 
-### Prerequisites
-- Inkscape 1.0 or newer
-- Python 3.8 or newer
+### Windows
 
-### Method 1: Install as a standalone extension (Recommended)
-
-1. Find your Inkscape extensions directory:
-   - On Windows: `C:\Users\[USERNAME]\AppData\Roaming\inkscape\extensions`
-   - On Linux: `~/.config/inkscape/extensions/`
-   - On macOS: `~/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/`
-
-2. Create a `hairbrush` directory in the extensions folder
-
-3. Copy the following files:
-   - Copy `dual_airbrush_export.inx` and `dual_airbrush_export.py` to the Inkscape extensions directory
-   - Copy the entire contents of `src/hairbrush` to the `hairbrush` directory you created in the extensions folder
-
-4. Restart Inkscape
-
-### Method 2: Install with pip (For developers)
-
-1. Install the hairbrush package:
+1. Download the latest release from the GitHub repository
+2. Run the installer script:
    ```
-   pip install -e /path/to/hairbrush
+   python install.py
    ```
-
-2. Copy only these files to the Inkscape extensions directory:
-   - `dual_airbrush_export.inx`
-   - `dual_airbrush_export.py`
-
 3. Restart Inkscape
+
+### Manual Installation
+
+1. Copy the following files to your Inkscape extensions directory:
+   - `hairbrush.inx`
+   - `hairbrush_control.py`
+   - `hairbrush.py`
+   - `hairbrush_lib/` (directory and all contents)
+   - `hairbrush_deps/` (directory and all contents)
+2. Restart Inkscape
+
+The Inkscape extensions directory is typically located at:
+- Windows: `C:\Program Files\Inkscape\share\inkscape\extensions` or `%APPDATA%\inkscape\extensions`
+- macOS: `/Applications/Inkscape.app/Contents/Resources/share/inkscape/extensions`
+- Linux: `~/.config/inkscape/extensions` or `/usr/share/inkscape/extensions`
 
 ## Usage
 
-1. Open your SVG file in Inkscape
-2. Make sure you have layers named according to your configuration (default: "black" and "white")
-3. Go to Extensions → Dual Airbrush → Export to G-code
-4. Configure the settings and click Apply
-5. The G-code file will be saved to the specified location
+1. Open Inkscape and load your SVG file
+2. Go to Extensions > H.Airbrush > H.Airbrush Control
+3. Configure the settings as needed
+4. Click "Apply" to generate G-code
 
-## Configuration
+### Brush Selection
 
-The extension provides several configuration options:
+The extension uses stroke color to determine which airbrush to use:
+- Black stroke: Airbrush A
+- White stroke: Airbrush B
+- Other colors: Defaults to Airbrush A
 
-### Layers Tab
-- **Black Layer Name**: The name of the layer containing paths for the black airbrush
-- **White Layer Name**: The name of the layer containing paths for the white airbrush
-- **Processing Order**: Which layer to process first (black or white)
+### Brush Height
 
-### Machine Settings Tab
-- **Z Height**: The height of the airbrush nozzle above the surface
-- **Feedrate**: The movement speed during drawing
-- **Travel Feedrate**: The movement speed during non-drawing moves
-- **Brush Offset X/Y**: The offset between the two airbrushes
+Stroke width controls the height of the airbrush:
+- Stroke width is multiplied by 10 to get a height value (0-100%)
+- Default stroke width of 1 = 10% height
 
-### Output Tab
-- **Output Path**: Where to save the G-code file
-- **Add Comments**: Include descriptive comments in the G-code
-- **Preview G-code**: Show a preview of the generated G-code
+### Opacity
+
+Stroke opacity controls the paint flow and speed:
+- 100% opacity = full paint flow
+- Lower opacity = reduced paint flow
+
+## G-code Output
+
+The generated G-code includes:
+- Proper initialization and homing commands
+- Brush selection based on stroke color
+- Height control based on stroke width
+- Speed control based on settings
+- Proper path following with optimized movements
 
 ## Troubleshooting
 
-If you encounter issues with the extension:
+If the extension doesn't appear in Inkscape:
+1. Verify the files are in the correct location
+2. Check the Inkscape console for error messages
+3. Try running the installation script again with admin privileges
+4. Check the log file at `%TEMP%\hairbrush_debug.log` (Windows) or `/tmp/hairbrush_debug.log` (Linux/macOS)
 
-1. **Extension not appearing in Inkscape**:
-   - Make sure the `.inx` and `.py` files are in the correct Inkscape extensions directory
-   - Check that you have restarted Inkscape after installation
-   - Verify that the files have the correct permissions
+## License
 
-2. **ImportError for hairbrush modules**:
-   - Make sure the hairbrush package is correctly installed
-   - If using Method 1, verify that the hairbrush directory is in the Inkscape extensions directory
-   - If using Method 2, verify that the pip installation was successful
-
-3. **Layer processing issues**:
-   - Verify that your SVG has properly named layers
-   - Check that the layer names in the extension settings match your SVG layers
-
-4. **Output file issues**:
-   - Make sure you have write permissions to the output directory
-   - Try specifying an absolute path for the output file
-
-For more help, please open an issue on the GitHub repository. 
+This project is licensed under the MIT License - see the LICENSE file for details. 

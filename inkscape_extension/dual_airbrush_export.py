@@ -25,14 +25,20 @@ except ImportError:
     sys.stderr.write("This extension is meant to be run from within Inkscape.\n")
     sys.exit(1)
 
-# Import hairbrush modules
+# Try to import from hairbrush_lib first (extension directory)
 try:
-    from hairbrush.svg_parser import SVGParser
-    from hairbrush.gcode_generator import GCodeGenerator
-    from hairbrush.config import load_command_template
+    from hairbrush_lib.svg_parser import SVGParser
+    from hairbrush_lib.gcode_generator import GCodeGenerator
+    from hairbrush_lib.path_processor import PathProcessor
 except ImportError:
-    inkex.utils.debug("Error: Could not import hairbrush package. Make sure it's installed or in the parent directory.")
-    sys.exit(1)
+    # If that fails, try to import from hairbrush package (installed in extensions dir)
+    try:
+        from hairbrush.svg_parser import SVGParser
+        from hairbrush.gcode_generator import GCodeGenerator
+        from hairbrush.path_processor import PathProcessor
+    except ImportError:
+        inkex.utils.debug("Error: Could not import hairbrush modules. Make sure they're installed correctly.")
+        sys.exit(1)
 
 class DualAirbrushExport(inkex.EffectExtension):
     """
