@@ -4,6 +4,7 @@
 H.Airbrush Extension Installer
 
 This script installs the H.Airbrush Inkscape extension to the user's Inkscape extensions directory.
+It also installs the required Python dependencies.
 """
 
 import os
@@ -111,6 +112,48 @@ def find_inkscape_command():
     
     return None
 
+def install_python_dependencies(source_dir):
+    """
+    Install required Python dependencies
+    """
+    requirements_file = os.path.join(source_dir, 'requirements.txt')
+    
+    if not os.path.isfile(requirements_file):
+        print("Warning: requirements.txt not found, skipping dependency installation")
+        return
+    
+    print("Installing Python dependencies...")
+    
+    # Try to install using pip
+    try:
+        # First try using the system's pip
+        subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', requirements_file], check=True)
+        print("Dependencies installed successfully using pip")
+        return
+    except Exception as e:
+        print(f"Warning: Could not install dependencies using pip: {str(e)}")
+    
+    # If pip fails, try to install dependencies manually
+    try:
+        with open(requirements_file, 'r') as f:
+            requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+        
+        print("Attempting to install dependencies manually...")
+        
+        for req in requirements:
+            print(f"Installing {req}...")
+            try:
+                subprocess.run([sys.executable, '-m', 'pip', 'install', req], check=True)
+                print(f"Installed {req}")
+            except Exception as e:
+                print(f"Warning: Could not install {req}: {str(e)}")
+    except Exception as e:
+        print(f"Warning: Could not install dependencies manually: {str(e)}")
+        print("You may need to install the following dependencies manually:")
+        print("  - lxml>=4.9.0")
+        print("  - pyyaml>=6.0")
+        print("  - numpy>=1.22.0")
+
 def install_extension(source_dir, extensions_dir):
     """
     Install the extension files to the Inkscape extensions directory
@@ -124,12 +167,20 @@ def install_extension(source_dir, extensions_dir):
         'hairbrush.inx',
         'hairbrush_control.py',
         'hairbrush.py',
+        'hairbrush_export_effect.inx',
+        'hairbrush_export_effect.py',
+        'check_installation.inx',
+        'check_installation.py',
+        'README.md',
+        'INSTALL.md',
+        'requirements.txt'
     ]
     
     # Directories to install
     dirs_to_install = [
         'hairbrush_lib',
         'hairbrush_deps',
+        'vendor'  # Include the vendor directory with bundled dependencies
     ]
     
     # Install files
@@ -159,6 +210,49 @@ def install_extension(source_dir, extensions_dir):
             shutil.copytree(source_dir_path, dest_dir_path)
         else:
             print(f"Warning: {dirname} directory not found in source directory")
+    
+    # Install gcode_backend directory
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    gcode_backend_src = os.path.join(project_root, 'gcode_backend')
+    gcode_backend_dst = os.path.join(extensions_dir, 'gcode_backend')
+    
+    if os.path.isdir(gcode_backend_src):
+        print("Installing gcode_backend directory...")
+        
+        # Remove existing directory if it exists
+        if os.path.isdir(gcode_backend_dst):
+            shutil.rmtree(gcode_backend_dst)
+        
+        # Copy directory
+        shutil.copytree(gcode_backend_src, gcode_backend_dst)
+    else:
+        print("Warning: gcode_backend directory not found in project root")
+        
+        # Create gcode_backend directory with default templates
+        print("Creating default gcode_backend directory...")
+        os.makedirs(gcode_backend_dst, exist_ok=True)
+        
+        # Create default command_templates.yaml
+        default_template = {
+            "brush_a": {
+                "offset": [0, 0],
+                "air_on": "M42 P0 S1",
+                "air_off": "M42 P0 S0",
+                "paint_on": "M280 P0 S90",
+                "paint_off": "M280 P0 S0"
+            },
+            "brush_b": {
+                "offset": [50, 50],
+                "air_on": "M42 P1 S1",
+                "air_off": "M42 P1 S0",
+                "paint_on": "M280 P1 S90",
+                "paint_off": "M280 P1 S0"
+            }
+        }
+        
+        import yaml
+        with open(os.path.join(gcode_backend_dst, 'command_templates.yaml'), 'w') as f:
+            yaml.dump(default_template, f, default_flow_style=False)
 
 def main():
     """Main function"""
@@ -187,6 +281,7 @@ def main():
     
     print("\nInstallation complete!")
     print("Please restart Inkscape to use the H.Airbrush extension.")
+    print("\nNote: All dependencies are bundled with the extension.")
     
     # Find Inkscape command
     inkscape_cmd = find_inkscape_command()

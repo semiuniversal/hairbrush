@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Hairbrush G-code Export</name>
+    <name>H.Airbrush G-code Export</name>
     <id>org.inkscape.effect.hairbrush_gcode_export</id>
     
     <dependency type="executable" location="extensions">hairbrush_export_effect.py</dependency>
@@ -13,31 +13,23 @@
             </param>
             <param name="z_height" type="float" min="0.1" max="20" precision="1" gui-text="Base Z Height (mm):">2.0</param>
             <param name="feedrate" type="int" min="100" max="5000" gui-text="Base Feedrate (mm/min):">1500</param>
-            <param name="curve_resolution" type="int" min="5" max="50" gui-text="Curve Resolution:">20</param>
-            <param name="simplify" type="bool" gui-text="Simplify Paths:">false</param>
+            <param name="curve_resolution" type="int" min="5" max="100" gui-text="Curve Resolution:">20</param>
+            <param name="simplify" type="bool" gui-text="Simplify Paths">false</param>
             <param name="tolerance" type="float" min="0.1" max="5.0" precision="1" gui-text="Simplification Tolerance:">0.5</param>
-            <param name="debug_markers" type="bool" gui-text="Add Debug Markers:">false</param>
+            <param name="debug_markers" type="bool" gui-text="Add Debug Markers">false</param>
             <param name="output_path" type="string" gui-text="Output file (leave empty for auto):"></param>
         </page>
         <page name="transform" gui-text="Transform">
-            <param name="scale_factor" type="float" min="0.1" max="10.0" precision="2" gui-text="Scale Factor:">1.00</param>
-            <param name="offset_x" type="float" min="-500" max="500" precision="1" gui-text="X Offset (mm):">0.0</param>
-            <param name="offset_y" type="float" min="-500" max="500" precision="1" gui-text="Y Offset (mm):">0.0</param>
+            <param name="scale_factor" type="float" min="0.1" max="10" precision="2" gui-text="Scale Factor:">1.0</param>
+            <param name="offset_x" type="float" min="-1000" max="1000" precision="1" gui-text="X Offset (mm):">0.0</param>
+            <param name="offset_y" type="float" min="-1000" max="1000" precision="1" gui-text="Y Offset (mm):">0.0</param>
         </page>
         <page name="help" gui-text="Help">
-            <label>Hairbrush G-code Export</label>
-            <label>Export SVG paths to G-code for dual-airbrush plotter.</label>
+            <label>This extension exports the current document to G-code for the H.Airbrush dual-airbrush plotter.</label>
+            <label>Use stroke colors to specify which airbrush to use:</label>
+            <label>- Black strokes will use Brush A (Black)</label>
+            <label>- White strokes will use Brush B (White)</label>
             <label>If no output file is specified, it will use the SVG filename with .gcode extension.</label>
-            <label>Options:</label>
-            <label>- Default Brush: Select the default brush (A=Black, B=White)</label>
-            <label>- Base Z Height: Base height for the airbrush (mm)</label>
-            <label>- Base Feedrate: Base movement speed (mm/min)</label>
-            <label>- Curve Resolution: Higher values give smoother curves</label>
-            <label>- Simplify Paths: Reduce number of points in paths</label>
-            <label>- Tolerance: Higher values simplify more aggressively</label>
-            <label>- Debug Markers: Add comments in G-code for debugging</label>
-            <label>- Scale Factor: Scale the output by this factor</label>
-            <label>- X/Y Offset: Move the output by this amount (mm)</label>
         </page>
     </param>
     

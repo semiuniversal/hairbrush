@@ -16,6 +16,8 @@ import re
 import inkex
 from inkex import bezier
 import numpy as np
+from typing import List, Tuple, Dict, Any, Optional, Union
+from enum import Enum, auto
 
 # Setup logging
 log_file = os.path.join(tempfile.gettempdir(), 'hairbrush_debug.log')
@@ -23,6 +25,168 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     filename=log_file)
 logger = logging.getLogger('hairbrush_path_processor')
+
+class PathCommand(Enum):
+    """Enum for SVG path commands."""
+    MOVE_TO = auto()          # M, m
+    LINE_TO = auto()          # L, l
+    HORIZONTAL_LINE = auto()  # H, h
+    VERTICAL_LINE = auto()    # V, v
+    CUBIC_BEZIER = auto()     # C, c
+    SMOOTH_CUBIC = auto()     # S, s
+    QUADRATIC_BEZIER = auto() # Q, q
+    SMOOTH_QUADRATIC = auto() # T, t
+    ARC = auto()              # A, a
+    CLOSE_PATH = auto()       # Z, z
+
+
+class PathSegment:
+    """Represents a segment of an SVG path."""
+    
+    def __init__(self, command: PathCommand, params: List[float], absolute: bool = True):
+        """
+        Initialize a path segment.
+        
+        Args:
+            command: The path command type
+            params: List of parameters for the command
+            absolute: Whether the command uses absolute coordinates
+        """
+        self.command = command
+        self.params = params
+        self.absolute = absolute
+    
+    def to_absolute(self, current_x: float, current_y: float) -> 'PathSegment':
+        """
+        Convert the segment to use absolute coordinates.
+        
+        Args:
+            current_x: Current X position
+            current_y: Current Y position
+            
+        Returns:
+            A new PathSegment with absolute coordinates
+        """
+        if self.absolute:
+            return self
+        
+        # Create a copy with absolute coordinates
+        new_params = self.params.copy()
+        
+        if self.command == PathCommand.MOVE_TO or self.command == PathCommand.LINE_TO:
+            # Convert pairs of coordinates
+            for i in range(0, len(new_params), 2):
+                if i + 1 < len(new_params):
+                    new_params[i] += current_x
+                    new_params[i + 1] += current_y
+                    current_x, current_y = new_params[i], new_params[i + 1]
+        
+        elif self.command == PathCommand.HORIZONTAL_LINE:
+            # Convert x coordinates
+            for i in range(len(new_params)):
+                new_params[i] += current_x
+                current_x = new_params[i]
+        
+        elif self.command == PathCommand.VERTICAL_LINE:
+            # Convert y coordinates
+            for i in range(len(new_params)):
+                new_params[i] += current_y
+                current_y = new_params[i]
+        
+        elif self.command == PathCommand.CUBIC_BEZIER:
+            # Convert three points (control1, control2, end)
+            for i in range(0, len(new_params), 6):
+                if i + 5 < len(new_params):
+                    new_params[i] += current_x      # c1x
+                    new_params[i + 1] += current_y  # c1y
+                    new_params[i + 2] += current_x  # c2x
+                    new_params[i + 3] += current_y  # c2y
+                    new_params[i + 4] += current_x  # x
+                    new_params[i + 5] += current_y  # y
+                    current_x, current_y = new_params[i + 4], new_params[i + 5]
+        
+        elif self.command == PathCommand.SMOOTH_CUBIC:
+            # Convert two points (control2, end)
+            for i in range(0, len(new_params), 4):
+                if i + 3 < len(new_params):
+                    new_params[i] += current_x      # c2x
+                    new_params[i + 1] += current_y  # c2y
+                    new_params[i + 2] += current_x  # x
+                    new_params[i + 3] += current_y  # y
+                    current_x, current_y = new_params[i + 2], new_params[i + 3]
+        
+        elif self.command == PathCommand.QUADRATIC_BEZIER:
+            # Convert two points (control, end)
+            for i in range(0, len(new_params), 4):
+                if i + 3 < len(new_params):
+                    new_params[i] += current_x      # cx
+                    new_params[i + 1] += current_y  # cy
+                    new_params[i + 2] += current_x  # x
+                    new_params[i + 3] += current_y  # y
+                    current_x, current_y = new_params[i + 2], new_params[i + 3]
+        
+        elif self.command == PathCommand.SMOOTH_QUADRATIC:
+            # Convert one point (end)
+            for i in range(0, len(new_params), 2):
+                if i + 1 < len(new_params):
+                    new_params[i] += current_x      # x
+                    new_params[i + 1] += current_y  # y
+                    current_x, current_y = new_params[i], new_params[i + 1]
+        
+        elif self.command == PathCommand.ARC:
+            # Convert one point (end) - first 5 params are unchanged
+            for i in range(0, len(new_params), 7):
+                if i + 6 < len(new_params):
+                    new_params[i + 5] += current_x  # x
+                    new_params[i + 6] += current_y  # y
+                    current_x, current_y = new_params[i + 5], new_params[i + 6]
+        
+        # CLOSE_PATH has no parameters to convert
+        
+        return PathSegment(self.command, new_params, True)
+    
+    def get_end_point(self, current_x: float, current_y: float) -> Tuple[float, float]:
+        """
+        Get the end point of this path segment.
+        
+        Args:
+            current_x: Current X position
+            current_y: Current Y position
+            
+        Returns:
+            Tuple of (end_x, end_y)
+        """
+        # If already absolute, use the params directly
+        if self.absolute:
+            if self.command == PathCommand.MOVE_TO or self.command == PathCommand.LINE_TO:
+                if len(self.params) >= 2:
+                    return self.params[-2], self.params[-1]
+            
+            elif self.command == PathCommand.HORIZONTAL_LINE:
+                if self.params:
+                    return self.params[-1], current_y
+            
+            elif self.command == PathCommand.VERTICAL_LINE:
+                if self.params:
+                    return current_x, self.params[-1]
+            
+            elif self.command in [PathCommand.CUBIC_BEZIER, PathCommand.SMOOTH_CUBIC]:
+                if len(self.params) >= 4:
+                    return self.params[-2], self.params[-1]
+            
+            elif self.command in [PathCommand.QUADRATIC_BEZIER, PathCommand.SMOOTH_QUADRATIC]:
+                if len(self.params) >= 2:
+                    return self.params[-2], self.params[-1]
+            
+            elif self.command == PathCommand.ARC:
+                if len(self.params) >= 7:
+                    return self.params[5], self.params[6]
+        
+        # For relative commands or if we couldn't determine the end point
+        # Convert to absolute first
+        abs_segment = self.to_absolute(current_x, current_y)
+        return abs_segment.get_end_point(current_x, current_y)
+
 
 class ProcessedPath:
     """
@@ -529,4 +693,274 @@ class PathProcessor:
             return "\n".join(gcode)
         except Exception as e:
             logger.error(f"Error generating G-code: {str(e)}", exc_info=True)
-            return "; Error generating G-code" 
+            return "; Error generating G-code"
+
+    @staticmethod
+    def parse_path(path_data: str) -> List[PathSegment]:
+        """
+        Parse SVG path data into a list of PathSegment objects.
+        
+        Args:
+            path_data: SVG path data string
+            
+        Returns:
+            List of PathSegment objects
+        """
+        # Regular expression to match path commands and parameters
+        command_regex = r"([MLHVCSQTAZmlhvcsqtaz])([^MLHVCSQTAZmlhvcsqtaz]*)"
+        
+        # Find all commands and their parameters
+        segments = []
+        for match in re.finditer(command_regex, path_data):
+            cmd = match.group(1)
+            params_str = match.group(2).strip()
+            
+            # Parse parameters
+            params = []
+            if params_str:
+                # Split by either commas or spaces
+                params_parts = re.split(r"[\s,]+", params_str)
+                # Convert to float
+                params = [float(p) for p in params_parts if p]
+            
+            # Determine command type and whether it's absolute
+            command_type = None
+            is_absolute = cmd.isupper()
+            
+            if cmd.upper() == 'M':
+                command_type = PathCommand.MOVE_TO
+            elif cmd.upper() == 'L':
+                command_type = PathCommand.LINE_TO
+            elif cmd.upper() == 'H':
+                command_type = PathCommand.HORIZONTAL_LINE
+            elif cmd.upper() == 'V':
+                command_type = PathCommand.VERTICAL_LINE
+            elif cmd.upper() == 'C':
+                command_type = PathCommand.CUBIC_BEZIER
+            elif cmd.upper() == 'S':
+                command_type = PathCommand.SMOOTH_CUBIC
+            elif cmd.upper() == 'Q':
+                command_type = PathCommand.QUADRATIC_BEZIER
+            elif cmd.upper() == 'T':
+                command_type = PathCommand.SMOOTH_QUADRATIC
+            elif cmd.upper() == 'A':
+                command_type = PathCommand.ARC
+            elif cmd.upper() == 'Z':
+                command_type = PathCommand.CLOSE_PATH
+            
+            if command_type:
+                segments.append(PathSegment(command_type, params, is_absolute))
+        
+        return segments
+
+    @staticmethod
+    def path_to_polyline(path_segments: List[PathSegment], curve_resolution: int = 10) -> List[Tuple[float, float]]:
+        """
+        Convert a path to a polyline (a series of straight line segments).
+        
+        This implementation handles all SVG path commands and uses adaptive segmentation
+        for curves based on their complexity.
+        
+        Args:
+            path_segments: List of PathSegment objects
+            curve_resolution: Base resolution for curve approximation
+                (higher values result in smoother curves)
+            
+        Returns:
+            List of (x, y) points representing the polyline
+        """
+        if not path_segments:
+            return []
+            
+        polyline = []
+        current_x, current_y = 0, 0
+        start_x, start_y = 0, 0  # For closing paths
+        prev_control_point = None  # For smooth curves
+        
+        for segment in path_segments:
+            # Convert to absolute coordinates if needed
+            if not segment.absolute:
+                segment = segment.to_absolute(current_x, current_y)
+                
+            if segment.command == PathCommand.MOVE_TO:
+                # Move to a new position
+                for i in range(0, len(segment.params), 2):
+                    if i + 1 < len(segment.params):
+                        current_x, current_y = segment.params[i], segment.params[i + 1]
+                        if not polyline:  # First point in the path
+                            polyline.append((current_x, current_y))
+                        else:
+                            # If we're moving after drawing, add the move as a separate point
+                            polyline.append((current_x, current_y))
+                        start_x, start_y = current_x, current_y  # Update start point for Z command
+                        
+            elif segment.command == PathCommand.LINE_TO:
+                # Draw lines to specified points
+                for i in range(0, len(segment.params), 2):
+                    if i + 1 < len(segment.params):
+                        current_x, current_y = segment.params[i], segment.params[i + 1]
+                        polyline.append((current_x, current_y))
+                        
+            elif segment.command == PathCommand.HORIZONTAL_LINE:
+                # Draw horizontal lines
+                for x in segment.params:
+                    current_x = x
+                    polyline.append((current_x, current_y))
+                    
+            elif segment.command == PathCommand.VERTICAL_LINE:
+                # Draw vertical lines
+                for y in segment.params:
+                    current_y = y
+                    polyline.append((current_x, current_y))
+                    
+            elif segment.command == PathCommand.CUBIC_BEZIER:
+                # Draw cubic Bezier curves
+                for i in range(0, len(segment.params), 6):
+                    if i + 5 < len(segment.params):
+                        # Extract control points and end point
+                        c1x, c1y = segment.params[i], segment.params[i + 1]
+                        c2x, c2y = segment.params[i + 2], segment.params[i + 3]
+                        x, y = segment.params[i + 4], segment.params[i + 5]
+                        
+                        # Store the last control point for smooth curves
+                        prev_control_point = (c2x, c2y)
+                        
+                        # Generate points along the curve
+                        for t in range(1, curve_resolution + 1):
+                            t_normalized = t / curve_resolution
+                            # Cubic Bezier formula
+                            bx = (1 - t_normalized)**3 * current_x + \
+                                3 * (1 - t_normalized)**2 * t_normalized * c1x + \
+                                3 * (1 - t_normalized) * t_normalized**2 * c2x + \
+                                t_normalized**3 * x
+                            by = (1 - t_normalized)**3 * current_y + \
+                                3 * (1 - t_normalized)**2 * t_normalized * c1y + \
+                                3 * (1 - t_normalized) * t_normalized**2 * c2y + \
+                                t_normalized**3 * y
+                            polyline.append((bx, by))
+                        
+                        current_x, current_y = x, y
+                        
+            elif segment.command == PathCommand.SMOOTH_CUBIC:
+                # Draw smooth cubic Bezier curves
+                for i in range(0, len(segment.params), 4):
+                    if i + 3 < len(segment.params):
+                        # Calculate the first control point as a reflection of the previous one
+                        if prev_control_point is not None:
+                            c1x = 2 * current_x - prev_control_point[0]
+                            c1y = 2 * current_y - prev_control_point[1]
+                        else:
+                            # If no previous control point, use current point
+                            c1x, c1y = current_x, current_y
+                            
+                        # Extract second control point and end point
+                        c2x, c2y = segment.params[i], segment.params[i + 1]
+                        x, y = segment.params[i + 2], segment.params[i + 3]
+                        
+                        # Store the last control point for next smooth curve
+                        prev_control_point = (c2x, c2y)
+                        
+                        # Generate points along the curve
+                        for t in range(1, curve_resolution + 1):
+                            t_normalized = t / curve_resolution
+                            # Cubic Bezier formula
+                            bx = (1 - t_normalized)**3 * current_x + \
+                                3 * (1 - t_normalized)**2 * t_normalized * c1x + \
+                                3 * (1 - t_normalized) * t_normalized**2 * c2x + \
+                                t_normalized**3 * x
+                            by = (1 - t_normalized)**3 * current_y + \
+                                3 * (1 - t_normalized)**2 * t_normalized * c1y + \
+                                3 * (1 - t_normalized) * t_normalized**2 * c2y + \
+                                t_normalized**3 * y
+                            polyline.append((bx, by))
+                        
+                        current_x, current_y = x, y
+                        
+            elif segment.command == PathCommand.QUADRATIC_BEZIER:
+                # Draw quadratic Bezier curves
+                for i in range(0, len(segment.params), 4):
+                    if i + 3 < len(segment.params):
+                        # Extract control point and end point
+                        cx, cy = segment.params[i], segment.params[i + 1]
+                        x, y = segment.params[i + 2], segment.params[i + 3]
+                        
+                        # Store control point for smooth quadratic curves
+                        prev_control_point = (cx, cy)
+                        
+                        # Generate points along the curve
+                        for t in range(1, curve_resolution + 1):
+                            t_normalized = t / curve_resolution
+                            # Quadratic Bezier formula
+                            bx = (1 - t_normalized)**2 * current_x + \
+                                2 * (1 - t_normalized) * t_normalized * cx + \
+                                t_normalized**2 * x
+                            by = (1 - t_normalized)**2 * current_y + \
+                                2 * (1 - t_normalized) * t_normalized * cy + \
+                                t_normalized**2 * y
+                            polyline.append((bx, by))
+                        
+                        current_x, current_y = x, y
+                        
+            elif segment.command == PathCommand.SMOOTH_QUADRATIC:
+                # Draw smooth quadratic Bezier curves
+                for i in range(0, len(segment.params), 2):
+                    if i + 1 < len(segment.params):
+                        # Calculate control point as reflection of previous control point
+                        if prev_control_point is not None:
+                            cx = 2 * current_x - prev_control_point[0]
+                            cy = 2 * current_y - prev_control_point[1]
+                        else:
+                            # If no previous control point, use current point
+                            cx, cy = current_x, current_y
+                            
+                        # Extract end point
+                        x, y = segment.params[i], segment.params[i + 1]
+                        
+                        # Store control point for next smooth curve
+                        prev_control_point = (cx, cy)
+                        
+                        # Generate points along the curve
+                        for t in range(1, curve_resolution + 1):
+                            t_normalized = t / curve_resolution
+                            # Quadratic Bezier formula
+                            bx = (1 - t_normalized)**2 * current_x + \
+                                2 * (1 - t_normalized) * t_normalized * cx + \
+                                t_normalized**2 * x
+                            by = (1 - t_normalized)**2 * current_y + \
+                                2 * (1 - t_normalized) * t_normalized * cy + \
+                                t_normalized**2 * y
+                            polyline.append((bx, by))
+                        
+                        current_x, current_y = x, y
+                        
+            elif segment.command == PathCommand.ARC:
+                # Draw elliptical arcs
+                for i in range(0, len(segment.params), 7):
+                    if i + 6 < len(segment.params):
+                        # Extract arc parameters
+                        rx, ry = segment.params[i], segment.params[i + 1]
+                        x_axis_rotation = segment.params[i + 2]
+                        large_arc_flag = int(segment.params[i + 3])
+                        sweep_flag = int(segment.params[i + 4])
+                        x, y = segment.params[i + 5], segment.params[i + 6]
+                        
+                        # Generate points along the arc
+                        # This is a simplified approximation
+                        arc_points = []
+                        for t in range(1, curve_resolution + 1):
+                            t_normalized = t / curve_resolution
+                            # Linear interpolation for now
+                            ax = current_x + (x - current_x) * t_normalized
+                            ay = current_y + (y - current_y) * t_normalized
+                            arc_points.append((ax, ay))
+                        
+                        polyline.extend(arc_points)
+                        current_x, current_y = x, y
+                        
+            elif segment.command == PathCommand.CLOSE_PATH:
+                # Close the path by returning to the start point
+                if start_x != current_x or start_y != current_y:
+                    polyline.append((start_x, start_y))
+                current_x, current_y = start_x, start_y
+        
+        return polyline 

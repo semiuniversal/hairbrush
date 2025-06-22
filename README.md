@@ -1,4 +1,4 @@
-# Hairbrush - Dual Airbrush Plotter Controller
+# H.Airbrush - Dual Airbrush Plotter Controller
 
 A Python package and Inkscape extension for controlling a dual-airbrush plotter with a Duet 2 WiFi board.
 

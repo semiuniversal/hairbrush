@@ -4,6 +4,7 @@
 H.Airbrush Extension - Installation Checker
 
 This script checks if the H.Airbrush extension is properly installed and can be loaded by Inkscape.
+It also verifies that the required Python dependencies are available.
 """
 
 import os
@@ -23,7 +24,7 @@ logger = logging.getLogger('hairbrush_check')
 
 class CheckInstallationEffect(inkex.Effect):
     """
-    Check if the H.Airbrush extension is properly installed.
+    Check if the Hairbrush extension is properly installed.
     """
     
     def __init__(self):
@@ -58,9 +59,15 @@ class CheckInstallationEffect(inkex.Effect):
         required_files = [
             "hairbrush.inx",
             "hairbrush.py",
+            "hairbrush_export_effect.inx",
+            "hairbrush_export_effect.py",
             os.path.join("hairbrush_lib", "__init__.py"),
             os.path.join("hairbrush_lib", "svg_parser.py"),
-            os.path.join("hairbrush_lib", "path_processor.py")
+            os.path.join("hairbrush_lib", "path_processor.py"),
+            os.path.join("hairbrush_lib", "gcode_generator.py"),
+            os.path.join("hairbrush_lib", "config.py"),
+            os.path.join("hairbrush_lib", "templates", "default.yaml"),
+            os.path.join("vendor", "yaml", "__init__.py")  # Check for bundled PyYAML
         ]
         
         for file_path in required_files:
@@ -70,11 +77,26 @@ class CheckInstallationEffect(inkex.Effect):
             else:
                 results.append(f"✗ Missing: {file_path}")
         
+        # Check for required dependencies
+        results.append("\nChecking bundled dependencies:")
+        
+        # Check for PyYAML in vendor directory
+        yaml_path = os.path.join(extension_dir, "vendor", "yaml")
+        if os.path.exists(yaml_path) and os.path.isdir(yaml_path):
+            results.append(f"✓ PyYAML is bundled in vendor directory")
+        else:
+            results.append(f"✗ PyYAML is NOT bundled in vendor directory")
+        
         # Try to import hairbrush modules
         try:
             # Add the extensions directory to sys.path
             if extension_dir not in sys.path:
                 sys.path.append(extension_dir)
+            
+            # Add vendor directory to sys.path
+            vendor_dir = os.path.join(extension_dir, "vendor")
+            if os.path.exists(vendor_dir) and vendor_dir not in sys.path:
+                sys.path.insert(0, vendor_dir)
             
             # Try to import the main module
             spec = importlib.util.find_spec("hairbrush")
@@ -89,7 +111,7 @@ class CheckInstallationEffect(inkex.Effect):
                 results.append("✓ hairbrush_lib package can be imported")
                 
                 # Try to import specific modules
-                for module_name in ["svg_parser", "path_processor"]:
+                for module_name in ["svg_parser", "path_processor", "gcode_generator", "config"]:
                     try:
                         module = importlib.import_module(f"hairbrush_lib.{module_name}")
                         results.append(f"✓ hairbrush_lib.{module_name} can be imported")

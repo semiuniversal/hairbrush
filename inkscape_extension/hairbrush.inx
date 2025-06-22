@@ -7,15 +7,15 @@
     
     <param name="mode" type="notebook">
         <page name="plot" gui-text="Plot">
-            <label indent="0" appearance="header">H.Airbrush Control</label>
+            <label indent="0" appearance="header">Hairbrush Control</label>
             
             <hbox>
                 <image width="30" height="1">hairbrush_deps/inx_img/spacer_10px.svg</image>
                 <vbox>
-                    <label xml:space="preserve">Press "Apply" to begin plotting. Use other tabs to adjust
+                                         <label xml:space="preserve">Press "Apply" to begin plotting. Use other tabs to adjust
 settings and access additional H.Airbrush functions.</label>
                     <spacer />
-                    <label xml:space="preserve">H.Airbrush is a dual-airbrush plotting system for creating
+                                         <label xml:space="preserve">H.Airbrush is a dual-airbrush plotting system for creating
 artwork using two airbrushed colors.</label>
                 </vbox>
             </hbox>
@@ -361,7 +361,7 @@ artwork using two airbrushed colors.</label>
     <param name="preview" type="bool" indent="4" 
         gui-text="Preview mode (Simulate plotting only)">false</param>
 
-    <effect needs-live-preview="false">
+    <effect>
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="H.Airbrush"/>

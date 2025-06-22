@@ -96,17 +96,33 @@ class SVGParser:
         self.height = None
         self.layers = {}
         
+        # Debug information
+        logger.info(f"Initializing SVGParser with document type: {type(document)}")
+        
         # Parse the document
         self._parse_document()
     
     def _parse_document(self):
         """Parse the SVG document"""
         try:
-            # Get the root element
-            self.root = self.document.getroot()
+            # Check if document is a string (file path)
+            if isinstance(self.document, str):
+                logger.info(f"Parsing document from file path: {self.document}")
+                try:
+                    from lxml import etree
+                    tree = etree.parse(self.document)
+                    self.root = tree.getroot()
+                    logger.info(f"Parsed XML document with root tag: {self.root.tag}")
+                except Exception as e:
+                    logger.error(f"Error parsing XML from file: {str(e)}", exc_info=True)
+                    return
+            else:
+                # Assume it's already an XML element or document
+                logger.info("Document is not a string, assuming it's an XML element or document")
+                self.root = self.document.getroot() if hasattr(self.document, 'getroot') else self.document
             
             # Get the viewBox attribute
-            if 'viewBox' in self.root.attrib:
+            if self.root is not None and 'viewBox' in self.root.attrib:
                 viewbox = self.root.attrib['viewBox'].split()
                 self.viewbox = {
                     'x': float(viewbox[0]),
@@ -114,12 +130,18 @@ class SVGParser:
                     'width': float(viewbox[2]),
                     'height': float(viewbox[3])
                 }
+                logger.info(f"Found viewBox: {self.viewbox}")
+            else:
+                logger.warning("No viewBox attribute found in SVG root")
             
             # Get the width and height
-            if 'width' in self.root.attrib:
-                self.width = self._parse_dimension(self.root.attrib['width'])
-            if 'height' in self.root.attrib:
-                self.height = self._parse_dimension(self.root.attrib['height'])
+            if self.root is not None:
+                if 'width' in self.root.attrib:
+                    self.width = self._parse_dimension(self.root.attrib['width'])
+                    logger.info(f"Found width: {self.width}")
+                if 'height' in self.root.attrib:
+                    self.height = self._parse_dimension(self.root.attrib['height'])
+                    logger.info(f"Found height: {self.height}")
             
             # Find all layers
             self._find_layers()
@@ -168,49 +190,63 @@ class SVGParser:
         try:
             paths = []
             
+            if self.root is None:
+                logger.error("Cannot extract paths: root element is None")
+                return paths
+            
+            logger.info("Extracting paths from SVG document")
+            
             # Find all path elements
-            for element in self.root.findall(f".//{self.SVG_NS}path"):
+            logger.info("Looking for path elements...")
+            path_elements = self.root.findall(f".//{self.SVG_NS}path")
+            logger.info(f"Found {len(path_elements)} path elements")
+            
+            for element in path_elements:
                 path = self._extract_path_from_element(element)
                 if path:
                     paths.append(path)
             
             # Find all rectangles and convert to paths
-            for element in self.root.findall(f".//{self.SVG_NS}rect"):
+            logger.info("Looking for rectangle elements...")
+            rect_elements = self.root.findall(f".//{self.SVG_NS}rect")
+            logger.info(f"Found {len(rect_elements)} rectangle elements")
+            
+            for element in rect_elements:
                 path = self._extract_rect_as_path(element)
                 if path:
                     paths.append(path)
             
             # Find all circles and convert to paths
-            for element in self.root.findall(f".//{self.SVG_NS}circle"):
+            logger.info("Looking for circle elements...")
+            circle_elements = self.root.findall(f".//{self.SVG_NS}circle")
+            logger.info(f"Found {len(circle_elements)} circle elements")
+            
+            for element in circle_elements:
                 path = self._extract_circle_as_path(element)
                 if path:
                     paths.append(path)
             
             # Find all ellipses and convert to paths
-            for element in self.root.findall(f".//{self.SVG_NS}ellipse"):
+            logger.info("Looking for ellipse elements...")
+            ellipse_elements = self.root.findall(f".//{self.SVG_NS}ellipse")
+            logger.info(f"Found {len(ellipse_elements)} ellipse elements")
+            
+            for element in ellipse_elements:
                 path = self._extract_ellipse_as_path(element)
                 if path:
                     paths.append(path)
             
             # Find all lines and convert to paths
-            for element in self.root.findall(f".//{self.SVG_NS}line"):
+            logger.info("Looking for line elements...")
+            line_elements = self.root.findall(f".//{self.SVG_NS}line")
+            logger.info(f"Found {len(line_elements)} line elements")
+            
+            for element in line_elements:
                 path = self._extract_line_as_path(element)
                 if path:
                     paths.append(path)
             
-            # Find all polylines and convert to paths
-            for element in self.root.findall(f".//{self.SVG_NS}polyline"):
-                path = self._extract_polyline_as_path(element)
-                if path:
-                    paths.append(path)
-            
-            # Find all polygons and convert to paths
-            for element in self.root.findall(f".//{self.SVG_NS}polygon"):
-                path = self._extract_polygon_as_path(element)
-                if path:
-                    paths.append(path)
-            
-            logger.info(f"Extracted {len(paths)} paths from the document")
+            logger.info(f"Total paths extracted: {len(paths)}")
             return paths
         except Exception as e:
             logger.error(f"Error extracting paths: {str(e)}", exc_info=True)
@@ -485,4 +521,30 @@ class SVGParser:
             return style
         except Exception as e:
             logger.error(f"Error extracting style: {str(e)}", exc_info=True)
-            return {} 
+            return {}
+    
+    def get_document_dimensions(self):
+        """
+        Get the dimensions of the SVG document.
+        
+        Returns:
+            tuple: (width, height, viewbox) where viewbox is a tuple (min_x, min_y, width, height)
+                  or (None, None, None) if dimensions are not available
+        """
+        try:
+            # Convert viewbox to the format expected by GCodeGenerator
+            viewbox_tuple = None
+            if self.viewbox:
+                viewbox_tuple = (
+                    self.viewbox['x'],
+                    self.viewbox['y'],
+                    self.viewbox['width'],
+                    self.viewbox['height']
+                )
+            
+            logger.info(f"Document dimensions: width={self.width}, height={self.height}, viewbox={viewbox_tuple}")
+            
+            return self.width, self.height, viewbox_tuple
+        except Exception as e:
+            logger.error(f"Error getting document dimensions: {str(e)}", exc_info=True)
+            return None, None, None 

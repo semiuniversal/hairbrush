@@ -1,85 +1,106 @@
-# H.Airbrush - Inkscape Extension
+# H.Airbrush Inkscape Extension
 
-This Inkscape extension allows you to export SVG paths to G-code for a dual-airbrush plotter system.
+An Inkscape extension for controlling a dual-airbrush plotter with a Duet 2 WiFi board in H configuration.
 
 ## Features
 
-- Exports SVG paths to G-code for dual-airbrush plotter
-- Supports all SVG path commands and basic shapes
-- Converts stroke color to airbrush selection (black/white)
-- Uses stroke width to control airbrush height
-- Uses stroke opacity to control paint flow and speed
-- Configurable options for scaling, offsets, and simplification
+- Export SVG paths to G-code for dual-airbrush plotter
+- Support for all SVG path commands (M, L, H, V, C, S, Q, T, A, Z)
+- Automatic brush selection based on stroke color
+- Path simplification for smoother output
+- Configurable curve resolution for Bezier curves
+- Customizable scaling and positioning
+- Debug markers for visualizing path conversion
 
 ## Installation
 
-### Windows
+### Prerequisites
 
-1. Download the latest release from the GitHub repository
-2. Run the installer script:
+- Inkscape 1.0 or newer
+- Python 3.8 or newer (typically included with Inkscape)
+
+### Installation Steps
+
+1. Run the installation script:
    ```
    python install.py
    ```
-3. Restart Inkscape
 
-### Manual Installation
+2. Alternatively, manually copy the files to your Inkscape extensions directory:
+   - Windows: `C:\Users\<username>\AppData\Roaming\Inkscape\extensions\`
+   - Linux: `~/.config/inkscape/extensions/`
+   - macOS: `~/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/`
 
-1. Copy the following files to your Inkscape extensions directory:
-   - `hairbrush.inx`
-   - `hairbrush_control.py`
-   - `hairbrush.py`
-   - `hairbrush_lib/` (directory and all contents)
-   - `hairbrush_deps/` (directory and all contents)
-2. Restart Inkscape
+3. Restart Inkscape completely
 
-The Inkscape extensions directory is typically located at:
-- Windows: `C:\Program Files\Inkscape\share\inkscape\extensions` or `%APPDATA%\inkscape\extensions`
-- macOS: `/Applications/Inkscape.app/Contents/Resources/share/inkscape/extensions`
-- Linux: `~/.config/inkscape/extensions` or `/usr/share/inkscape/extensions`
+### Dependencies
+
+All required dependencies are bundled with the extension in the `vendor` directory:
+- PyYAML: For parsing configuration files
+
+This approach ensures the extension works without modifying Inkscape's Python environment.
 
 ## Usage
 
-1. Open Inkscape and load your SVG file
-2. Go to Extensions > H.Airbrush > H.Airbrush Control
-3. Configure the settings as needed
-4. Click "Apply" to generate G-code
+1. Create or open an SVG file in Inkscape
+2. Design your artwork using paths, shapes, or objects converted to paths
+3. Use stroke colors to specify which airbrush to use:
+   - Black strokes will use Brush A (Black)
+   - White strokes will use Brush B (White)
+4. Go to `Extensions > Export > H.Airbrush G-code Export`
+5. Configure the export options in the dialog
+6. Click "Apply" to export the G-code file
 
-### Brush Selection
+### Export Options
 
-The extension uses stroke color to determine which airbrush to use:
-- Black stroke: Airbrush A
-- White stroke: Airbrush B
-- Other colors: Defaults to Airbrush A
-
-### Brush Height
-
-Stroke width controls the height of the airbrush:
-- Stroke width is multiplied by 10 to get a height value (0-100%)
-- Default stroke width of 1 = 10% height
-
-### Opacity
-
-Stroke opacity controls the paint flow and speed:
-- 100% opacity = full paint flow
-- Lower opacity = reduced paint flow
-
-## G-code Output
-
-The generated G-code includes:
-- Proper initialization and homing commands
-- Brush selection based on stroke color
-- Height control based on stroke width
-- Speed control based on settings
-- Proper path following with optimized movements
+- **Default Brush**: Select the default brush to use (A=Black, B=White)
+- **Base Z Height**: Base height for the airbrush (mm)
+- **Base Feedrate**: Base movement speed (mm/min)
+- **Curve Resolution**: Higher values give smoother curves but larger files
+- **Simplify Paths**: Reduce the number of points in paths
+- **Simplification Tolerance**: Higher values simplify more aggressively
+- **Add Debug Markers**: Add comments in G-code for debugging
+- **Scale Factor**: Scale the output by this factor
+- **X/Y Offset**: Move the output by this amount (mm)
 
 ## Troubleshooting
 
 If the extension doesn't appear in Inkscape:
-1. Verify the files are in the correct location
-2. Check the Inkscape console for error messages
-3. Try running the installation script again with admin privileges
-4. Check the log file at `%TEMP%\hairbrush_debug.log` (Windows) or `/tmp/hairbrush_debug.log` (Linux/macOS)
+
+1. Run the check_installation.py script:
+   ```
+   python check_installation.py
+   ```
+
+2. Check Inkscape's extension error log:
+   - In Inkscape: Edit > Preferences > System > Extensions > Open extension errors log
+
+3. Make sure all files have the correct permissions
+
+## Directory Structure
+
+```
+inkscape_extension/
+├── hairbrush.inx              # Main extension UI definition (H.Airbrush Control)
+├── hairbrush_control.py       # Main entry point
+├── hairbrush.py               # Core functionality
+├── hairbrush_export_effect.inx # Export effect UI definition (H.Airbrush G-code Export)
+├── hairbrush_export_effect.py # Export effect implementation
+├── check_installation.inx     # Installation checker UI
+├── check_installation.py      # Installation checker
+├── install.py                 # Installation script
+├── hairbrush_deps/            # Dependencies
+│   └── inx_img/               # Images for the UI
+└── hairbrush_lib/             # Core library modules
+    ├── __init__.py
+    ├── svg_parser.py          # SVG parsing
+    ├── path_processor.py      # Path processing
+    ├── gcode_generator.py     # G-code generation
+    ├── config.py              # Configuration handling
+    └── templates/             # G-code command templates
+        └── default.yaml       # Default command template
+```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT License 
