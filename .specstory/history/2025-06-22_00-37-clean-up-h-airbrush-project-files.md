@@ -11591,21 +11591,98 @@ Now evaluate @/tests
 
 _**Assistant**_
 
-
-
----
-
-
+Let's evaluate the `tests` directory to determine if it's still useful for the current implementation:
 
 ---
 
+Read file: /mnt/c/Users/wtrem/Projects/hairbrush/tests/test_gcode_generation.py
 
+---
+
+<no message>
 
 ---
 
-
+Read file: /mnt/c/Users/wtrem/Projects/hairbrush/tests/visualize_gcode.py
 
 ---
+
+<no message>
+
+---
+
+<details>
+            <summary>Listed directory tests/svg_samples • **1** results</summary>
+        
+| Name |
+|-------|
+| 📄 `test_curves.svg` |
+
+</details>
+
+---
+
+Let's check if the tests are still compatible with our current implementation:
+
+---
+
+<details>
+            <summary>Grep search for "from hairbrush_lib" • **0** files</summary>
+        
+No results found
+</details>
+
+---
+
+<no message>
+
+---
+
+<details>
+            <summary>Grep search for "inkscape_extension" • **0** files</summary>
+        
+No results found
+</details>
+
+---
+
+Based on my analysis of the `tests` directory:
+
+1. **Test Files**: The directory contains several test scripts for G-code generation, path processing, and visualization.
+
+2. **Compatibility Issues**:
+   - All test files import from `src.hairbrush` instead of `inkscape_extension.hairbrush_lib`
+   - The tests are designed for the older, simpler implementation in the `src` directory
+   - There are no references to the current `inkscape_extension` directory in the test files
+
+3. **Test Resources**:
+   - Contains SVG samples for testing
+   - Has fixtures and other test resources
+
+4. **Visualization Tools**:
+   - The `visualize_gcode.py` script is potentially useful for debugging G-code output
+   - Could be adapted to work with the current implementation
+
+**Recommendation**:
+The `tests` directory contains useful test files and resources, but they're designed for the older implementation in the `src` directory. You have a few options:
+
+1. **Keep and Update**: Keep the tests directory but update the imports and test logic to work with the current implementation in `inkscape_extension`. This would require changing imports from `hairbrush.module` to `hairbrush_lib.module` and updating test expectations.
+
+2. **Keep as Reference**: Keep the tests directory as a reference but don't include it in the GitHub repository. You could create new tests specifically for the `inkscape_extension` implementation.
+
+3. **Remove**: Remove the tests directory entirely if you don't plan to use or update the tests.
+
+The visualization tools in particular could be valuable to keep and adapt for the current implementation, as they provide a way to visually debug G-code output. If you decide to keep the tests, you'll need to update them to work with the current implementation.
+
+---
+
+_**User**_
+
+OK I'll leave tose for now. I'll do the commit. Aaaaand.. it's pushed. Public. Can you read @README.md and update it?
+
+---
+
+_**Assistant**_
 
 
 
