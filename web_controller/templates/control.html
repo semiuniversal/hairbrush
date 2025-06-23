@@ -1,0 +1,805 @@
+{% extends 'base.html' %}
+
+{% block title %}Machine Control - H.Airbrush Controller{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/control.css') }}">
+<style>
+    /* Control buttons layout */
+    .jog-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 5px;
+        width: 180px;
+        margin: 0 auto;
+    }
+    .jog-controls button {
+        height: 50px;
+        width: 50px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .jog-btn-y-pos {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .jog-btn-x-neg {
+        grid-column: 1;
+        grid-row: 2;
+    }
+    .jog-btn-home {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    .jog-btn-x-pos {
+        grid-column: 3;
+        grid-row: 2;
+    }
+    .jog-btn-y-neg {
+        grid-column: 2;
+        grid-row: 3;
+    }
+    
+    /* Z control buttons */
+    .z-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 50px;
+        margin: 0 auto;
+    }
+    .z-controls button {
+        height: 50px;
+        width: 50px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Position visualization */
+    .visualization-wrapper {
+        width: 100%;
+        height: 400px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin: 15px 0;
+        background-color: #f0f0f0;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .visualization-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .paper-sheet {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .machine-grid {
+        position: absolute;
+        pointer-events: none;
+    }
+    
+    .grid-line {
+        position: absolute;
+        background-color: #ccc;
+        pointer-events: none;
+    }
+    
+    .grid-line-horizontal {
+        height: 1px;
+        width: 100%;
+    }
+    
+    .grid-line-vertical {
+        width: 1px;
+        height: 100%;
+    }
+    
+    .machine-origin {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background-color: #dc3545;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+    
+    .machine-head {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+    }
+    
+    .machine-head-label {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        font-weight: bold;
+        pointer-events: none;
+    }
+    
+    #brush-a-position {
+        background-color: #000000;
+        color: white;
+    }
+    
+    #brush-b-position {
+        background-color: #ffffff;
+        border: 2px solid #000000;
+        color: #000000;
+    }
+    
+    .axis-label {
+        position: absolute;
+        font-size: 12px;
+        font-weight: bold;
+        color: #6c757d;
+        pointer-events: none;
+    }
+    
+    .paper-size-label {
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        font-size: 12px;
+        color: #6c757d;
+        background-color: rgba(255,255,255,0.7);
+        padding: 2px 5px;
+        border-radius: 3px;
+        z-index: 10;
+    }
+    
+    /* Position display */
+    .position-display {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-family: monospace;
+        font-size: 16px;
+    }
+    
+    .position-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .axis {
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    
+    .position-value {
+        min-width: 50px;
+        text-align: right;
+        margin-right: 5px;
+    }
+    
+    /* Position column */
+    .position-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: 20px;
+    }
+    
+    /* Hide view tabs */
+    .view-tabs {
+        display: none !important;
+    }
+    
+    /* Control card styling */
+    .control-card {
+        margin-bottom: 20px;
+    }
+    
+    /* Button styling */
+    .control-button {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .home-button {
+        background-color: #f8f9fa;
+    }
+    
+    .distance-button, .speed-button {
+        width: 100%;
+    }
+    
+    .distance-button.active, .speed-button.active {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+    
+    /* Status indicators */
+    .status-indicator {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    
+    .status-active {
+        background-color: #28a745;
+    }
+    
+    .status-inactive {
+        background-color: #dc3545;
+    }
+    
+    /* Command history */
+    .command-history {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Movement Control</h5>
+            </div>
+            <div class="card-body">
+                <!-- Endstop Status at the top -->
+                <div class="mb-4">
+                    <h6 class="mb-2">Endstop Status</h6>
+                    <div class="endstop-status">
+                        <div class="d-flex justify-content-between">
+                            <div class="endstop-item">
+                                <span class="endstop-label">X:</span>
+                                <span id="x-endstop" class="endstop-value badge bg-secondary">Unknown</span>
+                            </div>
+                            <div class="endstop-item">
+                                <span class="endstop-label">Y:</span>
+                                <span id="y-endstop" class="endstop-value badge bg-secondary">Unknown</span>
+                            </div>
+                            <div class="endstop-item">
+                                <span class="endstop-label">Z:</span>
+                                <span id="z-endstop" class="endstop-value badge bg-secondary">Unknown</span>
+                            </div>
+                            <button id="refresh-endstops" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-arrow-repeat"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Position Visualization -->
+                <div class="mb-4">
+                    <h6 class="mb-3">Position Visualization</h6>
+                    <div class="visualization-wrapper">
+                        <div class="visualization-container" id="top-view">
+                            <div class="paper-sheet"></div>
+                            <div class="machine-origin"></div>
+                            <div class="machine-head" id="brush-a-position">
+                                <div class="machine-head-label">A</div>
+                            </div>
+                            <div class="machine-head" id="brush-b-position">
+                                <div class="machine-head-label">B</div>
+                            </div>
+                            <div class="axis-label" id="axis-label-x">+X</div>
+                            <div class="axis-label" id="axis-label-y">+Y</div>
+                            <div class="paper-size-label">A0 (841mm × 1189mm)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- XY and Z Controls with Position Display -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <h6 class="mb-3">XY Control</h6>
+                        <div class="jog-controls">
+                            <div></div>
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-y-pos" data-axis="Y" data-distance="10">
+                                <i class="bi bi-arrow-up"></i>
+                            </button>
+                            <div></div>
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-x-neg" data-axis="X" data-distance="-10">
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-home" data-axis="home">
+                                <i class="bi bi-house"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-x-pos" data-axis="X" data-distance="10">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                            <div></div>
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-y-neg" data-axis="Y" data-distance="-10">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="mb-3">Z Control</h6>
+                        <div class="z-controls">
+                            <button class="btn btn-outline-secondary jog-btn" data-axis="Z" data-distance="1">
+                                <i class="bi bi-arrow-up"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-home" data-axis="Z" data-distance="0">
+                                <i class="bi bi-house"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary jog-btn" data-axis="Z" data-distance="-1">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 position-column">
+                        <h6 class="mb-3">Position</h6>
+                        <div class="position-display">
+                            <div class="position-item">
+                                <span class="axis">X:</span>
+                                <span id="x-position" class="position-value">0.00</span>
+                                <span class="unit">mm</span>
+                            </div>
+                            <div class="position-item">
+                                <span class="axis">Y:</span>
+                                <span id="y-position" class="position-value">0.00</span>
+                                <span class="unit">mm</span>
+                            </div>
+                            <div class="position-item">
+                                <span class="axis">Z:</span>
+                                <span id="z-position" class="position-value">0.00</span>
+                                <span class="unit">mm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Movement Distance and Speed Controls -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="mb-2">Movement Distance</h6>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="distance" id="distance-0.1" value="0.1">
+                            <label class="btn btn-outline-secondary" for="distance-0.1">0.1mm</label>
+                            
+                            <input type="radio" class="btn-check" name="distance" id="distance-1" value="1" checked>
+                            <label class="btn btn-outline-secondary" for="distance-1">1mm</label>
+                            
+                            <input type="radio" class="btn-check" name="distance" id="distance-10" value="10">
+                            <label class="btn btn-outline-secondary" for="distance-10">10mm</label>
+                            
+                            <input type="radio" class="btn-check" name="distance" id="distance-50" value="50">
+                            <label class="btn btn-outline-secondary" for="distance-50">50mm</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="mb-2">Movement Speed</h6>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="speed" id="speed-500" value="500">
+                            <label class="btn btn-outline-secondary" for="speed-500">Slow</label>
+                            
+                            <input type="radio" class="btn-check" name="speed" id="speed-1000" value="1000" checked>
+                            <label class="btn btn-outline-secondary" for="speed-1000">Normal</label>
+                            
+                            <input type="radio" class="btn-check" name="speed" id="speed-3000" value="3000">
+                            <label class="btn btn-outline-secondary" for="speed-3000">Fast</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="mt-4">
+                    <h6 class="mb-2">Quick Actions</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button id="home-all" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Home All
+                        </button>
+                        <button id="home-xy" class="btn btn-outline-primary">
+                            <i class="bi bi-house"></i> Home XY
+                        </button>
+                        <button id="home-z" class="btn btn-outline-primary">
+                            <i class="bi bi-house"></i> Home Z
+                        </button>
+                        <button id="park-machine" class="btn btn-secondary">
+                            <i class="bi bi-p-square"></i> Park
+                        </button>
+                        <button id="disable-motors" class="btn btn-outline-dark">
+                            <i class="bi bi-power"></i> Disable Motors
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Brush Control</h5>
+            </div>
+            <div class="card-body">
+                <div class="brush-controls">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Brush A (Black)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="me-2">Status:</span>
+                                    <span class="status-indicator status-inactive" id="brush-a-status-indicator"></span>
+                                    <span id="brush-a-status">Inactive</span>
+                                </div>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-primary" id="brush-a-air-on">
+                                        <i class="bi bi-wind"></i> Air On
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="brush-a-air-off">
+                                        <i class="bi bi-wind"></i> Air Off
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-primary" id="brush-a-paint-on">
+                                        <i class="bi bi-droplet-fill"></i> Paint On
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="brush-a-paint-off">
+                                        <i class="bi bi-droplet"></i> Paint Off
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Brush B (White)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="me-2">Status:</span>
+                                    <span class="status-indicator status-inactive" id="brush-b-status-indicator"></span>
+                                    <span id="brush-b-status">Inactive</span>
+                                </div>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-primary" id="brush-b-air-on">
+                                        <i class="bi bi-wind"></i> Air On
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="brush-b-air-off">
+                                        <i class="bi bi-wind"></i> Air Off
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-primary" id="brush-b-paint-on">
+                                        <i class="bi bi-droplet-fill"></i> Paint On
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="brush-b-paint-off">
+                                        <i class="bi bi-droplet"></i> Paint Off
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Manual Command</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="manual-command" class="form-control" placeholder="Enter G-code command...">
+                    <button id="send-command" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Send
+                    </button>
+                </div>
+                <div>
+                    <h6 class="mb-2">Command History</h6>
+                    <div id="command-history" class="command-history">
+                        <div class="text-muted text-center py-2">No commands sent yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/control.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // A0 paper dimensions in mm (portrait)
+        const paperWidth = 841;  // width in mm
+        const paperHeight = 1189; // height in mm
+        
+        // Machine visualization
+        const visualization = document.querySelector('.machine-visualization');
+        const visualizationContainer = document.querySelector('.visualization-container');
+        const paperSheet = document.querySelector('.paper-sheet');
+        const machineGrid = document.querySelector('.machine-grid');
+        const brushA = document.getElementById('brush-a-position');
+        const brushB = document.getElementById('brush-b-position');
+        const origin = document.querySelector('.machine-origin');
+        const viewTabs = document.querySelectorAll('.view-tab');
+        
+        // Set up view tabs
+        viewTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                viewTabs.forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Update visualization based on selected view
+                updateVisualization(tab.dataset.view);
+            });
+        });
+        
+        // Calculate visualization scale
+        function updateVisualization(view = 'top') {
+            if (!visualization || !visualizationContainer || !paperSheet || !machineGrid) return;
+            
+            // Get container dimensions
+            const visWidth = visualization.offsetWidth;
+            const visHeight = visualization.offsetHeight;
+            
+            // Clear previous styles
+            paperSheet.style = '';
+            machineGrid.style = '';
+            
+            if (view === 'top') {
+                // Top view (XY plane)
+                setupTopView(visWidth, visHeight);
+            } else if (view === 'front') {
+                // Front view (XZ plane)
+                setupFrontView(visWidth, visHeight);
+            } else if (view === 'side') {
+                // Side view (YZ plane)
+                setupSideView(visWidth, visHeight);
+            }
+        }
+        
+        function setupTopView(visWidth, visHeight) {
+            // Calculate scaling factor to fit paper in visualization
+            // We want to maintain aspect ratio and leave some margin
+            const margin = 20; // margin in pixels
+            const availableWidth = visWidth - (2 * margin);
+            const availableHeight = visHeight - (2 * margin);
+            
+            // Calculate scale (mm to pixels) based on the limiting dimension
+            const scaleX = availableWidth / paperWidth;
+            const scaleY = availableHeight / paperHeight;
+            const scale = Math.min(scaleX, scaleY);
+            
+            // Calculate paper dimensions in pixels
+            const paperWidthPx = paperWidth * scale;
+            const paperHeightPx = paperHeight * scale;
+            
+            // Position paper in center of visualization
+            const paperLeft = (visWidth - paperWidthPx) / 2;
+            const paperTop = (visHeight - paperHeightPx) / 2;
+            
+            // Set paper dimensions and position
+            paperSheet.style.width = paperWidthPx + 'px';
+            paperSheet.style.height = paperHeightPx + 'px';
+            paperSheet.style.left = paperLeft + 'px';
+            paperSheet.style.top = paperTop + 'px';
+            paperSheet.style.display = 'block';
+            
+            // Set grid size based on paper dimensions
+            // Create a grid with lines every 100mm
+            const gridSize = 100 * scale;
+            machineGrid.style.backgroundSize = gridSize + 'px ' + gridSize + 'px';
+            machineGrid.style.width = paperWidthPx + 'px';
+            machineGrid.style.height = paperHeightPx + 'px';
+            machineGrid.style.left = paperLeft + 'px';
+            machineGrid.style.top = paperTop + 'px';
+            
+            // Set origin position (center of paper)
+            const originX = paperLeft + (paperWidthPx / 2);
+            const originY = paperTop + (paperHeightPx / 2);
+            origin.style.left = originX + 'px';
+            origin.style.top = originY + 'px';
+            
+            // Initial brush positions
+            updateBrushPosition(brushA, 0, 0, scale, originX, originY);
+            updateBrushPosition(brushB, 50, 50, scale, originX, originY);
+            
+            // Update axis labels
+            document.querySelector('.axis-label-x').textContent = '+X';
+            document.querySelector('.axis-label-y').textContent = '+Y';
+            document.querySelector('.paper-size-label').textContent = 'A0 (841mm × 1189mm)';
+        }
+        
+        function setupFrontView(visWidth, visHeight) {
+            // Front view shows X and Z dimensions
+            const margin = 20;
+            const availableWidth = visWidth - (2 * margin);
+            const availableHeight = visHeight - (2 * margin);
+            
+            // In front view, we show X (width) and Z (height) dimensions
+            const frontWidth = paperWidth;
+            const frontHeight = 50; // Z height in mm
+            
+            const scaleX = availableWidth / frontWidth;
+            const scaleY = availableHeight / frontHeight;
+            const scale = Math.min(scaleX, scaleY);
+            
+            const frontWidthPx = frontWidth * scale;
+            const frontHeightPx = frontHeight * scale;
+            
+            const paperLeft = (visWidth - frontWidthPx) / 2;
+            const paperTop = (visHeight - frontHeightPx) / 2;
+            
+            // Set paper dimensions for front view (horizontal bar)
+            paperSheet.style.width = frontWidthPx + 'px';
+            paperSheet.style.height = '5px';
+            paperSheet.style.left = paperLeft + 'px';
+            paperSheet.style.top = paperTop + 'px';
+            paperSheet.style.backgroundColor = '#333';
+            
+            // Set grid
+            machineGrid.style.backgroundSize = (100 * scale) + 'px ' + (10 * scale) + 'px';
+            machineGrid.style.width = frontWidthPx + 'px';
+            machineGrid.style.height = frontHeightPx + 'px';
+            machineGrid.style.left = paperLeft + 'px';
+            machineGrid.style.top = paperTop + 'px';
+            
+            // Set origin
+            const originX = paperLeft + (frontWidthPx / 2);
+            const originY = paperTop;
+            origin.style.left = originX + 'px';
+            origin.style.top = originY + 'px';
+            
+            // Position brushes
+            if (brushA) {
+                brushA.style.left = originX + 'px';
+                brushA.style.top = (originY + 30) + 'px';
+            }
+            
+            if (brushB) {
+                brushB.style.left = (originX + 50 * scale) + 'px';
+                brushB.style.top = (originY + 30) + 'px';
+            }
+            
+            // Update axis labels
+            document.querySelector('.axis-label-x').textContent = '+X';
+            document.querySelector('.axis-label-y').textContent = '+Z';
+            document.querySelector('.paper-size-label').textContent = 'Front View (X-Z plane)';
+        }
+        
+        function setupSideView(visWidth, visHeight) {
+            // Side view shows Y and Z dimensions
+            const margin = 20;
+            const availableWidth = visWidth - (2 * margin);
+            const availableHeight = visHeight - (2 * margin);
+            
+            // In side view, we show Y (length) and Z (height) dimensions
+            const sideWidth = paperHeight; // Y dimension (paper height in portrait)
+            const sideHeight = 50; // Z height in mm
+            
+            const scaleX = availableWidth / sideWidth;
+            const scaleY = availableHeight / sideHeight;
+            const scale = Math.min(scaleX, scaleY);
+            
+            const sideWidthPx = sideWidth * scale;
+            const sideHeightPx = sideHeight * scale;
+            
+            const paperLeft = (visWidth - sideWidthPx) / 2;
+            const paperTop = (visHeight - sideHeightPx) / 2;
+            
+            // Set paper dimensions for side view (horizontal bar)
+            paperSheet.style.width = sideWidthPx + 'px';
+            paperSheet.style.height = '5px';
+            paperSheet.style.left = paperLeft + 'px';
+            paperSheet.style.top = paperTop + 'px';
+            paperSheet.style.backgroundColor = '#333';
+            
+            // Set grid
+            machineGrid.style.backgroundSize = (100 * scale) + 'px ' + (10 * scale) + 'px';
+            machineGrid.style.width = sideWidthPx + 'px';
+            machineGrid.style.height = sideHeightPx + 'px';
+            machineGrid.style.left = paperLeft + 'px';
+            machineGrid.style.top = paperTop + 'px';
+            
+            // Set origin
+            const originX = paperLeft + (sideWidthPx / 2);
+            const originY = paperTop;
+            origin.style.left = originX + 'px';
+            origin.style.top = originY + 'px';
+            
+            // Position brushes
+            if (brushA) {
+                brushA.style.left = originX + 'px';
+                brushA.style.top = (originY + 30) + 'px';
+            }
+            
+            if (brushB) {
+                brushB.style.left = (originX + 50 * scale) + 'px';
+                brushB.style.top = (originY + 30) + 'px';
+            }
+            
+            // Update axis labels
+            document.querySelector('.axis-label-x').textContent = '+Y';
+            document.querySelector('.axis-label-y').textContent = '+Z';
+            document.querySelector('.paper-size-label').textContent = 'Side View (Y-Z plane)';
+        }
+        
+        // Function to update brush position in visualization
+        function updateBrushPosition(element, x, y, scale, originX, originY) {
+            if (!element) return;
+            
+            // Convert machine coordinates to visualization coordinates
+            const visX = originX + (x * scale);
+            const visY = originY - (y * scale); // Y is inverted in visualization
+            
+            element.style.left = visX + 'px';
+            element.style.top = visY + 'px';
+        }
+        
+        // Initialize visualization
+        updateVisualization('top');
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const activeTab = document.querySelector('.view-tab.active');
+            const activeView = activeTab ? activeTab.dataset.view : 'top';
+            updateVisualization(activeView);
+        });
+        
+        // Brush position initialization
+        // This sets up the brush indicators with proper styling
+        
+        // Make sure we have the right brush indicators
+        const brushAElement = document.getElementById('brush-a-position');
+        const brushBElement = document.getElementById('brush-b-position');
+        
+        if (brushAElement) {
+            brushAElement.innerHTML = '<div class="machine-head-label">A</div>';
+            brushAElement.style.backgroundColor = '#000000';
+            brushAElement.style.color = 'white';
+        }
+        
+        if (brushBElement) {
+            brushBElement.innerHTML = '<div class="machine-head-label">B</div>';
+            brushBElement.style.backgroundColor = '#ffffff';
+            brushBElement.style.border = '2px solid #000000';
+            brushBElement.style.color = '#000000';
+        }
+        
+        // Request initial status update
+        if (typeof hairbrushController !== 'undefined' && hairbrushController.requestMachineStatus) {
+            hairbrushController.requestMachineStatus();
+        }
+    });
+</script>
+{% endblock %} 

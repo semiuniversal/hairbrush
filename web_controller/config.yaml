@@ -1,0 +1,48 @@
+brushes:
+  a:
+    air_off: M42 P0 S0
+    air_on: M42 P0 S1
+    name: Black
+    offset_x: 0
+    offset_y: 0
+    paint_off: M280 P0 S0
+    paint_on: M280 P0 S90
+  b:
+    air_off: M42 P1 S0
+    air_on: M42 P1 S1
+    name: White
+    offset_x: 50
+    offset_y: 50
+    paint_off: M280 P1 S0
+    paint_on: M280 P1 S90
+connection:
+  history:
+  - 192.168.86.43
+duet:
+  connect_timeout: 5
+  host: 192.168.86.43
+  http_port: 80
+  password: ''
+  telnet_port: 23
+machine:
+  cleaning_x: 750
+  cleaning_y: 1100
+  cleaning_z: 5
+  home_x: 0
+  home_y: 0
+  home_z: 10
+  max_x: 841
+  max_y: 1189
+  max_z: 50
+  paper:
+    height: 1189
+    orientation: portrait
+    width: 841
+  park_x: 0
+  park_y: 0
+  park_z: 10
+web:
+  debug: false
+  host: 0.0.0.0
+  port: 5000
+  secret_key: 357beac5e565366c903c51d86d12135f7ca0fefa4873342d

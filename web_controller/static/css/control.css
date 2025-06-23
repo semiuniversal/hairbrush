@@ -1,0 +1,134 @@
+/* Styles for machine control page */
+
+/* Position display */
+.position-display {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px;
+    border: 1px solid #eaeaea;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.position-item {
+    margin-bottom: 5px;
+}
+
+.position-item:last-child {
+    margin-bottom: 0;
+}
+
+.axis {
+    font-weight: 600;
+    display: inline-block;
+    width: 40px;
+}
+
+.position-value {
+    font-weight: 600;
+}
+
+/* Jog controls */
+.jog-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    width: 200px;
+    margin: 0 auto;
+}
+
+.jog-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.z-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 60px;
+    margin: 0 auto;
+}
+
+/* Brush controls */
+.brush-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.brush-control-group {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 15px;
+    border: 1px solid #eaeaea;
+}
+
+.brush-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.brush-status {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.brush-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Command history */
+.command-history {
+    margin-top: 15px;
+}
+
+.command-history-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f8f9fa;
+}
+
+.command-history-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.command-history-item:last-child {
+    border-bottom: none;
+}
+
+.command-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+}
+
+.command-result {
+    font-size: 0.9em;
+    margin-top: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .jog-controls {
+        width: 150px;
+    }
+    
+    .jog-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+    }
+    
+    .brush-buttons {
+        flex-direction: column;
+    }
+} 

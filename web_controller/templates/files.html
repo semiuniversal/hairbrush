@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}File Manager - H.Airbrush Controller{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">File Manager</h1>
+            
+            <!-- File Upload -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Upload G-code File</h5>
+                </div>
+                <div class="card-body">
+                    <form id="upload-form" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="file-input" class="form-label">Select G-code file</label>
+                            <input class="form-control" type="file" id="file-input" accept=".gcode,.nc,.g">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                    <div class="progress mt-3 d-none" id="upload-progress-container">
+                        <div class="progress-bar" id="upload-progress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">G-code Files</h5>
+                    <button class="btn btn-sm btn-outline-secondary" id="refresh-files">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Filename</th>
+                                    <th>Size</th>
+                                    <th>Upload Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list">
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading files...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Preview Modal -->
+<div class="modal fade" id="file-preview-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">File Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="file-preview-content" class="bg-light p-3" style="max-height: 500px; overflow-y: auto;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirm-delete-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <span id="delete-filename" class="fw-bold"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load file list on page load
+        loadFileList();
+        
+        // Set up refresh button
+        document.getElementById('refresh-files').addEventListener('click', loadFileList);
+        
+        // Set up file upload form
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            uploadFile();
+        });
+    });
+    
+    function loadFileList() {
+        fetch('/api/files')
+            .then(response => response.json())
+            .then(data => {
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = '';
+                
+                if (data.length === 0) {
+                    fileList.innerHTML = '<tr><td colspan="4" class="text-center">No files found</td></tr>';
+                    return;
+                }
+                
+                data.forEach(file => {
+                    const row = document.createElement('tr');
+                    
+                    // Format file size
+                    const fileSize = formatFileSize(file.size);
+                    
+                    // Format date
+                    const uploadDate = new Date(file.upload_date).toLocaleString();
+                    
+                    row.innerHTML = `
+                        <td>${file.filename}</td>
+                        <td>${fileSize}</td>
+                        <td>${uploadDate}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-primary print-file" data-file-id="${file.id}">
+                                    <i class="bi bi-play-fill"></i> Print
+                                </button>
+                                <button class="btn btn-secondary preview-file" data-file-id="${file.id}" title="Preview G-code file">
+                                    <i class="bi bi-eye"></i> Preview
+                                </button>
+                                <button class="btn btn-danger delete-file" data-file-id="${file.id}" data-filename="${file.filename}">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    fileList.appendChild(row);
+                });
+                
+                // Set up action buttons
+                setupActionButtons();
+            })
+            .catch(error => {
+                console.error('Error loading file list:', error);
+                document.getElementById('file-list').innerHTML = 
+                    '<tr><td colspan="4" class="text-center text-danger">Error loading files</td></tr>';
+            });
+    }
+    
+    function setupActionButtons() {
+        // Print file buttons
+        document.querySelectorAll('.print-file').forEach(button => {
+            button.addEventListener('click', function() {
+                const fileId = this.getAttribute('data-file-id');
+                startPrint(fileId);
+            });
+        });
+        
+        // Preview file buttons
+        document.querySelectorAll('.preview-file').forEach(button => {
+            button.addEventListener('click', function() {
+                const fileId = this.getAttribute('data-file-id');
+                previewFile(fileId);
+            });
+        });
+        
+        // Delete file buttons
+        document.querySelectorAll('.delete-file').forEach(button => {
+            button.addEventListener('click', function() {
+                const fileId = this.getAttribute('data-file-id');
+                const filename = this.getAttribute('data-filename');
+                showDeleteConfirmation(fileId, filename);
+            });
+        });
+    }
+    
+    function uploadFile() {
+        const fileInput = document.getElementById('file-input');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Please select a file to upload');
+            return;
+        }
+        
+        // Show progress bar
+        const progressContainer = document.getElementById('upload-progress-container');
+        const progressBar = document.getElementById('upload-progress');
+        progressContainer.classList.remove('d-none');
+        progressBar.style.width = '0%';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        fetch('/api/files', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Reset form and hide progress
+                fileInput.value = '';
+                progressContainer.classList.add('d-none');
+                
+                // Show success message
+                alert('File uploaded successfully');
+                
+                // Refresh file list
+                loadFileList();
+            } else {
+                throw new Error(data.message || 'Upload failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            alert('Error uploading file: ' + error.message);
+            progressContainer.classList.add('d-none');
+        });
+    }
+    
+    function startPrint(fileId) {
+        const socket = io();
+        
+        socket.emit('job_control', {
+            action: 'start',
+            job_id: fileId
+        }, function(response) {
+            if (response.status === 'success') {
+                alert('Print job started');
+                // Redirect to dashboard to monitor progress
+                window.location.href = '/';
+            } else {
+                alert('Failed to start print: ' + response.message);
+            }
+        });
+    }
+    
+    function previewFile(fileId) {
+        // Navigate to the file preview page
+        window.location.href = `/files/preview?id=${fileId}`;
+    }
+    
+    function showDeleteConfirmation(fileId, filename) {
+        document.getElementById('delete-filename').textContent = filename;
+        
+        const modal = new bootstrap.Modal(document.getElementById('confirm-delete-modal'));
+        modal.show();
+        
+        document.getElementById('confirm-delete-btn').onclick = function() {
+            deleteFile(fileId);
+            modal.hide();
+        };
+    }
+    
+    function deleteFile(fileId) {
+        fetch(`/api/files/${fileId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('File deleted successfully');
+                loadFileList();
+            } else {
+                throw new Error(data.message || 'Delete failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting file:', error);
+            alert('Error deleting file: ' + error.message);
+        });
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+</script>
+{% endblock %} 

@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance - H.Airbrush Controller{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Maintenance</h1>
+            
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Homing</h6>
+                                    <p class="card-text">Home machine axes</p>
+                                    <div class="d-flex gap-2">
+                                        <button id="home-all" class="btn btn-primary">
+                                            <i class="bi bi-house"></i> Home All
+                                        </button>
+                                        <button id="home-xy" class="btn btn-outline-primary">
+                                            <i class="bi bi-house"></i> Home XY
+                                        </button>
+                                        <button id="home-z" class="btn btn-outline-primary">
+                                            <i class="bi bi-house"></i> Home Z
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Machine Control</h6>
+                                    <p class="card-text">Basic machine operations</p>
+                                    <div class="d-flex gap-2">
+                                        <button id="park-machine" class="btn btn-secondary">
+                                            <i class="bi bi-p-square"></i> Park
+                                        </button>
+                                        <button id="disable-motors" class="btn btn-outline-dark">
+                                            <i class="bi bi-power"></i> Disable Motors
+                                        </button>
+                                        <button id="emergency-stop" class="btn btn-danger">
+                                            <i class="bi bi-exclamation-octagon"></i> Emergency Stop
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Brush Maintenance -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Brush Maintenance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Brush A (Black)</h6>
+                                    <p class="card-text">Maintenance routines for Brush A</p>
+                                    <div class="d-grid gap-2">
+                                        <button id="clean-brush-a" class="btn btn-primary">
+                                            <i class="bi bi-droplet"></i> Clean Brush A
+                                        </button>
+                                        <button id="test-brush-a" class="btn btn-outline-primary">
+                                            <i class="bi bi-check-circle"></i> Test Brush A
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Brush B (White)</h6>
+                                    <p class="card-text">Maintenance routines for Brush B</p>
+                                    <div class="d-grid gap-2">
+                                        <button id="clean-brush-b" class="btn btn-primary">
+                                            <i class="bi bi-droplet"></i> Clean Brush B
+                                        </button>
+                                        <button id="test-brush-b" class="btn btn-outline-primary">
+                                            <i class="bi bi-check-circle"></i> Test Brush B
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Calibration -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Calibration</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Z-Axis Calibration</h6>
+                                    <p class="card-text">Calibrate Z-axis height and spray distance</p>
+                                    <button id="calibrate-z" class="btn btn-primary">
+                                        <i class="bi bi-arrows-expand"></i> Calibrate Z-Axis
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Brush Offset Calibration</h6>
+                                    <p class="card-text">Calibrate brush offsets for dual-brush operation</p>
+                                    <button id="calibrate-offsets" class="btn btn-primary">
+                                        <i class="bi bi-arrows-move"></i> Calibrate Offsets
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Spray Pattern Test</h6>
+                                    <p class="card-text">Test spray pattern and coverage</p>
+                                    <button id="test-pattern" class="btn btn-primary">
+                                        <i class="bi bi-grid"></i> Run Test Pattern
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Full Calibration</h6>
+                                    <p class="card-text">Run complete calibration sequence</p>
+                                    <button id="full-calibration" class="btn btn-primary">
+                                        <i class="bi bi-tools"></i> Full Calibration
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Diagnostics -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Diagnostics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">System Information</h6>
+                                    <div id="system-info">
+                                        <div class="mb-2">
+                                            <strong>Firmware Version:</strong> <span id="firmware-version">Unknown</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Board Type:</strong> <span id="board-type">Unknown</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Uptime:</strong> <span id="uptime">Unknown</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Status:</strong> <span id="system-status">Unknown</span>
+                                        </div>
+                                    </div>
+                                    <button id="refresh-info" class="btn btn-outline-secondary mt-2">
+                                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Diagnostic Tests</h6>
+                                    <div class="d-grid gap-2">
+                                        <button id="test-motion" class="btn btn-outline-primary">
+                                            <i class="bi bi-arrow-repeat"></i> Test Motion System
+                                        </button>
+                                        <button id="test-communication" class="btn btn-outline-primary">
+                                            <i class="bi bi-broadcast"></i> Test Communication
+                                        </button>
+                                        <button id="test-brushes" class="btn btn-outline-primary">
+                                            <i class="bi bi-droplet"></i> Test Brushes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calibration Modal -->
+<div class="modal fade" id="calibration-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="calibration-title">Calibration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="calibration-steps">
+                    <div id="calibration-instructions" class="mb-3">
+                        Follow the instructions to calibrate the machine.
+                    </div>
+                    <div class="progress mb-3">
+                        <div id="calibration-progress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div id="calibration-step" class="alert alert-info">
+                        Waiting to start...
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="calibration-next" class="btn btn-primary">Start</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize socket connection
+        const socket = io();
+        
+        // System information refresh
+        document.getElementById('refresh-info').addEventListener('click', function() {
+            fetchSystemInfo();
+        });
+        
+        // Quick actions
+        document.getElementById('home-all').addEventListener('click', function() {
+            sendCommand('home_all');
+        });
+        
+        document.getElementById('home-xy').addEventListener('click', function() {
+            sendCommand('home_xy');
+        });
+        
+        document.getElementById('home-z').addEventListener('click', function() {
+            sendCommand('home_z');
+        });
+        
+        document.getElementById('park-machine').addEventListener('click', function() {
+            sendCommand('park');
+        });
+        
+        document.getElementById('disable-motors').addEventListener('click', function() {
+            sendCommand('disable_motors');
+        });
+        
+        document.getElementById('emergency-stop').addEventListener('click', function() {
+            if (confirm('Are you sure you want to perform an emergency stop?')) {
+                sendCommand('emergency_stop');
+            }
+        });
+        
+        // Brush maintenance
+        document.getElementById('clean-brush-a').addEventListener('click', function() {
+            sendCommand('clean_brush', { brush: 'a' });
+        });
+        
+        document.getElementById('test-brush-a').addEventListener('click', function() {
+            sendCommand('test_brush', { brush: 'a' });
+        });
+        
+        document.getElementById('clean-brush-b').addEventListener('click', function() {
+            sendCommand('clean_brush', { brush: 'b' });
+        });
+        
+        document.getElementById('test-brush-b').addEventListener('click', function() {
+            sendCommand('test_brush', { brush: 'b' });
+        });
+        
+        // Calibration
+        document.getElementById('calibrate-z').addEventListener('click', function() {
+            startCalibration('z_calibration', 'Z-Axis Calibration');
+        });
+        
+        document.getElementById('calibrate-offsets').addEventListener('click', function() {
+            startCalibration('offset_calibration', 'Brush Offset Calibration');
+        });
+        
+        document.getElementById('test-pattern').addEventListener('click', function() {
+            sendCommand('test_pattern');
+        });
+        
+        document.getElementById('full-calibration').addEventListener('click', function() {
+            startCalibration('full_calibration', 'Full Calibration');
+        });
+        
+        // Diagnostic tests
+        document.getElementById('test-motion').addEventListener('click', function() {
+            sendCommand('test_motion');
+        });
+        
+        document.getElementById('test-communication').addEventListener('click', function() {
+            sendCommand('test_communication');
+        });
+        
+        document.getElementById('test-brushes').addEventListener('click', function() {
+            sendCommand('test_brushes');
+        });
+        
+        // Calibration modal
+        let currentCalibration = null;
+        let calibrationStep = 0;
+        
+        document.getElementById('calibration-next').addEventListener('click', function() {
+            const button = document.getElementById('calibration-next');
+            
+            if (button.textContent === 'Start') {
+                // Start calibration
+                button.textContent = 'Next';
+                advanceCalibration();
+            } else if (button.textContent === 'Next') {
+                // Advance to next step
+                advanceCalibration();
+            } else if (button.textContent === 'Finish') {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('calibration-modal'));
+                modal.hide();
+            }
+        });
+        
+        // Fetch system information on page load
+        fetchSystemInfo();
+        
+        // Functions
+        function fetchSystemInfo() {
+            // In a real implementation, this would fetch data from the server
+            // For now, use placeholder data
+            document.getElementById('firmware-version').textContent = 'RepRapFirmware 3.2.0';
+            document.getElementById('board-type').textContent = 'Duet 2 WiFi';
+            document.getElementById('uptime').textContent = '3 days, 7 hours';
+            document.getElementById('system-status').textContent = 'Idle';
+        }
+        
+        function sendCommand(command, params = {}) {
+            console.log(`Sending command: ${command}`, params);
+            
+            // In a real implementation, this would send the command to the server
+            // For now, show an alert
+            setTimeout(function() {
+                alert(`Command ${command} executed successfully`);
+            }, 500);
+        }
+        
+        function startCalibration(type, title) {
+            currentCalibration = type;
+            calibrationStep = 0;
+            
+            document.getElementById('calibration-title').textContent = title;
+            document.getElementById('calibration-progress').style.width = '0%';
+            document.getElementById('calibration-step').textContent = 'Waiting to start...';
+            document.getElementById('calibration-next').textContent = 'Start';
+            
+            const modal = new bootstrap.Modal(document.getElementById('calibration-modal'));
+            modal.show();
+        }
+        
+        function advanceCalibration() {
+            calibrationStep++;
+            
+            // Different steps based on calibration type
+            let steps;
+            let progress;
+            let isComplete = false;
+            
+            switch (currentCalibration) {
+                case 'z_calibration':
+                    steps = [
+                        'Homing all axes...',
+                        'Moving to calibration position...',
+                        'Adjust Z height until the brush is at the correct distance from the surface.',
+                        'Calibration complete. Z height has been set.'
+                    ];
+                    progress = (calibrationStep / steps.length) * 100;
+                    isComplete = calibrationStep >= steps.length;
+                    break;
+                    
+                case 'offset_calibration':
+                    steps = [
+                        'Homing all axes...',
+                        'Moving Brush A to reference position...',
+                        'Confirm Brush A position and click Next.',
+                        'Moving Brush B to the same reference position...',
+                        'Adjust offset values until Brush B aligns with the reference position.',
+                        'Calibration complete. Brush offsets have been saved.'
+                    ];
+                    progress = (calibrationStep / steps.length) * 100;
+                    isComplete = calibrationStep >= steps.length;
+                    break;
+                    
+                case 'full_calibration':
+                    steps = [
+                        'Homing all axes...',
+                        'Calibrating Z axis height...',
+                        'Calibrating Brush A position...',
+                        'Calibrating Brush B position...',
+                        'Running test pattern...',
+                        'Verifying calibration...',
+                        'Calibration complete. All parameters have been saved.'
+                    ];
+                    progress = (calibrationStep / steps.length) * 100;
+                    isComplete = calibrationStep >= steps.length;
+                    break;
+                    
+                default:
+                    steps = ['Unknown calibration type'];
+                    progress = 100;
+                    isComplete = true;
+            }
+            
+            // Update UI
+            document.getElementById('calibration-progress').style.width = `${progress}%`;
+            
+            if (calibrationStep <= steps.length) {
+                document.getElementById('calibration-step').textContent = steps[calibrationStep - 1];
+            }
+            
+            if (isComplete) {
+                document.getElementById('calibration-next').textContent = 'Finish';
+            }
+        }
+    });
+</script>
+{% endblock %} 

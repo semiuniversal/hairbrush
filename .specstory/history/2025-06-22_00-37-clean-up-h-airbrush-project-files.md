@@ -11684,13 +11684,249 @@ OK I'll leave tose for now. I'll do the commit. Aaaaand.. it's pushed. Public. C
 
 _**Assistant**_
 
+I'll update the README.md to reflect the current state of the project. Let me analyze the existing README and make appropriate changes:
 
+---
+
+```diff
+  # H.Airbrush - Dual Airbrush Plotter Controller
+  
+- A Python package and Inkscape extension for controlling a dual-airbrush plotter with a Duet 2 WiFi board.
++ An Inkscape extension for controlling a dual-airbrush plotter with a Duet 2 WiFi board.
+  
+  ## Features
+```
+
+```diff
+  - Support for all SVG path commands (M, L, H, V, C, S, Q, T, A, Z)
+  - SVG viewBox and document dimensions handling for proper scaling
+- - Debug markers for visualizing path conversion
+- - Automatic brush selection based on fill color
++ - Automatic brush selection based on stroke color
+  - User-defined scaling and offset for G-code output
+  - Robust handling of Inkscape-specific SVG features
++ - Physics-based airbrush parameter calculation for optimal output
+  
+  ## Installation
+```
+
+```diff
+  
+  - Python 3.8 or newer
+- - Inkscape 1.0 or newer (for the extension)
++ - Inkscape 1.0 or newer
++ - WSL (Windows Subsystem for Linux) if using Windows
+  
+  ### Install from Source
+```
+
+```diff
+  python -m uv venv
+  source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+- python -m uv pip install -e .
++ pip install -r inkscape_extension/requirements.txt
+  ```
+  
+```
+
+```diff
+  
+  ## Usage
+- 
+- ### Command Line Tools
+- 
+- #### Analyze SVG Files
+- 
+- ```bash
+- python analyze_svg.py path/to/file.svg
+- ```
+- 
+- #### Convert SVG to G-code
+- 
+- ```bash
+- python path_to_gcode.py path/to/file.svg --output output.gcode
+- ```
+- 
+- Options:
+- - `--layer LAYER_NAME`: Process only a specific layer
+- - `--simplify`: Simplify paths for smoother output
+- - `--tolerance VALUE`: Tolerance for path simplification (default: 0.5)
+- - `--z-height VALUE`: Z height for the brush (default: 2.0)
+- - `--feedrate VALUE`: Feedrate for movements (default: 1500)
+- - `--brush BRUSH_ID`: Brush to use (brush_a or brush_b)
+- - `--curve-resolution VALUE`: Number of segments for curve approximation (default: 10)
+- - `--debug-markers`: Add debug markers to the G-code
+- - `--scale-factor VALUE`: Additional scaling factor to apply (default: 1.0)
+- - `--offset-x VALUE`: X offset to apply after all transformations (default: 0.0)
+- - `--offset-y VALUE`: Y offset to apply after all transformations (default: 0.0)
+  
+  ### Inkscape Extension
+```
+
+```diff
+  4. Adjust stroke width to control airbrush height (thicker strokes = greater height)
+  5. Adjust stroke opacity to control paint flow and speed (lower opacity = less paint and faster movement)
+- 6. Go to `File > Save As...` and select "G-code (*.gcode)" from the file type dropdown
++ 6. Go to `Extensions > H.Airbrush > Export G-code`
+  7. Configure the export options in the dialog that appears
+- 8. Click "Save" to export the G-code file
++ 8. Click "Apply" to export the G-code file
+  
+  #### Export Options
+```
+
+```diff
+  - **Simplify Paths**: Reduce the number of points in paths
+  - **Simplification Tolerance**: Higher values simplify more aggressively
+- - **Add Debug Markers**: Add comments in G-code for debugging
+  - **Scale Factor**: Scale the output by this factor
+  - **X/Y Offset**: Move the output by this amount (mm)
++ - **Brush Offsets**: Adjust the position of each brush independently
++ - **Z Travel Height**: Height for travel moves between paths
++ - **Skip Homing**: Option to skip the homing command in G-code
+  
+  ### Visualizing G-code
+```
+
+```diff
+  ```
+  hairbrush/
+- ├── src/
+- │   └── hairbrush/
+- │       ├── __init__.py
+- │       ├── svg_parser.py      # SVG parsing utilities
+- │       ├── path_processor.py  # Path processing and simplification
+- │       ├── gcode_generator.py # G-code generation
+- │       ├── config.py          # Configuration handling
+- │       └── tools/             # Command-line tools
+- ├── inkscape_extension/        # Inkscape extension files
+- │   ├── hairbrush_export.inx   # Inkscape extension XML definition
+- │   ├── hairbrush_export.py    # Extension Python script
++ ├── inkscape_extension/        # Main Inkscape extension files
++ │   ├── hairbrush.inx          # Main extension XML definition
++ │   ├── hairbrush.py           # Core extension implementation
++ │   ├── hairbrush_control.py   # Extension control interface
++ │   ├── hairbrush_export_effect.inx # Export effect XML definition
++ │   ├── hairbrush_export_effect.py  # Export effect implementation
++ │   ├── check_installation.inx # Installation check XML definition
++ │   ├── check_installation.py  # Installation check implementation
+  │   ├── install.py             # Installation script
+- │   └── README.md              # Extension documentation
+- ├── tests/                     # Test files and examples
+- │   ├── svg_samples/           # Sample SVG files for testing
+- │   ├── test_path_processing.py # Test script for path processing
+- │   ├── test_improved_path_processing.py # Test script for improved path processing
+- │   ├── test_gcode_generation.py # Test script for G-code generation
+- │   └── visualize_gcode.py     # Script to visualize G-code output
+- ├── gcode_backend/             # G-code command templates
++ │   ├── requirements.txt       # Python dependencies
++ │   ├── hairbrush_lib/         # Core library modules
++ │   │   ├── __init__.py
++ │   │   ├── config.py          # Configuration handling
++ │   │   ├── gcode_generator.py # G-code generation
++ │   │   ├── path_processor.py  # Path processing and simplification
++ │   │   ├── svg_parser.py      # SVG parsing utilities
++ │   │   └── templates/         # Template files
++ │   └── vendor/                # Vendored dependencies
++ ├── memory-bank/               # Project documentation and planning
+  └── assets/                    # Example files
+  ```
+  
+- ### Testing Path Processing
+- 
+- ```bash
+- python tests/test_path_processing.py tests/svg_samples/test_curves.svg
+- ```
+- 
+- ### Testing Improved Path Processing
+- 
+- ```bash
+- python tests/test_improved_path_processing.py
+- ```
+- 
+- ### Testing G-code Generation
+- 
+- ```bash
+- python tests/test_gcode_generation.py tests/svg_samples/test_curves.svg --output test_output.gcode
+- ```
+- 
+- ### Visualizing G-code Output
+- 
+- ```bash
+- python tests/visualize_gcode.py test_output.gcode --output test_output.svg
+- ```
+- 
+- ## Path Processing Improvements
+- 
+- The path processing system has been enhanced with:
++ ## Path Processing Features
++ 
++ The path processing system includes:
+  
+  1. **Adaptive Bezier Curve Segmentation**: Automatically adjusts the number of segments based on curve complexity and curvature.
+```
+
+```diff
+  4. **Robust Coordinate Transformation**: Correctly transforms from SVG coordinate space to G-code coordinate space.
+  
+- ## G-code Generation Improvements
++ ## G-code Generation Features
+  
+- The G-code generator now includes:
++ The G-code generator includes:
+  
+  1. **Proper Document Scaling**: Handles SVG viewBox, width, and height correctly.
+  2. **User-defined Transformations**: Allows custom scaling and positioning of the output.
+- 3. **Automatic Brush Selection**: Chooses the appropriate brush based on path fill color.
+- 4. **Enhanced Path Processing**: Uses the improved path processor for more accurate G-code output.
+- 
+- ## Development
+- 
+- ### Setup Development Environment
+- 
+- ```bash
+- python -m uv venv
+- source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+- python -m uv pip install -e ".[dev]"
+- ```
+- 
+- ### Run Tests
+- 
+- ```bash
+- pytest
+- ```
++ 3. **Automatic Brush Selection**: Chooses the appropriate brush based on path stroke color.
++ 4. **Physics-based Airbrush Parameters**: Calculates optimal Z-height, paint flow, and movement speed based on stroke width and opacity.
++ 5. **Optimized G-code**: Generates clean, efficient G-code with proper separation of Z and XY movements.
+  
+  ## License
+```
 
 ---
 
+The README has been updated to reflect the current state of the project. I've made the following key changes:
 
+1. Removed references to the `src` directory structure and command-line tools
+2. Updated the project structure to focus on the `inkscape_extension` directory as the main component
+3. Updated installation instructions to use `requirements.txt` instead of `-e .`
+4. Changed the usage instructions to reflect the current workflow using `Extensions > H.Airbrush > Export G-code`
+5. Added new features like physics-based airbrush parameter calculation
+6. Removed the testing and development sections that referenced the old structure
+7. Updated the export options to include brush offsets, Z travel height, and skip homing
+8. Clarified that automatic brush selection is based on stroke color (not fill color)
+9. Added mention of WSL for Windows users
+
+The README now accurately represents the current state of the project as an Inkscape extension with the core functionality in the `inkscape_extension/hairbrush_lib` directory.
 
 ---
+
+_**User**_
+
+I want to thank you for your help. This has been great. And we will pick it up later to build the web controller. 
+
+---
+
+_**Assistant**_
 
 
 

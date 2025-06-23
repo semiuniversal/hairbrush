@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Static File Test</title>
+</head>
+<body>
+    <h1>Static File Test</h1>
+    <p>If you can see this, static files are being served correctly.</p>
+    
+    <script>
+        // Test loading the gcode-viewer.js file
+        fetch('/static/js/gcode-viewer.js')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(content => {
+                document.body.innerHTML += `<p style="color: green;">Successfully loaded gcode-viewer.js (${content.length} bytes)</p>`;
+            })
+            .catch(error => {
+                document.body.innerHTML += `<p style="color: red;">Error loading gcode-viewer.js: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html> 

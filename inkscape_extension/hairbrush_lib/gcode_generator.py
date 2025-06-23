@@ -338,14 +338,17 @@ class GCodeGenerator:
         
         # STEP 1: Raise Z to travel height (G0 for rapid movement)
         self.output_lines.append("G0 Z{:.2f} F3000".format(travel_z))
+        self.output_lines.append("M400 ; Wait for Z movement to complete")
         
         # STEP 2: Move XY to start point with Z raised (G0 for rapid movement)
         first_point = polyline[0]
         x, y = self.transform_coordinates(first_point[0], first_point[1])
         self.output_lines.append("G0 X{:.2f} Y{:.2f} F3000".format(x + offset_x, y + offset_y))
+        self.output_lines.append("M400 ; Wait for XY movement to complete")
         
         # STEP 3: Lower Z to drawing height (G1 for controlled movement)
         self.output_lines.append("G1 Z{:.2f} F1500".format(transformed_z))
+        self.output_lines.append("M400 ; Wait for Z movement to complete")
         
         # STEP 4: Turn on airbrush
         servo_angle = int((math.sqrt(paint_flow) * 170) + 10)  # Range 10-180
@@ -360,12 +363,16 @@ class GCodeGenerator:
             x, y = self.transform_coordinates(point[0], point[1])
             self.output_lines.append("G1 X{:.2f} Y{:.2f}".format(x + offset_x, y + offset_y))
         
+        # Add M400 after completing the drawing path
+        self.output_lines.append("M400 ; Wait for drawing to complete")
+        
         # STEP 7: Turn off airbrush
         self.output_lines.append(f"M280 P{brush_index} S0 ; Release trigger")
         self.output_lines.append(f"M42 P{brush_index} S0 ; Air off")
         
         # STEP 8: Raise Z to travel height (G0 for rapid movement)
         self.output_lines.append("G0 Z{:.2f} F3000".format(travel_z))
+        self.output_lines.append("M400 ; Wait for Z movement to complete")
 
     def generate_gcode(self, include_test_pattern=False):
         """

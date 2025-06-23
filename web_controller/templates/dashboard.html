@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - H.Airbrush Controller{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Machine Status</h5>
+                <button id="refresh-status" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="status-group">
+                            <h6>Position</h6>
+                            <div class="position-status">
+                                <div class="position-item">
+                                    <span class="axis">X:</span>
+                                    <span id="x-position" class="position-value">0.00</span>
+                                    <span class="unit">mm</span>
+                                </div>
+                                <div class="position-item">
+                                    <span class="axis">Y:</span>
+                                    <span id="y-position" class="position-value">0.00</span>
+                                    <span class="unit">mm</span>
+                                </div>
+                                <div class="position-item">
+                                    <span class="axis">Z:</span>
+                                    <span id="z-position" class="position-value">0.00</span>
+                                    <span class="unit">mm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="status-group">
+                            <h6>Brush Status</h6>
+                            <div class="brush-status">
+                                <div class="brush-item">
+                                    <span class="brush-name">Brush A (Black):</span>
+                                    <span id="brush-a-status" class="brush-value">Inactive</span>
+                                </div>
+                                <div class="brush-item">
+                                    <span class="brush-name">Brush B (White):</span>
+                                    <span id="brush-b-status" class="brush-value">Inactive</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="status-group">
+                            <h6>Machine State</h6>
+                            <div class="machine-state">
+                                <div class="state-item">
+                                    <span class="state-name">Status:</span>
+                                    <span id="machine-state" class="state-value">Unknown</span>
+                                </div>
+                                <div class="state-item">
+                                    <span class="state-name">Homed:</span>
+                                    <span id="homed-state" class="state-value">No</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="status-group">
+                            <h6>Quick Actions</h6>
+                            <div class="action-buttons">
+                                <button id="home-machine" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-house"></i> Home
+                                </button>
+                                <button id="park-machine" class="btn btn-sm btn-secondary">
+                                    <i class="bi bi-p-square"></i> Park
+                                </button>
+                                <button id="disable-motors" class="btn btn-sm btn-outline-dark">
+                                    <i class="bi bi-power"></i> Disable Motors
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Current Job</h5>
+            </div>
+            <div class="card-body">
+                <div id="no-job" class="text-center py-4">
+                    <i class="bi bi-file-earmark-x fs-1 text-muted"></i>
+                    <p class="mt-2">No active job. Go to File Manager to start a job.</p>
+                    <a href="/files" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-code"></i> File Manager
+                    </a>
+                </div>
+                <div id="active-job" class="d-none">
+                    <h6 id="job-name">filename.gcode</h6>
+                    <div class="progress mb-3">
+                        <div id="job-progress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>Progress: <span id="job-progress-text">0%</span></div>
+                        <div>Time: <span id="job-time">00:00:00</span></div>
+                    </div>
+                    <div class="job-controls">
+                        <button id="pause-job" class="btn btn-warning">
+                            <i class="bi bi-pause-fill"></i> Pause
+                        </button>
+                        <button id="resume-job" class="btn btn-success d-none">
+                            <i class="bi bi-play-fill"></i> Resume
+                        </button>
+                        <button id="stop-job" class="btn btn-danger">
+                            <i class="bi bi-stop-fill"></i> Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Visualization</h5>
+            </div>
+            <div class="card-body">
+                <div id="visualization-container" class="visualization-container">
+                    <canvas id="visualization-canvas"></canvas>
+                </div>
+                <div class="text-center mt-2">
+                    <div class="btn-group btn-group-sm">
+                        <button id="view-top" class="btn btn-outline-secondary active">Top</button>
+                        <button id="view-front" class="btn btn-outline-secondary">Front</button>
+                        <button id="view-side" class="btn btn-outline-secondary">Side</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Files</h5>
+            </div>
+            <div class="card-body">
+                <div id="recent-files-list" class="list-group">
+                    <div class="text-center py-3 text-muted">
+                        <i class="bi bi-file-earmark"></i> No recent files
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %} 

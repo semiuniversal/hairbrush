@@ -1,0 +1,774 @@
+{% extends "base.html" %}
+
+{% block title %}G-code Preview - H.Airbrush Controller{% endblock %}
+
+{% block styles %}
+<style>
+    /* Ensure the visualization container is properly contained */
+    #gcode-viewer-container {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 700px;
+        border: 1px solid #dee2e6;
+        background-color: #f0f0f0;
+    }
+    
+    #gcode-canvas {
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* Progress bar for loading */
+    #loading-progress-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    
+    /* Ensure tab content is properly contained */
+    .tab-content {
+        overflow: hidden;
+    }
+    
+    .tab-pane {
+        height: 100%;
+    }
+    
+    /* Layer slider styling */
+    .layer-slider-container {
+        margin-top: 10px;
+    }
+    
+    /* View controls */
+    .view-controls {
+        margin-bottom: 15px;
+    }
+    
+    /* Color legend */
+    .color-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 15px;
+    }
+    
+    .color-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .color-box {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #ccc;
+    }
+
+    /* Dimensions display */
+    .dimensions-display {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background-color: rgba(255, 255, 255, 0.7);
+        padding: 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        pointer-events: none;
+    }
+    
+    /* Hide Top/Front/Side buttons */
+    .view-tabs {
+        display: none !important;
+    }
+    
+    /* Fix position dots to appear inside canvas */
+    .machine-head {
+        position: absolute;
+        z-index: 10;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>G-code Preview: <span id="file-name">Loading...</span></h1>
+                <a href="/files" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Files
+                </a>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="preview-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="visualization-tab" data-bs-toggle="tab" data-bs-target="#visualization" type="button" role="tab" aria-controls="visualization" aria-selected="true">
+                                <i class="bi bi-graph-up"></i> Visualization
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="raw-tab" data-bs-toggle="tab" data-bs-target="#raw" type="button" role="tab" aria-controls="raw" aria-selected="false">
+                                <i class="bi bi-code"></i> Raw G-code
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
+                                <i class="bi bi-bar-chart"></i> Statistics
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="preview-tab-content">
+                        <!-- Visualization Tab -->
+                        <div class="tab-pane fade show active" id="visualization" role="tabpanel" aria-labelledby="visualization-tab">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div id="gcode-viewer-container">
+                                        <canvas id="gcode-canvas"></canvas>
+                                        <div id="loading-progress-container">
+                                            <h5>Loading G-code Visualization</h5>
+                                            <div class="progress mb-3">
+                                                <div id="loading-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div id="loading-status">Preparing...</div>
+                                        </div>
+                                        <div class="dimensions-display">
+                                            <span id="canvas-dimensions">A0 (841mm × 1189mm)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">View Controls</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3 view-controls">
+                                                <label class="form-label">View Options</label>
+                                                <div class="btn-group w-100 mb-2" role="group">
+                                                    <button type="button" class="btn btn-outline-primary active" id="view-fit">Fit</button>
+                                                    <button type="button" class="btn btn-outline-primary" id="view-center">Center</button>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="show-travel" checked>
+                                                    <label class="form-check-label" for="show-travel">Show Travel Moves</label>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="show-toolhead" checked>
+                                                    <label class="form-check-label" for="show-toolhead">Show Toolhead</label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3 layer-slider-container">
+                                                <label for="layer-slider" class="form-label">Layer: <span id="layer-number">All</span></label>
+                                                <input type="range" class="form-range" id="layer-slider" min="0" max="100" value="100">
+                                                <div class="btn-group w-100 mt-2" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prev-layer">
+                                                        <i class="bi bi-chevron-left"></i> Prev
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="next-layer">
+                                                        Next <i class="bi bi-chevron-right"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <button id="reset-view" class="btn btn-secondary w-100">
+                                                    <i class="bi bi-arrow-counterclockwise"></i> Reset View
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="color-legend">
+                                                <h6>Color Legend</h6>
+                                                <div class="color-item">
+                                                    <div class="color-box" style="background-color: #000000;"></div>
+                                                    <span>Brush A Strokes</span>
+                                                </div>
+                                                <div class="color-item">
+                                                    <div class="color-box" style="background-color: #FFFFFF; border: 1px solid #000000;"></div>
+                                                    <span>Brush B Strokes</span>
+                                                </div>
+                                                <div class="color-item">
+                                                    <div class="color-box" style="background-color: #FF0000;"></div>
+                                                    <span>Travel Move (Rapids)</span>
+                                                </div>
+                                                <div class="color-item">
+                                                    <div class="color-box" style="background-color: #000000; color: white; text-align: center; font-weight: bold; font-size: 12px;">A</div>
+                                                    <span>Brush A Position</span>
+                                                </div>
+                                                <div class="color-item">
+                                                    <div class="color-box" style="background-color: #FFFFFF; border: 1px solid #000000; text-align: center; font-weight: bold; font-size: 12px;">B</div>
+                                                    <span>Brush B Position</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Raw G-code Tab -->
+                        <div class="tab-pane fade" id="raw" role="tabpanel" aria-labelledby="raw-tab">
+                            <pre id="gcode-content" class="bg-light p-3" style="height: 600px; overflow-y: auto;">Loading G-code content...</pre>
+                        </div>
+                        
+                        <!-- Statistics Tab -->
+                        <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Basic Information</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>File Size</th>
+                                                        <td id="file-size">Calculating...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Line Count</th>
+                                                        <td id="line-count">Calculating...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Estimated Time</th>
+                                                        <td id="estimated-time">Calculating...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Dimensions</th>
+                                                        <td id="dimensions">Calculating...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Movement Statistics</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>Total Distance</th>
+                                                        <td id="total-distance">Calculating...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Drawing Distance</th>
+                                                        <td id="drawing-distance">Calculating...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Travel Distance</th>
+                                                        <td id="travel-distance">Calculating...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Layer Count</th>
+                                                        <td id="layer-count">Calculating...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button id="start-print" class="btn btn-primary w-100 mb-3">
+                                                <i class="bi bi-play-fill"></i> Start Print
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button id="delete-file" class="btn btn-danger w-100 mb-3">
+                                                <i class="bi bi-trash"></i> Delete File
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirm-delete-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <span id="delete-filename" class="fw-bold"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/gcode-viewer.js') }}"></script>
+
+<script>
+// Check if GCodeViewer class is available
+console.log('GCodeViewer class available:', typeof GCodeViewer !== 'undefined');
+    // Global variables
+    let fileId = null;
+    let fileName = '';
+    let gcodeContent = '';
+    let gcodeViewer = null;
+    let currentLayer = 0;
+    let maxLayer = 0;
+    let showTravel = true;
+    let showToolhead = true;
+    let viewMode = 'fit'; // Default to fit view
+    let progressBar = null;
+    let statusText = null;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get file ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        fileId = urlParams.get('id');
+        
+        if (!fileId) {
+            alert('No file ID provided');
+            window.location.href = '/files';
+            return;
+        }
+        
+        // Initialize UI elements
+        progressBar = document.getElementById('loading-progress');
+        statusText = document.getElementById('loading-status');
+        
+        // Set active view button based on viewMode
+        if (viewMode === 'fit') {
+            document.getElementById('view-fit').classList.add('active');
+            document.getElementById('view-center').classList.remove('active');
+        } else {
+            document.getElementById('view-center').classList.add('active');
+            document.getElementById('view-fit').classList.remove('active');
+        }
+        
+        // Load file information
+        loadFileInfo();
+        
+        // Load G-code content
+        loadGcodeContent();
+        
+        // Set up event listeners
+        setupEventListeners();
+        
+        // Remove any Top/Front/Side buttons if they exist
+        const viewButtons = document.querySelectorAll('.view-tab');
+        viewButtons.forEach(button => {
+            if (button.textContent === 'Top' || button.textContent === 'Front' || button.textContent === 'Side') {
+                button.style.display = 'none';
+            }
+        });
+    });
+    
+    function loadFileInfo() {
+        fetch(`/api/files/${fileId}`)
+            .then(response => response.json())
+            .then(data => {
+                fileName = data.filename;
+                document.getElementById('file-name').textContent = fileName;
+                document.getElementById('delete-filename').textContent = fileName;
+                
+                // Update statistics
+                document.getElementById('file-size').textContent = formatFileSize(data.size || 0);
+                document.getElementById('line-count').textContent = data.total_lines || 'N/A';
+                
+                // Estimated time is a placeholder - would need actual calculation
+                const estimatedTime = data.estimated_time || 'N/A';
+                document.getElementById('estimated-time').textContent = estimatedTime;
+            })
+            .catch(error => {
+                console.error('Error loading file info:', error);
+                alert('Error loading file information');
+            });
+    }
+    
+    function loadGcodeContent() {
+        console.log('Loading G-code content for file ID:', fileId);
+        
+        fetch(`/api/files/${fileId}/preview`)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(content => {
+                console.log('Content loaded, length:', content.length);
+                gcodeContent = content;
+                document.getElementById('gcode-content').textContent = content;
+                
+                // Parse G-code and create visualization
+                parseGcode(content);
+            })
+            .catch(error => {
+                console.error('Error loading G-code content:', error);
+                document.getElementById('gcode-content').textContent = 'Error loading G-code content: ' + error.message;
+                
+                if (statusText) statusText.textContent = 'Error loading G-code content: ' + error.message;
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                    progressBar.classList.add('bg-danger');
+                }
+            });
+    }
+    
+    function parseGcode(content) {
+        console.log('Parsing G-code, content length:', content.length);
+        
+        try {
+            // Initialize the G-code viewer
+            const canvas = document.getElementById('gcode-canvas');
+            console.log('Canvas element:', canvas);
+            
+            if (!canvas) {
+                throw new Error('Canvas element not found');
+            }
+            
+            try {
+                gcodeViewer = new GCodeViewer(canvas);
+                console.log('GCodeViewer initialized');
+            } catch (e) {
+                console.error('Error creating GCodeViewer:', e);
+                throw e;
+            }
+            
+            // Set viewer options
+            gcodeViewer.setOptions({
+                showTravel: showTravel,
+                showToolhead: showToolhead,
+                drawColorA: '#000000', // Black for brush A
+                drawColorB: '#FFFFFF', // White for brush B
+                travelColor: '#FF0000', // Red for rapids
+                toolheadColorA: '#000000', // Black for tool A
+                toolheadColorB: '#FFFFFF', // White for tool B
+                backgroundColor: '#F0F0F0', // Light gray background
+                gridColor: '#CCCCCC', // Grid color
+                showGrid: true
+            });
+            console.log('Viewer options set');
+        } catch (error) {
+            console.error('Error initializing G-code viewer:', error);
+            if (statusText) statusText.textContent = 'Error initializing viewer: ' + error.message;
+            if (progressBar) {
+                progressBar.style.width = '100%';
+                progressBar.classList.add('bg-danger');
+            }
+            throw error;
+        }
+        
+        // Parse the G-code in chunks to avoid blocking the UI
+        const lines = content.split('\n');
+        const totalLines = lines.length;
+        const chunkSize = 1000; // Process 1000 lines at a time
+        let currentLine = 0;
+        let layerZ = 0;
+        let layers = [];
+        
+        // Statistics
+        let minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
+        let totalDistance = 0;
+        let drawingDistance = 0;
+        let travelDistance = 0;
+        
+        statusText.textContent = 'Parsing G-code...';
+        
+        function processChunk() {
+            try {
+                const endLine = Math.min(currentLine + chunkSize, totalLines);
+                
+                for (let i = currentLine; i < endLine; i++) {
+                    const line = lines[i].trim();
+                    
+                    // Skip comments and empty lines
+                    if (line === '' || line.startsWith(';')) continue;
+                    
+                    // Process G-code command
+                    gcodeViewer.addGCodeLine(line);
+                    
+                    // Check for layer change (simplified)
+                    if (line.startsWith('G0 Z') || line.startsWith('G1 Z')) {
+                        const parts = line.split(' ');
+                        for (const part of parts) {
+                            if (part.startsWith('Z')) {
+                                const z = parseFloat(part.substring(1));
+                                if (z !== layerZ) {
+                                    layerZ = z;
+                                    layers.push(i);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Update statistics (simplified)
+                    const stats = gcodeViewer.getStatistics();
+                    minX = stats.minX;
+                    maxX = stats.maxX;
+                    minY = stats.minY;
+                    maxY = stats.maxY;
+                    minZ = stats.minZ;
+                    maxZ = stats.maxZ;
+                    totalDistance = stats.totalDistance;
+                    drawingDistance = stats.drawingDistance;
+                    travelDistance = stats.travelDistance;
+                }
+                
+                // Update progress
+                currentLine = endLine;
+                const progress = Math.round((currentLine / totalLines) * 100);
+                progressBar.style.width = `${progress}%`;
+                progressBar.setAttribute('aria-valuenow', progress);
+                statusText.textContent = `Parsing G-code... ${progress}%`;
+                
+                // Continue processing or finish
+                if (currentLine < totalLines) {
+                    setTimeout(processChunk, 0);
+                } else {
+                    // Parsing complete
+                    statusText.textContent = 'Rendering visualization...';
+                    
+                    // Update statistics
+                    document.getElementById('dimensions').textContent = 
+                        `X: ${minX.toFixed(1)} to ${maxX.toFixed(1)} mm, Y: ${minY.toFixed(1)} to ${maxY.toFixed(1)} mm, Z: ${minZ.toFixed(1)} to ${maxZ.toFixed(1)} mm`;
+                    document.getElementById('total-distance').textContent = `${totalDistance.toFixed(1)} mm`;
+                    document.getElementById('drawing-distance').textContent = `${drawingDistance.toFixed(1)} mm`;
+                    document.getElementById('travel-distance').textContent = `${travelDistance.toFixed(1)} mm`;
+                    document.getElementById('layer-count').textContent = layers.length;
+                    
+                    // Update layer slider
+                    const layerSlider = document.getElementById('layer-slider');
+                    layerSlider.max = layers.length;
+                    layerSlider.value = layers.length;
+                    maxLayer = layers.length;
+                    document.getElementById('layer-number').textContent = 'All';
+                    
+                    // Render the visualization
+                    setTimeout(() => {
+                        try {
+                            // Apply view mode directly without initial render
+                            if (viewMode === 'fit') {
+                                console.log("Applying fit to window");
+                                gcodeViewer.fitToWindow(); // This will call render internally
+                            } else {
+                                console.log("Applying center view");
+                                gcodeViewer.centerView(); // This will call render internally
+                            }
+                            
+                            // Hide loading indicator
+                            document.getElementById('loading-progress-container').style.display = 'none';
+                        } catch (error) {
+                            console.error('Error rendering visualization:', error);
+                            if (statusText) statusText.textContent = 'Error rendering visualization: ' + error.message;
+                            if (progressBar) progressBar.classList.add('bg-danger');
+                        }
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('Error processing G-code chunk:', error);
+                if (statusText) statusText.textContent = 'Error processing G-code: ' + error.message;
+                if (progressBar) progressBar.classList.add('bg-danger');
+            }
+        }
+        
+        // Start processing
+        try {
+            setTimeout(processChunk, 0);
+        } catch (error) {
+            console.error('Error starting G-code processing:', error);
+            if (statusText) statusText.textContent = 'Error starting G-code processing: ' + error.message;
+            if (progressBar) progressBar.classList.add('bg-danger');
+        }
+    }
+    
+    function updateLayerVisibility() {
+        const layerNumber = parseInt(document.getElementById('layer-slider').value);
+        document.getElementById('layer-number').textContent = layerNumber === maxLayer ? 'All' : layerNumber;
+        
+        if (gcodeViewer) {
+            if (layerNumber === maxLayer) {
+                // Show all layers
+                gcodeViewer.showAllLayers();
+            } else {
+                // Show only up to the selected layer
+                gcodeViewer.showLayerUpTo(layerNumber);
+            }
+        }
+    }
+    
+    function setupEventListeners() {
+        // View mode buttons
+        document.getElementById('view-fit').addEventListener('click', function() {
+            if (gcodeViewer) {
+                gcodeViewer.fitToWindow();
+                viewMode = 'fit';
+                document.querySelectorAll('#view-fit, #view-center').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+        
+        document.getElementById('view-center').addEventListener('click', function() {
+            if (gcodeViewer) {
+                gcodeViewer.centerView();
+                viewMode = 'center';
+                document.querySelectorAll('#view-fit, #view-center').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+        
+        // Layer slider
+        document.getElementById('layer-slider').addEventListener('input', updateLayerVisibility);
+        
+        // Layer navigation buttons
+        document.getElementById('prev-layer').addEventListener('click', function() {
+            const layerSlider = document.getElementById('layer-slider');
+            if (parseInt(layerSlider.value) > 0) {
+                layerSlider.value = parseInt(layerSlider.value) - 1;
+                updateLayerVisibility();
+            }
+        });
+        
+        document.getElementById('next-layer').addEventListener('click', function() {
+            const layerSlider = document.getElementById('layer-slider');
+            if (parseInt(layerSlider.value) < parseInt(layerSlider.max)) {
+                layerSlider.value = parseInt(layerSlider.value) + 1;
+                updateLayerVisibility();
+            }
+        });
+        
+        // Show travel moves checkbox
+        document.getElementById('show-travel').addEventListener('change', function() {
+            showTravel = this.checked;
+            if (gcodeViewer) {
+                gcodeViewer.setOptions({ showTravel: showTravel });
+                gcodeViewer.render();
+            }
+        });
+        
+        // Show toolhead checkbox
+        document.getElementById('show-toolhead').addEventListener('change', function() {
+            showToolhead = this.checked;
+            if (gcodeViewer) {
+                gcodeViewer.setOptions({ showToolhead: showToolhead });
+                gcodeViewer.render();
+            }
+        });
+        
+        // Reset view button
+        document.getElementById('reset-view').addEventListener('click', function() {
+            if (gcodeViewer) {
+                if (viewMode === 'fit') {
+                    gcodeViewer.fitToWindow();
+                } else {
+                    gcodeViewer.centerView();
+                }
+            }
+        });
+        
+        // Start print button
+        document.getElementById('start-print').addEventListener('click', function() {
+            startPrint();
+        });
+        
+        // Delete file button
+        document.getElementById('delete-file').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('confirm-delete-modal'));
+            modal.show();
+        });
+        
+        // Confirm delete button
+        document.getElementById('confirm-delete-btn').addEventListener('click', function() {
+            deleteFile();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (gcodeViewer) {
+                gcodeViewer.resize();
+                if (viewMode === 'fit') {
+                    gcodeViewer.fitToWindow();
+                }
+            }
+        });
+    }
+    
+    function startPrint() {
+        const socket = io();
+        
+        socket.emit('job_control', {
+            action: 'start',
+            job_id: fileId
+        }, function(response) {
+            if (response.status === 'success') {
+                alert('Print job started');
+                // Redirect to dashboard to monitor progress
+                window.location.href = '/';
+            } else {
+                alert('Failed to start print: ' + response.message);
+            }
+        });
+    }
+    
+    function deleteFile() {
+        fetch(`/api/files/${fileId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('File deleted successfully');
+                window.location.href = '/files';
+            } else {
+                throw new Error(data.message || 'Delete failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting file:', error);
+            alert('Error deleting file: ' + error.message);
+        });
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+</script>
+{% endblock %} 
