@@ -255,8 +255,57 @@
     
     /* Command history */
     .command-history {
-        max-height: 200px;
-        overflow-y: auto;
+        height: 300px !important; /* Force fixed height */
+        max-height: 300px !important;
+        overflow-y: scroll !important; /* Force scrollbar to always show */
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column-reverse; /* Reverse the order to show newest at bottom */
+    }
+    
+    /* Command history items */
+    .command-history-item {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .command-history-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .command-text {
+        font-weight: bold;
+    }
+    
+    /* Paint control styles */
+    .paint-control-container {
+        margin-top: 10px;
+    }
+    
+    .paint-slider-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #f8f9fa;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .paint-slider {
+        flex-grow: 1;
+    }
+    
+    .paint-value {
+        flex-shrink: 0;
+        width: 40px;
+        text-align: right;
+        font-size: 0.9rem;
     }
 </style>
 {% endblock %}
@@ -297,19 +346,8 @@
                 <div class="mb-4">
                     <h6 class="mb-3">Position Visualization</h6>
                     <div class="visualization-wrapper">
-                        <div class="visualization-container" id="top-view">
-                            <div class="paper-sheet"></div>
-                            <div class="machine-origin"></div>
-                            <div class="machine-head" id="brush-a-position">
-                                <div class="machine-head-label">A</div>
-                            </div>
-                            <div class="machine-head" id="brush-b-position">
-                                <div class="machine-head-label">B</div>
-                            </div>
-                            <div class="axis-label" id="axis-label-x">+X</div>
-                            <div class="axis-label" id="axis-label-y">+Y</div>
-                            <div class="paper-size-label">A0 (841mm × 1189mm)</div>
-                        </div>
+                        <div id="visualization-container" class="visualization-container" style="width: 100%; height: 400px;"></div>
+                        <div class="paper-size-label">A0 (841mm × 1189mm)</div>
                     </div>
                 </div>
                 
@@ -345,7 +383,7 @@
                             <button class="btn btn-outline-secondary jog-btn" data-axis="Z" data-distance="1">
                                 <i class="bi bi-arrow-up"></i>
                             </button>
-                            <button class="btn btn-outline-secondary jog-btn jog-btn-home" data-axis="Z" data-distance="0">
+                            <button class="btn btn-outline-secondary jog-btn jog-btn-home" data-axis="home" data-home-axis="Z">
                                 <i class="bi bi-house"></i>
                             </button>
                             <button class="btn btn-outline-secondary jog-btn" data-axis="Z" data-distance="-1">
@@ -428,6 +466,9 @@
                         <button id="disable-motors" class="btn btn-outline-dark">
                             <i class="bi bi-power"></i> Disable Motors
                         </button>
+                        <button id="enable-motors" class="btn btn-outline-success" style="display: none;">
+                            <i class="bi bi-power"></i> Enable Motors
+                        </button>
                     </div>
                 </div>
             </div>
@@ -452,23 +493,21 @@
                                     <span class="status-indicator status-inactive" id="brush-a-status-indicator"></span>
                                     <span id="brush-a-status">Inactive</span>
                                 </div>
-                                <div class="btn-group w-100" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="brush-a-air-on">
-                                        <i class="bi bi-wind"></i> Air On
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="brush-a-air-off">
-                                        <i class="bi bi-wind"></i> Air Off
+                                <div class="w-100">
+                                    <button type="button" class="btn btn-outline-primary w-100" id="brush-a-air-toggle">
+                                        <i class="bi bi-wind"></i> <span id="brush-a-air-text">Air On</span>
                                     </button>
                                 </div>
                             </div>
                             <div>
-                                <div class="btn-group w-100" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="brush-a-paint-on">
-                                        <i class="bi bi-droplet-fill"></i> Paint On
+                                <div class="w-100 paint-control-container">
+                                    <button type="button" class="btn btn-outline-primary w-100" id="brush-a-paint-toggle">
+                                        <i class="bi bi-droplet-fill" id="brush-a-paint-icon"></i> <span id="brush-a-paint-text">Paint On</span>
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="brush-a-paint-off">
-                                        <i class="bi bi-droplet"></i> Paint Off
-                                    </button>
+                                    <div class="paint-slider-container mt-2" id="brush-a-paint-slider-container" style="display: none;">
+                                        <input type="range" class="form-range paint-slider" id="brush-a-paint-slider" min="0" max="100" value="50">
+                                        <span class="paint-value" id="brush-a-paint-value">50%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -485,23 +524,21 @@
                                     <span class="status-indicator status-inactive" id="brush-b-status-indicator"></span>
                                     <span id="brush-b-status">Inactive</span>
                                 </div>
-                                <div class="btn-group w-100" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="brush-b-air-on">
-                                        <i class="bi bi-wind"></i> Air On
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="brush-b-air-off">
-                                        <i class="bi bi-wind"></i> Air Off
+                                <div class="w-100">
+                                    <button type="button" class="btn btn-outline-primary w-100" id="brush-b-air-toggle">
+                                        <i class="bi bi-wind"></i> <span id="brush-b-air-text">Air On</span>
                                     </button>
                                 </div>
                             </div>
                             <div>
-                                <div class="btn-group w-100" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="brush-b-paint-on">
-                                        <i class="bi bi-droplet-fill"></i> Paint On
+                                <div class="w-100 paint-control-container">
+                                    <button type="button" class="btn btn-outline-primary w-100" id="brush-b-paint-toggle">
+                                        <i class="bi bi-droplet-fill" id="brush-b-paint-icon"></i> <span id="brush-b-paint-text">Paint On</span>
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="brush-b-paint-off">
-                                        <i class="bi bi-droplet"></i> Paint Off
-                                    </button>
+                                    <div class="paint-slider-container mt-2" id="brush-b-paint-slider-container" style="display: none;">
+                                        <input type="range" class="form-range paint-slider" id="brush-b-paint-slider" min="0" max="100" value="50">
+                                        <span class="paint-value" id="brush-b-paint-value">50%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -522,7 +559,12 @@
                     </button>
                 </div>
                 <div>
-                    <h6 class="mb-2">Command History</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Command History <span id="command-count" class="badge bg-secondary">0</span></h6>
+                        <button id="clear-history" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-trash"></i> Clear
+                        </button>
+                    </div>
                     <div id="command-history" class="command-history">
                         <div class="text-muted text-center py-2">No commands sent yet</div>
                     </div>
@@ -535,6 +577,8 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/control.js') }}"></script>
+<script src="{{ url_for('static', filename='js/command_history_direct_fix.js') }}"></script>
+<script src="{{ url_for('static', filename='js/canvas_visualization.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // A0 paper dimensions in mm (portrait)

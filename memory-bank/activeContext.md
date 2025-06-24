@@ -3,30 +3,58 @@
 ## Current Focus
 We are implementing the H.Airbrush system architecture with three main components:
 1. **Inkscape Extension** - SVG processing and G-code generation (95% complete)
-2. **Web Controller** - Machine control and monitoring interface (92% complete)
+2. **Web Controller** - Machine control and monitoring interface (95% complete)
 3. **Duet 2 WiFi Controller** - Hardware control and execution (20% complete)
 
-The immediate focus is on completing the Web Controller component with testing, optimization, and documentation. The core functionality has been implemented, including G-code file management, machine control, status monitoring, and endstop monitoring via communication with the Duet 2 WiFi board.
+The immediate focus is on completing the Web Controller component with testing, optimization, and documentation. The core functionality has been implemented, including G-code file management, machine control, status monitoring, endstop monitoring, and settings persistence.
 
 ## Recent Implementations
-1. **Machine Control UI Improvements**
-   - Reorganized the machine control layout for better usability
-   - Moved endstop monitoring to the top of the control panel
-   - Added position display as a third column next to Z controls
-   - Fixed JavaScript errors related to duplicate socket declarations
-   - Added missing helper functions for movement control
 
-2. **Endstop Monitoring Feature**
-   - Added UI component to display endstop status in real-time
-   - Implemented M119 command handling in the DuetClient class
-   - Added automatic polling of endstop status every 5 seconds
-   - Created visual indicators with color-coded status badges
+1. **Visualization Improvements**
+   - Replaced DOM/CSS-based visualization with HTML5 Canvas implementation
+   - Fixed brush position visualization with proper offsets
+   - Added grid lines with numeric scale indicators
+   - Implemented proper origin (0,0) at center of paper
+   - Added high-DPI support for retina displays
+   - Improved brush position updates with real-time feedback
+   - Added position and brush offset text display
+   - Ensured visualization updates when brush offsets change in settings
 
-3. **JavaScript Error Resolution**
-   - Fixed duplicate socket variable declaration
-   - Implemented proper socket connection management
-   - Added missing helper functions for movement control
-   - Improved error handling and feedback
+2. **Settings Persistence**
+   - Created settings.js to handle loading and saving settings
+   - Added API endpoints for getting and setting configuration
+   - Implemented settings persistence to config.yaml file
+   - Connected settings changes to visualization updates
+   - Added toast notifications for settings feedback
+   - Fixed connection handling in the settings page
+   - Implemented test connection functionality
+
+3. **Movement Control Fixes**
+   - Fixed jog controls to respect selected distance and speed settings
+   - Modified jog button handling to use direction from button but magnitude from selected distance
+   - Updated Z-axis home button to properly send G28 Z command
+   - Improved error handling in movement control functions
+   - Added Enable Motors button as toggle counterpart to Disable Motors (using M17 command)
+   - Converted brush control buttons to toggle style with visual state indication
+   - Added paint intensity sliders with percentage control for precise paint flow adjustment
+   - Improved paint control layout with full-width buttons and sliders positioned below
+   - Disabled jog and home buttons when motors are disabled for safety
+
+4. **Command History Improvements**
+   - Expanded command history to support up to 100 entries (up from 10)
+   - Added command count badge to show number of commands in history
+   - Implemented clear history button functionality
+   - Fixed "removeChild" error that occurred when sending G-code commands
+   - Enhanced command history UI with better styling and scrolling
+   - Added error handling to prevent UI disruption from DOM exceptions
+
+5. **Endstop Monitoring Improvements**
+   - Fixed Z endstop status parsing to handle RepRapFirmware's Z probe information
+   - Implemented more robust regex pattern for M119 response parsing
+   - Added fallback parsing approach for complex endstop responses
+   - Updated documentation to include information about Z probe responses
+   - Improved error handling for endstop status parsing
+   - Eliminated UI blinking by only updating endstop indicators when status changes
 
 ## Key Accomplishments
 1. **Inkscape Extension**
@@ -43,6 +71,8 @@ The immediate focus is on completing the Web Controller component with testing, 
    - Added support for processing G-code files with M400 synchronization points
    - Implemented endstop monitoring with real-time status display
    - Improved machine control interface layout and usability
+   - Created canvas-based visualization with proper scaling and offsets
+   - Implemented settings persistence to config.yaml
 
 3. **Architecture Planning**
    - Defined component responsibilities and interfaces
@@ -59,7 +89,7 @@ flowchart TD
 
 ### Component Responsibilities
 - **Inkscape Extension**: SVG processing, path optimization, G-code generation with M400 sync points
-- **Web Controller**: Machine control interface, G-code management, status monitoring, M400 handling, endstop monitoring
+- **Web Controller**: Machine control interface, G-code management, status monitoring, M400 handling, endstop monitoring, settings persistence
 - **Duet Controller**: Hardware control, G-code execution, status reporting, endstop status
 
 ## Duet Communication Strategy
@@ -103,6 +133,8 @@ We are focusing on the following areas:
 - **HTTP API Communication**: Migrated from Telnet to HTTP API for Duet communication
 - **UI Layout**: Improved machine control interface layout for better usability
 - **JavaScript Errors**: Fixed duplicate socket declaration and added missing functions
+- **Visualization**: Replaced DOM/CSS visualization with Canvas implementation
+- **Settings Persistence**: Implemented settings persistence to config.yaml
 
 ## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
 - All command-line operations MUST be executed in WSL, NOT in Windows

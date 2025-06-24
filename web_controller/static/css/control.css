@@ -85,25 +85,26 @@
 
 /* Command history */
 .command-history {
-    margin-top: 15px;
-}
-
-.command-history-list {
-    max-height: 300px;
-    overflow-y: auto;
+    height: 300px !important; /* Force fixed height */
+    max-height: 300px !important;
+    overflow-y: scroll !important; /* Force scrollbar to always show */
     border: 1px solid #eaeaea;
     border-radius: 4px;
     padding: 10px;
     background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column-reverse; /* Reverse the order to show newest at bottom */
 }
 
 .command-history-item {
     padding: 5px 0;
     border-bottom: 1px solid #eaeaea;
+    margin-bottom: 8px;
 }
 
 .command-history-item:last-child {
     border-bottom: none;
+    margin-bottom: 0;
 }
 
 .command-text {

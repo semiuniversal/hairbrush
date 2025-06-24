@@ -72,11 +72,16 @@
   - [x] Implement settings and configuration page
   - [x] Add endstop status monitoring section
   - [x] Improve position display and control layout
+  - [x] Replace DOM/CSS visualization with Canvas implementation
+  - [x] Add scale indicators to visualization
+  - [x] Implement settings persistence to config.yaml
+  - [x] Connect settings changes to visualization updates
 - [ ] Testing and optimization
   - [ ] Test with real hardware
   - [ ] Optimize performance for real-time control
   - [ ] Implement error recovery mechanisms
   - [ ] Add comprehensive logging
+  - [x] Fix endstop monitoring parsing for Z probe information
   - [ ] Test endstop monitoring and homing procedures
 - [ ] Documentation and deployment
   - [x] Create endstop monitoring documentation
@@ -139,6 +144,25 @@
 - [x] Improve machine control interface layout for better usability
 - [x] Fix JavaScript errors related to duplicate socket declaration
 - [x] Add missing helper functions for movement control
+- [x] Fix Z endstop status parsing to handle RepRapFirmware's Z probe information
+- [x] Update endstop monitoring documentation with Z probe information
+- [x] Fix endstop status indicator blinking during polling
+- [x] Fix "removeChild" error in command history
+- [x] Enhance command history with support for 100 entries
+- [x] Add command count badge and clear history button
+- [x] Fix jog controls to respect selected distance and speed settings
+- [x] Add Enable Motors button as toggle counterpart to Disable Motors
+- [x] Convert brush control buttons to toggle style for better state indication
+- [x] Add paint intensity sliders with percentage control for precise paint flow adjustment
+- [x] Improve paint control layout with full-width buttons and sliders below
+- [x] Disable jog and home buttons when motors are disabled
+- [x] Replace DOM/CSS visualization with Canvas implementation
+- [x] Add scale indicators to visualization with proper origin at center
+- [x] Add position and brush offset text display to visualization
+- [x] Implement settings persistence to config.yaml
+- [x] Connect settings changes to visualization updates
+- [x] Create settings.js to handle loading and saving settings
+- [x] Add API endpoints for getting and setting configuration
 
 ## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
 - All command-line operations MUST be executed in WSL, NOT in Windows

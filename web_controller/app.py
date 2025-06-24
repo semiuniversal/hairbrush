@@ -104,6 +104,11 @@ def test_page():
     """Render the test page."""
     return send_from_directory(os.path.join(app.root_path, 'static'), 'test.html')
 
+@app.route('/test_command_history')
+def test_command_history():
+    """Render the command history test page."""
+    return render_template('test_command_history.html')
+
 @app.route('/settings')
 def settings():
     """Render the settings page."""
@@ -191,15 +196,104 @@ def get_machine_config():
     }
     return jsonify(machine_config)
 
+@app.route('/api/settings', methods=['GET'])
+def get_settings():
+    """Get all settings."""
+    try:
+        # Return the entire configuration
+        return jsonify(config.config)
+    except Exception as e:
+        logger.error(f"Error getting settings: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/settings', methods=['POST'])
+def update_settings():
+    """Update settings."""
+    try:
+        settings = request.json
+        if not settings:
+            return jsonify({"error": "No settings provided"}), 400
+        
+        # Update settings
+        for section, values in settings.items():
+            if isinstance(values, dict):
+                # Handle nested sections (e.g., duet, machine, brushes)
+                for key, value in values.items():
+                    if isinstance(value, dict):
+                        # Handle doubly nested sections (e.g., brushes.a)
+                        for subkey, subvalue in value.items():
+                            config.set(f"{section}.{key}.{subkey}", subvalue)
+                    else:
+                        config.set(f"{section}.{key}", value)
+            else:
+                # Handle top-level settings
+                config.set(section, values)
+        
+        # Save configuration to file
+        config.save()
+        
+        # Return updated configuration
+        return jsonify({"success": True, "config": config.config})
+    except Exception as e:
+        logger.error(f"Error updating settings: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/connection/test', methods=['POST'])
+def test_connection():
+    """Test connection to the Duet board."""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"error": "No connection data provided"}), 400
+        
+        host = data.get('host')
+        port = data.get('port')
+        
+        if not host:
+            return jsonify({"error": "Host is required"}), 400
+        
+        if not port:
+            port = 80  # Default HTTP port
+        
+        # Create a temporary client to test connection
+        from duet_client import DuetClient
+        test_client = DuetClient(
+            host=host,
+            http_port=port,
+            connect_timeout=5,
+            auto_connect=False
+        )
+        
+        # Test connection
+        success, message = test_client.test_connection()
+        
+        # Return result
+        return jsonify({
+            "success": success,
+            "message": message,
+            "host": host,
+            "port": port
+        })
+    except Exception as e:
+        logger.error(f"Error testing connection: {e}")
+        return jsonify({
+            "success": False,
+            "message": str(e),
+            "host": data.get('host') if data else None,
+            "port": data.get('port') if data else None
+        })
+
 @app.route('/api/connection', methods=['GET'])
 def get_connection_status():
     """Get the current connection status."""
     if duet_client:
+        connected = duet_client.is_connected()
         return jsonify({
-            "connected": duet_client.connected,
-            "ip": duet_client.host if duet_client.connected else None
+            "connected": connected,
+            "host": duet_client.host,
+            "port": duet_client.http_port
         })
-    return jsonify({"error": "Duet client not initialized"}), 500
+    return jsonify({"connected": False})
 
 @app.route('/api/connection/history', methods=['GET'])
 def get_connection_history():
@@ -212,168 +306,254 @@ def serve_static(filename):
     """Serve static files."""
     return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
-# WebSocket events
+# Socket.IO event handlers
 @socketio.on('connect')
 def handle_connect():
-    """Handle WebSocket connection."""
+    """Handle client connection."""
     logger.info(f"Client connected: {request.sid}")
     
-    # Send connection status to client
+    # Initialize components if not already initialized
+    if duet_client is None:
+        initialize_components()
+    
+    # Send initial status
     if duet_client:
-        socketio.emit('connection_status', {
-            'connected': duet_client.connected,
-            'ip': duet_client.host if duet_client.connected else None
-        }, room=request.sid)
+        connected = duet_client.is_connected()
+        socketio.emit('connection_status', {"connected": connected}, room=request.sid)
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Handle WebSocket disconnection."""
+    """Handle client disconnection."""
     logger.info(f"Client disconnected: {request.sid}")
 
 @socketio.on('connect_device')
 def handle_connect_device(data):
-    """Handle device connection request."""
-    ip = data.get('ip')
+    """Handle connect device request."""
+    global duet_client, job_manager, machine_control
+    
+    host = data.get('host', '192.168.1.1')
+    port = data.get('port', 80)
     password = data.get('password', '')
     
-    logger.info(f"Received connection request for device at {ip}")
+    logger.info(f"Connecting to device: {host}:{port}")
     
-    if not ip:
-        logger.error("Connection request missing IP address")
-        return {'status': 'error', 'message': 'No IP address provided'}
-    
-    if duet_client:
-        # Update host and password
-        logger.debug(f"Updating duet_client host to {ip} and setting password")
-        duet_client.host = ip
-        duet_client.password = password
+    try:
+        # Disconnect existing client if connected
+        if duet_client and duet_client.is_connected():
+            duet_client.disconnect()
         
-        # Try to connect
-        logger.info(f"Attempting to connect to device at {ip}")
-        if duet_client.connect():
-            logger.info(f"Successfully connected to device at {ip}")
-            
-            # Add to connection history
-            history = config.get('connection.history', [])
-            if ip in history:
-                history.remove(ip)
-            history.insert(0, ip)
-            if len(history) > 5:
-                history = history[:5]
-            
+        # Create new client
+        duet_client = DuetClient(
+            host=host,
+            http_port=port,
+            connect_timeout=5,
+            password=password,
+            auto_connect=False
+        )
+        
+        # Connect to device
+        connected = duet_client.connect()
+        
+        if connected:
             # Update configuration
-            logger.debug(f"Updating configuration with new connection details")
-            config.set('connection.history', history)
-            config.set('duet.host', ip)
-            
-            # Only save password if provided
-            if password:
-                config.set('duet.password', password)
-                
+            config.set('duet.host', host)
+            config.set('duet.http_port', port)
+            config.set('duet.password', password)
             config.save()
             
-            # Notify all clients about connection
-            logger.debug(f"Notifying clients about successful connection")
-            socketio.emit('connection_status', {
-                'connected': True,
-                'ip': ip
-            })
+            # Update connection history
+            history = config.get('connection.history', [])
+            if host not in history:
+                history.insert(0, host)
+                # Limit history to 10 items
+                if len(history) > 10:
+                    history = history[:10]
+                config.set('connection.history', history)
+                config.save()
             
-            return {'status': 'success'}
+            # Reinitialize components
+            job_manager = JobManager(app.config['UPLOAD_FOLDER'], duet_client)
+            machine_control = MachineControl(duet_client)
+            
+            # Send success response
+            socketio.emit('connection_status', {
+                "connected": True,
+                "host": host,
+                "port": port
+            }, room=request.sid)
+            
+            return {"status": "success", "connected": True}
         else:
-            logger.error(f"Failed to connect to device at {ip}")
-            return {'status': 'error', 'message': 'Failed to connect to device'}
+            # Send failure response
+            socketio.emit('connection_status', {
+                "connected": False,
+                "error": "Failed to connect to device"
+            }, room=request.sid)
+            
+            return {"status": "error", "message": "Failed to connect to device"}
     
-    logger.error("Duet client not initialized")
-    return {'status': 'error', 'message': 'Duet client not initialized'}
+    except Exception as e:
+        logger.error(f"Error connecting to device: {e}")
+        
+        # Send error response
+        socketio.emit('connection_status', {
+            "connected": False,
+            "error": str(e)
+        }, room=request.sid)
+        
+        return {"status": "error", "message": str(e)}
 
 @socketio.on('disconnect_device')
 def handle_disconnect_device(data):
-    """Handle device disconnection request."""
-    if duet_client:
-        duet_client.disconnect()
-        
-        # Notify all clients about disconnection
-        socketio.emit('connection_status', {
-            'connected': False,
-            'ip': None
-        })
-        
-        return {'status': 'success'}
+    """Handle disconnect device request."""
+    global duet_client
     
-    return {'status': 'error', 'message': 'Duet client not initialized'}
+    logger.info("Disconnecting from device")
+    
+    try:
+        # Disconnect client
+        if duet_client:
+            duet_client.disconnect()
+            duet_client = None
+        
+        # Send success response
+        socketio.emit('connection_status', {
+            "connected": False
+        }, room=request.sid)
+        
+        return {"status": "success", "connected": False}
+    
+    except Exception as e:
+        logger.error(f"Error disconnecting from device: {e}")
+        
+        # Send error response
+        socketio.emit('connection_status', {
+            "connected": False,
+            "error": str(e)
+        }, room=request.sid)
+        
+        return {"status": "error", "message": str(e)}
 
 @socketio.on('command')
 def handle_command(data):
-    """Handle G-code command from client."""
-    command = data.get('command')
-    if command and duet_client:
-        if not duet_client.connected:
-            return {'status': 'error', 'message': 'Not connected to device'}
-        
-        result = duet_client.send_command(command)
-        return {'status': 'success', 'result': result}
+    """Handle G-code command."""
+    if not duet_client:
+        return {"status": "error", "message": "Not connected to device"}
     
-    return {'status': 'error', 'message': 'Invalid command or client not initialized'}
+    command = data.get('command')
+    if not command:
+        return {"status": "error", "message": "No command provided"}
+    
+    try:
+        result = duet_client.send_gcode(command)
+        return {"status": "success", "result": result}
+    
+    except Exception as e:
+        logger.error(f"Error sending command: {e}")
+        return {"status": "error", "message": str(e)}
 
 @socketio.on('jog')
 def handle_jog(data):
-    """Handle jog command from client."""
-    if machine_control:
-        if not duet_client or not duet_client.connected:
-            return {'status': 'error', 'message': 'Not connected to device'}
-        
-        axis = data.get('axis')
-        distance = data.get('distance')
-        speed = data.get('speed', 1000)
-        result = machine_control.jog(axis, distance, speed)
-        return {'status': 'success', 'result': result}
+    """Handle jog command."""
+    if not duet_client:
+        return {"status": "error", "message": "Not connected to device"}
     
-    return {'status': 'error', 'message': 'Machine control not initialized'}
+    axis = data.get('axis')
+    distance = data.get('distance')
+    speed = data.get('speed')
+    
+    if not axis or distance is None:
+        return {"status": "error", "message": "Axis and distance are required"}
+    
+    try:
+        result = machine_control.jog(axis, distance, speed)
+        return {"status": "success", "result": result}
+    
+    except Exception as e:
+        logger.error(f"Error jogging: {e}")
+        return {"status": "error", "message": str(e)}
 
 @socketio.on('job_control')
 def handle_job_control(data):
-    """Handle job control command from client."""
-    if job_manager:
-        if not duet_client or not duet_client.connected:
-            return {'status': 'error', 'message': 'Not connected to device'}
-        
-        action = data.get('action')
-        job_id = data.get('job_id')
-        
-        if action == 'start' and job_id:
+    """Handle job control commands."""
+    if not job_manager:
+        return {"status": "error", "message": "Job manager not initialized"}
+    
+    action = data.get('action')
+    job_id = data.get('job_id')
+    
+    if not action:
+        return {"status": "error", "message": "No action provided"}
+    
+    try:
+        if action == 'start':
+            if not job_id:
+                return {"status": "error", "message": "Job ID is required"}
+            
             result = job_manager.start_job(job_id)
+            return {"status": "success", "result": result}
+        
         elif action == 'pause':
             result = job_manager.pause_job()
+            return {"status": "success", "result": result}
+        
         elif action == 'resume':
             result = job_manager.resume_job()
+            return {"status": "success", "result": result}
+        
         elif action == 'stop':
             result = job_manager.stop_job()
-        else:
-            return {'status': 'error', 'message': 'Invalid action'}
+            return {"status": "success", "result": result}
         
-        return {'status': 'success', 'result': result}
+        else:
+            return {"status": "error", "message": f"Unknown action: {action}"}
     
-    return {'status': 'error', 'message': 'Job manager not initialized'}
+    except Exception as e:
+        logger.error(f"Error controlling job: {e}")
+        return {"status": "error", "message": str(e)}
 
 @socketio.on('get_status')
 def handle_get_status(data):
-    """Handle status request from client."""
-    if duet_client:
-        if not duet_client.connected:
-            return {'status': 'error', 'message': 'Not connected to device'}
-        
-        status = duet_client.get_status()
-        return {'status': 'success', 'data': status}
+    """Handle status request."""
+    if not duet_client:
+        return {"status": "error", "message": "Not connected to device"}
     
-    return {'status': 'error', 'message': 'Duet client not initialized'}
+    try:
+        # Get machine status
+        status = duet_client.get_status()
+        
+        # Get machine position
+        position = duet_client.get_position()
+        
+        # Get brush state
+        brush_state = machine_control.get_brush_state() if machine_control else None
+        
+        # Get motors state
+        motors_state = machine_control.get_motors_state() if machine_control else None
+        
+        return {
+            "status": "success",
+            "data": {
+                "machine_status": status,
+                "position": position,
+                "brush_state": brush_state,
+                "motors_state": motors_state
+            }
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting status: {e}")
+        return {"status": "error", "message": str(e)}
 
+# Run the application if executed directly
 if __name__ == '__main__':
-    # Use eventlet as async server
+    # Initialize components
     initialize_components()
-    socketio.run(
-        app, 
-        host=os.environ.get('HOST', '0.0.0.0'),
-        port=int(os.environ.get('PORT', 5000)),
-        debug=os.environ.get('DEBUG', 'False').lower() == 'true'
-    ) 
+    
+    # Get web server configuration
+    host = config.get('web.host', '0.0.0.0')
+    port = int(config.get('web.port', 5000))
+    debug = config.get('web.debug', False)
+    
+    # Run the server
+    socketio.run(app, host=host, port=port, debug=debug, allow_unsafe_werkzeug=True) 

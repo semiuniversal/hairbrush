@@ -603,3 +603,733 @@
 2025-06-23 00:58:17,885 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 00:58:17] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
 2025-06-23 00:58:17,940 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 00:58:17] "GET /socket.io/?EIO=4&transport=polling&t=PUR9i6N&sid=lO5r7CYNmi8oNzdhAAAW HTTP/1.1" 200 -
 2025-06-23 00:58:18,000 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 00:58:18] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 07:44:59,576 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-23 07:44:59,649 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-23 07:44:59,659 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-23 07:44:59,662 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-23 07:44:59,686 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:7000
+ * Running on http://172.30.59.103:7000
+2025-06-23 07:44:59,688 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-23 07:44:59,690 - werkzeug - INFO -  * Restarting with stat
+2025-06-23 07:45:05,066 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-23 07:45:05,106 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-23 07:45:05,111 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-23 07:45:05,113 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-23 07:45:05,120 - werkzeug - WARNING -  * Debugger is active!
+2025-06-23 07:45:05,122 - werkzeug - INFO -  * Debugger PIN: 895-245-613
+2025-06-23 07:45:18,238 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 07:45:18] "GET /socket.io/?EIO=4&transport=polling&t=PUScs5Y HTTP/1.1" 200 -
+2025-06-23 07:45:18,298 - __main__ - INFO - Client connected: aVsm0sBIHLK6QjoOAAAB
+2025-06-23 07:45:18,299 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 07:45:18] "POST /socket.io/?EIO=4&transport=polling&t=PUScs6Y&sid=50L5Kyq1DCINg-yGAAAA HTTP/1.1" 200 -
+2025-06-23 07:45:18,299 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 07:45:18] "GET /socket.io/?EIO=4&transport=polling&t=PUScs6Z&sid=50L5Kyq1DCINg-yGAAAA HTTP/1.1" 200 -
+2025-06-23 07:45:18,307 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-23 07:45:18,311 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-23 07:45:18,313 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-23 07:45:18,329 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-23 07:45:18,331 - duet_client - INFO - API level: 1
+2025-06-23 07:45:18,346 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-23 07:45:18,347 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-23 07:45:18,352 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-23 07:45:18,365 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 07:45:18] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 07:45:18,445 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 07:45:18] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 11:20:49,471 - __main__ - INFO - Client disconnected: aVsm0sBIHLK6QjoOAAAB
+2025-06-23 11:52:19,506 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 11:52:19] "GET /socket.io/?EIO=4&transport=websocket&sid=50L5Kyq1DCINg-yGAAAA HTTP/1.1" 200 -
+2025-06-23 11:52:21,675 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 11:52:21] "GET /socket.io/?EIO=4&transport=polling&t=PUTVOcC HTTP/1.1" 200 -
+2025-06-23 11:52:21,740 - __main__ - INFO - Client connected: C8yW8hostnQqebbaAAAD
+2025-06-23 11:52:21,742 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 11:52:21] "POST /socket.io/?EIO=4&transport=polling&t=PUTVP6m&sid=QArtJEsEddx_-q7EAAAC HTTP/1.1" 200 -
+2025-06-23 11:52:21,743 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 11:52:21] "GET /socket.io/?EIO=4&transport=polling&t=PUTVP6p&sid=QArtJEsEddx_-q7EAAAC HTTP/1.1" 200 -
+2025-06-23 11:52:21,855 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 11:52:21] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 15:43:09,160 - __main__ - INFO - Client disconnected: C8yW8hostnQqebbaAAAD
+2025-06-23 15:43:12,247 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 15:43:12] "GET /socket.io/?EIO=4&transport=websocket&sid=QArtJEsEddx_-q7EAAAC HTTP/1.1" 200 -
+2025-06-23 15:50:13,024 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 15:50:13] "GET /socket.io/?EIO=4&transport=polling&t=PUULrI_ HTTP/1.1" 200 -
+2025-06-23 15:50:13,140 - __main__ - INFO - Client connected: fEig-EETaqkjFOr3AAAF
+2025-06-23 15:50:13,142 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 15:50:13] "POST /socket.io/?EIO=4&transport=polling&t=PUULrLQ&sid=qXSztW35EF7aZbFqAAAE HTTP/1.1" 200 -
+2025-06-23 15:50:13,147 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 15:50:13] "GET /socket.io/?EIO=4&transport=polling&t=PUULrLX&sid=qXSztW35EF7aZbFqAAAE HTTP/1.1" 200 -
+2025-06-23 15:50:13,953 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 15:50:13] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:18:16,971 - __main__ - INFO - Client disconnected: fEig-EETaqkjFOr3AAAF
+2025-06-23 17:18:20,038 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:18:20] "GET /socket.io/?EIO=4&transport=websocket&sid=qXSztW35EF7aZbFqAAAE HTTP/1.1" 200 -
+2025-06-23 17:21:52,074 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:21:52] "GET /socket.io/?EIO=4&transport=polling&t=PUUgpny HTTP/1.1" 200 -
+2025-06-23 17:21:52,134 - __main__ - INFO - Client connected: 4ehMH6gEcGBLIBkgAAAH
+2025-06-23 17:21:52,135 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:21:52] "POST /socket.io/?EIO=4&transport=polling&t=PUUgptF&sid=taWkGuhVO8SRHZqxAAAG HTTP/1.1" 200 -
+2025-06-23 17:21:52,157 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:21:52] "GET /socket.io/?EIO=4&transport=polling&t=PUUgptL&sid=taWkGuhVO8SRHZqxAAAG HTTP/1.1" 200 -
+2025-06-23 17:21:52,262 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:21:52] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:47:58,189 - __main__ - INFO - Client disconnected: 4ehMH6gEcGBLIBkgAAAH
+2025-06-23 17:47:58,191 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /socket.io/?EIO=4&transport=websocket&sid=taWkGuhVO8SRHZqxAAAG HTTP/1.1" 200 -
+2025-06-23 17:47:58,234 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET / HTTP/1.1" 200 -
+2025-06-23 17:47:58,290 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:47:58,335 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:47:58,337 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-06-23 17:47:58,338 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:47:58,414 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /socket.io/?EIO=4&transport=polling&t=PUUmoGC HTTP/1.1" 200 -
+2025-06-23 17:47:58,446 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:47:58,446 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:47:58,786 - __main__ - INFO - Client connected: G7a8Ig2JVp9q6N3wAAAJ
+2025-06-23 17:47:58,787 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "POST /socket.io/?EIO=4&transport=polling&t=PUUmoMB&sid=l4P_pMlQYLgVpL3SAAAI HTTP/1.1" 200 -
+2025-06-23 17:47:58,789 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /socket.io/?EIO=4&transport=polling&t=PUUmoMB.0&sid=l4P_pMlQYLgVpL3SAAAI HTTP/1.1" 200 -
+2025-06-23 17:47:58,814 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:47:58,925 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /socket.io/?EIO=4&transport=polling&t=PUUmoOK&sid=l4P_pMlQYLgVpL3SAAAI HTTP/1.1" 200 -
+2025-06-23 17:47:58,927 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "POST /socket.io/?EIO=4&transport=polling&t=PUUmoOJ&sid=l4P_pMlQYLgVpL3SAAAI HTTP/1.1" 200 -
+2025-06-23 17:47:58,938 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:47:58,951 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:47:58] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:48:18,644 - __main__ - INFO - Client disconnected: G7a8Ig2JVp9q6N3wAAAJ
+2025-06-23 17:48:18,646 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /socket.io/?EIO=4&transport=websocket&sid=l4P_pMlQYLgVpL3SAAAI HTTP/1.1" 200 -
+2025-06-23 17:48:18,682 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /files HTTP/1.1" 200 -
+2025-06-23 17:48:18,736 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:48:18,789 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:48:18,789 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:48:18,802 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:48:18,850 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /socket.io/?EIO=4&transport=polling&t=PUUmtFe HTTP/1.1" 200 -
+2025-06-23 17:48:18,858 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:48:18,863 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:48:18,880 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /api/files HTTP/1.1" 200 -
+2025-06-23 17:48:18,994 - __main__ - INFO - Client connected: 9auD8dGMguS6OlYoAAAL
+2025-06-23 17:48:18,996 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "POST /socket.io/?EIO=4&transport=polling&t=PUUmtHw&sid=PdP3pojx1Wzgbt5RAAAK HTTP/1.1" 200 -
+2025-06-23 17:48:18,997 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:18] "GET /socket.io/?EIO=4&transport=polling&t=PUUmtHx&sid=PdP3pojx1Wzgbt5RAAAK HTTP/1.1" 200 -
+2025-06-23 17:48:19,012 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:19] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:48:19,058 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:19] "POST /socket.io/?EIO=4&transport=polling&t=PUUmtIu&sid=PdP3pojx1Wzgbt5RAAAK HTTP/1.1" 200 -
+2025-06-23 17:48:19,062 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:19] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:48:19,062 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:19] "GET /socket.io/?EIO=4&transport=polling&t=PUUmtIv&sid=PdP3pojx1Wzgbt5RAAAK HTTP/1.1" 200 -
+2025-06-23 17:48:22,086 - __main__ - INFO - Client disconnected: 9auD8dGMguS6OlYoAAAL
+2025-06-23 17:48:22,087 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /socket.io/?EIO=4&transport=websocket&sid=PdP3pojx1Wzgbt5RAAAK HTTP/1.1" 200 -
+2025-06-23 17:48:22,172 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /files/preview?id=a9615118-b169-4d52-a8a8-f259f888b191 HTTP/1.1" 200 -
+2025-06-23 17:48:22,200 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:48:22,274 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:48:22,274 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:48:22,274 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:48:22,279 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "[36mGET /static/js/gcode-viewer.js HTTP/1.1[0m" 304 -
+2025-06-23 17:48:22,350 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /socket.io/?EIO=4&transport=polling&t=PUUmu6G HTTP/1.1" 200 -
+2025-06-23 17:48:22,354 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:48:22,358 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:48:22,362 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /api/files/a9615118-b169-4d52-a8a8-f259f888b191 HTTP/1.1" 200 -
+2025-06-23 17:48:22,366 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /api/files/a9615118-b169-4d52-a8a8-f259f888b191/preview HTTP/1.1" 200 -
+2025-06-23 17:48:22,478 - __main__ - INFO - Client connected: heBr2Ke14SmNP8OnAAAN
+2025-06-23 17:48:22,480 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "POST /socket.io/?EIO=4&transport=polling&t=PUUmu8J&sid=zcq91IYGyu3jtPxWAAAM HTTP/1.1" 200 -
+2025-06-23 17:48:22,482 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /socket.io/?EIO=4&transport=polling&t=PUUmu8K&sid=zcq91IYGyu3jtPxWAAAM HTTP/1.1" 200 -
+2025-06-23 17:48:22,509 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:48:22,546 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "POST /socket.io/?EIO=4&transport=polling&t=PUUmu9Q&sid=zcq91IYGyu3jtPxWAAAM HTTP/1.1" 200 -
+2025-06-23 17:48:22,550 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:48:22,550 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:48:22] "GET /socket.io/?EIO=4&transport=polling&t=PUUmu9Q.0&sid=zcq91IYGyu3jtPxWAAAM HTTP/1.1" 200 -
+2025-06-23 17:51:09,619 - __main__ - INFO - Client disconnected: heBr2Ke14SmNP8OnAAAN
+2025-06-23 17:51:09,620 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "GET /socket.io/?EIO=4&transport=websocket&sid=zcq91IYGyu3jtPxWAAAM HTTP/1.1" 200 -
+2025-06-23 17:51:09,638 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "GET / HTTP/1.1" 200 -
+2025-06-23 17:51:09,706 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:51:09,762 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:09,762 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:09,763 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:09,763 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:51:09,846 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:09,846 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "GET /socket.io/?EIO=4&transport=polling&t=PUUnW_I HTTP/1.1" 200 -
+2025-06-23 17:51:09,850 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:09] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:51:10,010 - __main__ - INFO - Client connected: ke-eKo-ogc6w6TQFAAAP
+2025-06-23 17:51:10,011 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:10] "POST /socket.io/?EIO=4&transport=polling&t=PUUnX23&sid=JIblJGhY4_M5d6PTAAAO HTTP/1.1" 200 -
+2025-06-23 17:51:10,014 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:10] "GET /socket.io/?EIO=4&transport=polling&t=PUUnX24&sid=JIblJGhY4_M5d6PTAAAO HTTP/1.1" 200 -
+2025-06-23 17:51:10,154 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:10] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:10,154 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:10] "GET /socket.io/?EIO=4&transport=polling&t=PUUnX4G&sid=JIblJGhY4_M5d6PTAAAO HTTP/1.1" 200 -
+2025-06-23 17:51:10,157 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:10] "POST /socket.io/?EIO=4&transport=polling&t=PUUnX4F&sid=JIblJGhY4_M5d6PTAAAO HTTP/1.1" 200 -
+2025-06-23 17:51:10,210 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:10] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:51:32,340 - __main__ - INFO - Client disconnected: ke-eKo-ogc6w6TQFAAAP
+2025-06-23 17:51:32,341 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /socket.io/?EIO=4&transport=websocket&sid=JIblJGhY4_M5d6PTAAAO HTTP/1.1" 200 -
+2025-06-23 17:51:32,355 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /files HTTP/1.1" 200 -
+2025-06-23 17:51:32,414 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:51:32,476 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:32,477 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:51:32,478 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:32,550 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:32,550 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /socket.io/?EIO=4&transport=polling&t=PUUncYD HTTP/1.1" 200 -
+2025-06-23 17:51:32,554 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:51:32,566 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /api/files HTTP/1.1" 200 -
+2025-06-23 17:51:32,678 - __main__ - INFO - Client connected: ycouCfCyYnXja36rAAAR
+2025-06-23 17:51:32,680 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "POST /socket.io/?EIO=4&transport=polling&t=PUUncaF&sid=NjsxxAF0yqVyaCKMAAAQ HTTP/1.1" 200 -
+2025-06-23 17:51:32,682 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /socket.io/?EIO=4&transport=polling&t=PUUncaF.0&sid=NjsxxAF0yqVyaCKMAAAQ HTTP/1.1" 200 -
+2025-06-23 17:51:32,694 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:51:32,742 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:32] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:37,750 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:37] "GET /socket.io/?EIO=4&transport=polling&t=PUUndpB HTTP/1.1" 200 -
+2025-06-23 17:51:37,810 - __main__ - INFO - Client connected: GvF8vzEk8rJZLzLYAAAT
+2025-06-23 17:51:37,811 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:37] "POST /socket.io/?EIO=4&transport=polling&t=PUUndqQ&sid=YCIIDn-yIhsXir-aAAAS HTTP/1.1" 200 -
+2025-06-23 17:51:37,813 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:37] "GET /socket.io/?EIO=4&transport=polling&t=PUUndqQ.0&sid=YCIIDn-yIhsXir-aAAAS HTTP/1.1" 200 -
+2025-06-23 17:51:37,870 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:37] "GET /socket.io/?EIO=4&transport=polling&t=PUUndrO.0&sid=YCIIDn-yIhsXir-aAAAS HTTP/1.1" 200 -
+2025-06-23 17:51:37,871 - job_manager - INFO - Started job 076d5c4f-dd22-4b27-a811-57c907007045
+2025-06-23 17:51:37,871 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:37] "POST /socket.io/?EIO=4&transport=polling&t=PUUndrO&sid=YCIIDn-yIhsXir-aAAAS HTTP/1.1" 200 -
+2025-06-23 17:51:40,102 - __main__ - INFO - Client disconnected: GvF8vzEk8rJZLzLYAAAT
+2025-06-23 17:51:40,103 - __main__ - INFO - Client disconnected: ycouCfCyYnXja36rAAAR
+2025-06-23 17:51:40,105 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /socket.io/?EIO=4&transport=websocket&sid=YCIIDn-yIhsXir-aAAAS HTTP/1.1" 200 -
+2025-06-23 17:51:40,107 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /socket.io/?EIO=4&transport=websocket&sid=NjsxxAF0yqVyaCKMAAAQ HTTP/1.1" 200 -
+2025-06-23 17:51:40,169 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET / HTTP/1.1" 200 -
+2025-06-23 17:51:40,204 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:51:40,285 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:51:40,298 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:40,299 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:40,300 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:40,366 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /socket.io/?EIO=4&transport=polling&t=PUUneSJ HTTP/1.1" 200 -
+2025-06-23 17:51:40,374 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:51:40,378 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:40,442 - __main__ - INFO - Client connected: ZbTsrnvsqJN0fJhdAAAV
+2025-06-23 17:51:40,444 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "POST /socket.io/?EIO=4&transport=polling&t=PUUneTT&sid=5mtgZWG0Q26o3Jj0AAAU HTTP/1.1" 200 -
+2025-06-23 17:51:40,445 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /socket.io/?EIO=4&transport=polling&t=PUUneTU&sid=5mtgZWG0Q26o3Jj0AAAU HTTP/1.1" 200 -
+2025-06-23 17:51:40,569 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /socket.io/?EIO=4&transport=polling&t=PUUneVZ&sid=5mtgZWG0Q26o3Jj0AAAU HTTP/1.1" 200 -
+2025-06-23 17:51:40,585 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:51:40,634 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:40] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:52,777 - __main__ - INFO - Client disconnected: ZbTsrnvsqJN0fJhdAAAV
+2025-06-23 17:51:52,780 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "GET /socket.io/?EIO=4&transport=websocket&sid=5mtgZWG0Q26o3Jj0AAAU HTTP/1.1" 200 -
+2025-06-23 17:51:52,792 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "GET / HTTP/1.1" 200 -
+2025-06-23 17:51:52,860 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:51:52,878 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:51:52,889 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:52,889 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:52,890 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:52,958 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "GET /socket.io/?EIO=4&transport=polling&t=PUUnhX1 HTTP/1.1" 200 -
+2025-06-23 17:51:52,966 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:52,967 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:52] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:51:53,030 - __main__ - INFO - Client connected: UDLa3oNIq3blsr5QAAAX
+2025-06-23 17:51:53,032 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "POST /socket.io/?EIO=4&transport=polling&t=PUUnhYE&sid=A3WOXmQ_UYZ4eJVMAAAW HTTP/1.1" 200 -
+2025-06-23 17:51:53,033 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "GET /socket.io/?EIO=4&transport=polling&t=PUUnhYF&sid=A3WOXmQ_UYZ4eJVMAAAW HTTP/1.1" 200 -
+2025-06-23 17:51:53,169 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "GET /socket.io/?EIO=4&transport=polling&t=PUUnhaB&sid=A3WOXmQ_UYZ4eJVMAAAW HTTP/1.1" 200 -
+2025-06-23 17:51:53,182 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:51:53,230 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:53,938 - __main__ - INFO - Client disconnected: UDLa3oNIq3blsr5QAAAX
+2025-06-23 17:51:53,940 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "GET /socket.io/?EIO=4&transport=websocket&sid=A3WOXmQ_UYZ4eJVMAAAW HTTP/1.1" 200 -
+2025-06-23 17:51:53,966 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:53] "GET /control HTTP/1.1" 200 -
+2025-06-23 17:51:54,009 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:51:54,082 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:51:54,085 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:54,088 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:51:54,089 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-23 17:51:54,158 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /socket.io/?EIO=4&transport=polling&t=PUUnhpn HTTP/1.1" 200 -
+2025-06-23 17:51:54,178 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:54,182 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:51:54,186 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-23 17:51:54,334 - __main__ - INFO - Client connected: WGONiyvpac4fVs3wAAAZ
+2025-06-23 17:51:54,336 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "POST /socket.io/?EIO=4&transport=polling&t=PUUnhsV&sid=MXrljwBvixzz3Oq2AAAY HTTP/1.1" 200 -
+2025-06-23 17:51:54,337 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /socket.io/?EIO=4&transport=polling&t=PUUnhsW&sid=MXrljwBvixzz3Oq2AAAY HTTP/1.1" 200 -
+2025-06-23 17:51:54,356 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:51:54,389 - duet_client - ERROR - Error sending command 'G1 X76.146 Y185.289 F299.99999999999994': ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+2025-06-23 17:51:54,390 - duet_client - ERROR - Command error details:
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connection.py", line 565, in getresponse
+    httplib_response = super().getresponse()
+  File "/usr/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.10/http/client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.10/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/util/retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/urllib3/connection.py", line 565, in getresponse
+    httplib_response = super().getresponse()
+  File "/usr/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.10/http/client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.10/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/duet_client.py", line 254, in send_command
+    response = self.session.get(url, timeout=5)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/requests/adapters.py", line 682, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+2025-06-23 17:51:54,426 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:51:54] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:51:54,460 - job_manager - ERROR - Job 076d5c4f-dd22-4b27-a811-57c907007045 failed: Error at line 305: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+2025-06-23 17:52:06,227 - __main__ - INFO - Client disconnected: WGONiyvpac4fVs3wAAAZ
+2025-06-23 17:52:06,230 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /socket.io/?EIO=4&transport=websocket&sid=MXrljwBvixzz3Oq2AAAY HTTP/1.1" 200 -
+2025-06-23 17:52:06,245 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /files HTTP/1.1" 200 -
+2025-06-23 17:52:06,299 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:52:06,368 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:52:06,369 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:06,372 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:06,442 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:52:06,443 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:52:06,444 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /socket.io/?EIO=4&transport=polling&t=PUUnkpm HTTP/1.1" 200 -
+2025-06-23 17:52:06,464 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /api/files HTTP/1.1" 200 -
+2025-06-23 17:52:06,566 - __main__ - INFO - Client connected: 33sxXbGEk7z63DMKAAAb
+2025-06-23 17:52:06,568 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "POST /socket.io/?EIO=4&transport=polling&t=PUUnkrk&sid=4la0s6eV1FJHIdOFAAAa HTTP/1.1" 200 -
+2025-06-23 17:52:06,573 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /socket.io/?EIO=4&transport=polling&t=PUUnkrk.0&sid=4la0s6eV1FJHIdOFAAAa HTTP/1.1" 200 -
+2025-06-23 17:52:06,586 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:52:06,694 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:06] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:52:08,019 - __main__ - INFO - Client disconnected: 33sxXbGEk7z63DMKAAAb
+2025-06-23 17:52:08,020 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /socket.io/?EIO=4&transport=websocket&sid=4la0s6eV1FJHIdOFAAAa HTTP/1.1" 200 -
+2025-06-23 17:52:08,038 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /control HTTP/1.1" 200 -
+2025-06-23 17:52:08,090 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:52:08,154 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:08,155 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:52:08,156 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:08,157 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:08,242 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /socket.io/?EIO=4&transport=polling&t=PUUnlFr HTTP/1.1" 200 -
+2025-06-23 17:52:08,258 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:52:08,259 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:52:08,262 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-23 17:52:08,386 - __main__ - INFO - Client connected: qYIbivO7NH5nSK4SAAAd
+2025-06-23 17:52:08,387 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "POST /socket.io/?EIO=4&transport=polling&t=PUUnlI8&sid=eIZqc3dKCfVnyQlEAAAc HTTP/1.1" 200 -
+2025-06-23 17:52:08,388 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /socket.io/?EIO=4&transport=polling&t=PUUnlI9&sid=eIZqc3dKCfVnyQlEAAAc HTTP/1.1" 200 -
+2025-06-23 17:52:08,418 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:52:08,466 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:52:08,466 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "GET /socket.io/?EIO=4&transport=polling&t=PUUnlJQ&sid=eIZqc3dKCfVnyQlEAAAc HTTP/1.1" 200 -
+2025-06-23 17:52:08,474 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:08] "POST /socket.io/?EIO=4&transport=polling&t=PUUnlJR&sid=eIZqc3dKCfVnyQlEAAAc HTTP/1.1" 200 -
+2025-06-23 17:52:14,518 - duet_client - INFO - Disconnected from H.Airbrush Plotter at 192.168.86.43
+2025-06-23 17:52:17,425 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-23 17:52:17,427 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-23 17:52:17,429 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-23 17:52:17,454 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-23 17:52:17,455 - duet_client - INFO - API level: 1
+2025-06-23 17:52:17,490 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-23 17:52:17,491 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-23 17:52:17,502 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-23 17:52:17,578 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:17] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:52:21,376 - __main__ - INFO - Client disconnected: qYIbivO7NH5nSK4SAAAd
+2025-06-23 17:52:21,378 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /socket.io/?EIO=4&transport=websocket&sid=eIZqc3dKCfVnyQlEAAAc HTTP/1.1" 200 -
+2025-06-23 17:52:21,438 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /control HTTP/1.1" 200 -
+2025-06-23 17:52:21,481 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:52:21,526 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:52:21,538 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:21,538 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:21,538 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-23 17:52:21,602 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /socket.io/?EIO=4&transport=polling&t=PUUnoWb HTTP/1.1" 200 -
+2025-06-23 17:52:21,606 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:52:21,607 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:52:21,610 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-23 17:52:21,746 - __main__ - INFO - Client connected: R7xD3XWGjlzP2irxAAAf
+2025-06-23 17:52:21,746 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /socket.io/?EIO=4&transport=polling&t=PUUnoYr&sid=o3NYXQb88cfvCoHtAAAe HTTP/1.1" 200 -
+2025-06-23 17:52:21,747 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "POST /socket.io/?EIO=4&transport=polling&t=PUUnoYq&sid=o3NYXQb88cfvCoHtAAAe HTTP/1.1" 200 -
+2025-06-23 17:52:21,773 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:52:21,801 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "[36mGET /static/favicon/favicon.ico HTTP/1.1[0m" 304 -
+2025-06-23 17:52:21,817 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /socket.io/?EIO=4&transport=polling&t=PUUnoZy&sid=o3NYXQb88cfvCoHtAAAe HTTP/1.1" 200 -
+2025-06-23 17:52:21,894 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:52:21] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:53:31,418 - __main__ - INFO - Client disconnected: R7xD3XWGjlzP2irxAAAf
+2025-06-23 17:53:31,421 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /socket.io/?EIO=4&transport=websocket&sid=o3NYXQb88cfvCoHtAAAe HTTP/1.1" 200 -
+2025-06-23 17:53:31,439 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /files HTTP/1.1" 200 -
+2025-06-23 17:53:31,500 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:53:31,550 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:53:31,553 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:53:31,554 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:53:31,646 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:53:31,646 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /socket.io/?EIO=4&transport=polling&t=PUUo3d1 HTTP/1.1" 200 -
+2025-06-23 17:53:31,650 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:53:31,665 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /api/files HTTP/1.1" 200 -
+2025-06-23 17:53:31,810 - __main__ - INFO - Client connected: j0Kg5GWWBwBx3GBgAAAh
+2025-06-23 17:53:31,811 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "POST /socket.io/?EIO=4&transport=polling&t=PUUo3fg&sid=SQcQuGmVmRkj95CCAAAg HTTP/1.1" 200 -
+2025-06-23 17:53:31,818 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /socket.io/?EIO=4&transport=polling&t=PUUo3fh&sid=SQcQuGmVmRkj95CCAAAg HTTP/1.1" 200 -
+2025-06-23 17:53:31,826 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:53:31,890 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:31] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:53:34,061 - __main__ - INFO - Client disconnected: j0Kg5GWWBwBx3GBgAAAh
+2025-06-23 17:53:34,063 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /socket.io/?EIO=4&transport=websocket&sid=SQcQuGmVmRkj95CCAAAg HTTP/1.1" 200 -
+2025-06-23 17:53:34,086 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /maintenance HTTP/1.1" 200 -
+2025-06-23 17:53:34,129 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:53:34,197 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:53:34,197 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:53:34,198 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:53:34,298 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /socket.io/?EIO=4&transport=polling&t=PUUo4GV HTTP/1.1" 200 -
+2025-06-23 17:53:34,302 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:53:34,306 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:53:34,307 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /socket.io/?EIO=4&transport=polling&t=PUUo4Gb HTTP/1.1" 200 -
+2025-06-23 17:53:34,438 - __main__ - INFO - Client connected: ZyJSMMJP7E8weYLfAAAk
+2025-06-23 17:53:34,439 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "POST /socket.io/?EIO=4&transport=polling&t=PUUo4Ii&sid=0ys2tMeVu2yDb0_TAAAi HTTP/1.1" 200 -
+2025-06-23 17:53:34,441 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /socket.io/?EIO=4&transport=polling&t=PUUo4Ii.0&sid=0ys2tMeVu2yDb0_TAAAi HTTP/1.1" 200 -
+2025-06-23 17:53:34,442 - __main__ - INFO - Client connected: fRV3VnvzSAbAGrsOAAAl
+2025-06-23 17:53:34,444 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "POST /socket.io/?EIO=4&transport=polling&t=PUUo4Il&sid=XdurYJdz2QT_RRTJAAAj HTTP/1.1" 200 -
+2025-06-23 17:53:34,444 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /socket.io/?EIO=4&transport=polling&t=PUUo4Im&sid=XdurYJdz2QT_RRTJAAAj HTTP/1.1" 200 -
+2025-06-23 17:53:34,503 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:53:34,504 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /socket.io/?EIO=4&transport=polling&t=PUUo4Jm&sid=XdurYJdz2QT_RRTJAAAj HTTP/1.1" 200 -
+2025-06-23 17:53:34,550 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:53:34] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:54:02,290 - __main__ - INFO - Client disconnected: fRV3VnvzSAbAGrsOAAAl
+2025-06-23 17:54:02,291 - __main__ - INFO - Client disconnected: ZyJSMMJP7E8weYLfAAAk
+2025-06-23 17:54:02,292 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /socket.io/?EIO=4&transport=websocket&sid=XdurYJdz2QT_RRTJAAAj HTTP/1.1" 200 -
+2025-06-23 17:54:02,293 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /socket.io/?EIO=4&transport=websocket&sid=0ys2tMeVu2yDb0_TAAAi HTTP/1.1" 200 -
+2025-06-23 17:54:02,306 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /files HTTP/1.1" 200 -
+2025-06-23 17:54:02,354 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:54:02,414 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:54:02,416 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:54:02,417 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:54:02,486 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /socket.io/?EIO=4&transport=polling&t=PUUoB8x HTTP/1.1" 200 -
+2025-06-23 17:54:02,490 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:54:02,491 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:54:02,510 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /api/files HTTP/1.1" 200 -
+2025-06-23 17:54:02,638 - __main__ - INFO - Client connected: at1LL4GktbkBLNNcAAAn
+2025-06-23 17:54:02,640 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "POST /socket.io/?EIO=4&transport=polling&t=PUUoBBI&sid=BoDaVOCTk2xilOwcAAAm HTTP/1.1" 200 -
+2025-06-23 17:54:02,640 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /socket.io/?EIO=4&transport=polling&t=PUUoBBI.0&sid=BoDaVOCTk2xilOwcAAAm HTTP/1.1" 200 -
+2025-06-23 17:54:02,653 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:54:02,698 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:02] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:54:07,006 - __main__ - INFO - Client disconnected: at1LL4GktbkBLNNcAAAn
+2025-06-23 17:54:07,008 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /socket.io/?EIO=4&transport=websocket&sid=BoDaVOCTk2xilOwcAAAm HTTP/1.1" 200 -
+2025-06-23 17:54:07,086 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /files/preview?id=a9615118-b169-4d52-a8a8-f259f888b191 HTTP/1.1" 200 -
+2025-06-23 17:54:07,142 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 17:54:07,223 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 17:54:07,224 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "[36mGET /static/js/gcode-viewer.js HTTP/1.1[0m" 304 -
+2025-06-23 17:54:07,226 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 17:54:07,226 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 17:54:07,306 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 17:54:07,306 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /socket.io/?EIO=4&transport=polling&t=PUUoCKB HTTP/1.1" 200 -
+2025-06-23 17:54:07,310 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 17:54:07,315 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /api/files/a9615118-b169-4d52-a8a8-f259f888b191 HTTP/1.1" 200 -
+2025-06-23 17:54:07,317 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /api/files/a9615118-b169-4d52-a8a8-f259f888b191/preview HTTP/1.1" 200 -
+2025-06-23 17:54:07,434 - __main__ - INFO - Client connected: U7L9i5guHCdjJFnOAAAp
+2025-06-23 17:54:07,435 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "POST /socket.io/?EIO=4&transport=polling&t=PUUoCMI&sid=03Pv9H2ps7ZdbXMnAAAo HTTP/1.1" 200 -
+2025-06-23 17:54:07,442 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /socket.io/?EIO=4&transport=polling&t=PUUoCMI.0&sid=03Pv9H2ps7ZdbXMnAAAo HTTP/1.1" 200 -
+2025-06-23 17:54:07,467 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 17:54:07,517 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /socket.io/?EIO=4&transport=polling&t=PUUoCNR&sid=03Pv9H2ps7ZdbXMnAAAo HTTP/1.1" 200 -
+2025-06-23 17:54:07,582 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 17:54:07] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 18:13:15,447 - duet_client - INFO - Disconnected from H.Airbrush Plotter at 192.168.86.43
+2025-06-23 18:13:16,947 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-23 18:13:16,949 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-23 18:13:16,952 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-23 18:13:16,977 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-23 18:13:16,980 - duet_client - INFO - API level: 1
+2025-06-23 18:13:17,021 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-23 18:13:17,023 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-23 18:13:17,030 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-23 18:13:17,090 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:17] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 18:13:20,278 - duet_client - INFO - Disconnected from H.Airbrush Plotter at 192.168.86.43
+2025-06-23 18:13:22,012 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-23 18:13:22,014 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-23 18:13:22,015 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-23 18:13:22,030 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-23 18:13:22,031 - duet_client - INFO - API level: 1
+2025-06-23 18:13:22,045 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-23 18:13:22,046 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-23 18:13:22,054 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-23 18:13:22,114 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:22] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 18:13:48,172 - __main__ - INFO - Client disconnected: U7L9i5guHCdjJFnOAAAp
+2025-06-23 18:13:48,174 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /socket.io/?EIO=4&transport=websocket&sid=03Pv9H2ps7ZdbXMnAAAo HTTP/1.1" 200 -
+2025-06-23 18:13:48,189 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET / HTTP/1.1" 200 -
+2025-06-23 18:13:48,238 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 18:13:48,291 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 18:13:48,291 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 18:13:48,292 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 18:13:48,294 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-06-23 18:13:48,378 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 18:13:48,379 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 18:13:48,379 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /socket.io/?EIO=4&transport=polling&t=PUUsigK HTTP/1.1" 200 -
+2025-06-23 18:13:48,538 - __main__ - INFO - Client connected: Ls-KeVhQ9Pemo8uyAAAr
+2025-06-23 18:13:48,539 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "POST /socket.io/?EIO=4&transport=polling&t=PUUsij1&sid=E9mg-qsRxwJHWoT5AAAq HTTP/1.1" 200 -
+2025-06-23 18:13:48,549 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /socket.io/?EIO=4&transport=polling&t=PUUsij1.0&sid=E9mg-qsRxwJHWoT5AAAq HTTP/1.1" 200 -
+2025-06-23 18:13:48,674 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /socket.io/?EIO=4&transport=polling&t=PUUsil8&sid=E9mg-qsRxwJHWoT5AAAq HTTP/1.1" 200 -
+2025-06-23 18:13:48,708 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 18:13:48,734 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:48] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 18:13:50,862 - __main__ - INFO - Client disconnected: Ls-KeVhQ9Pemo8uyAAAr
+2025-06-23 18:13:50,864 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "GET /socket.io/?EIO=4&transport=websocket&sid=E9mg-qsRxwJHWoT5AAAq HTTP/1.1" 200 -
+2025-06-23 18:13:50,874 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "GET /control HTTP/1.1" 200 -
+2025-06-23 18:13:50,922 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 18:13:50,979 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 18:13:50,982 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-23 18:13:50,984 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-23 18:13:50,986 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:50] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-23 18:13:51,042 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "GET /socket.io/?EIO=4&transport=polling&t=PUUsjKB HTTP/1.1" 200 -
+2025-06-23 18:13:51,062 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 18:13:51,066 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-23 18:13:51,067 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 18:13:51,202 - __main__ - INFO - Client connected: 6zzPqThFmdyvxO0YAAAt
+2025-06-23 18:13:51,204 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "POST /socket.io/?EIO=4&transport=polling&t=PUUsjMh&sid=fVYu6kIIO2gIDdF0AAAs HTTP/1.1" 200 -
+2025-06-23 18:13:51,205 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "GET /socket.io/?EIO=4&transport=polling&t=PUUsjMh.0&sid=fVYu6kIIO2gIDdF0AAAs HTTP/1.1" 200 -
+2025-06-23 18:13:51,219 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 18:13:51,318 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 18:13:51] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 23:44:21,614 - __main__ - INFO - Client disconnected: 6zzPqThFmdyvxO0YAAAt
+2025-06-23 23:44:21,616 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:21] "GET /socket.io/?EIO=4&transport=websocket&sid=fVYu6kIIO2gIDdF0AAAs HTTP/1.1" 200 -
+2025-06-23 23:44:26,047 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /control HTTP/1.1" 200 -
+2025-06-23 23:44:26,117 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-23 23:44:26,178 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-23 23:44:26,178 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-23 23:44:26,178 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-23 23:44:26,362 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /socket.io/?EIO=4&transport=polling&t=PUW2Nx4 HTTP/1.1" 200 -
+2025-06-23 23:44:26,370 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 23:44:26,370 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 23:44:26,374 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-23 23:44:26,423 - __main__ - INFO - Client connected: owscRP9UhGNX_bh_AAAv
+2025-06-23 23:44:26,424 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "POST /socket.io/?EIO=4&transport=polling&t=PUW2Nx_&sid=_m-ME9xKD-CWk59lAAAu HTTP/1.1" 200 -
+2025-06-23 23:44:26,425 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /socket.io/?EIO=4&transport=polling&t=PUW2Ny0&sid=_m-ME9xKD-CWk59lAAAu HTTP/1.1" 200 -
+2025-06-23 23:44:26,562 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /socket.io/?EIO=4&transport=polling&t=PUW2N-1&sid=_m-ME9xKD-CWk59lAAAu HTTP/1.1" 200 -
+2025-06-23 23:44:26,589 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-23 23:44:26,590 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-23 23:44:26,638 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:44:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 23:50:49,688 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-23 23:50:49,694 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:49] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 23:50:49,694 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:49] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-23 23:50:55,277 - __main__ - INFO - Client disconnected: owscRP9UhGNX_bh_AAAv
+2025-06-23 23:50:55,278 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /socket.io/?EIO=4&transport=websocket&sid=_m-ME9xKD-CWk59lAAAu HTTP/1.1" 200 -
+2025-06-23 23:50:55,358 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /control HTTP/1.1" 200 -
+2025-06-23 23:50:55,398 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-23 23:50:55,469 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-23 23:50:55,469 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-23 23:50:55,469 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-23 23:50:55,471 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-23 23:50:55,546 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /socket.io/?EIO=4&transport=polling&t=PUW3sx_ HTTP/1.1" 200 -
+2025-06-23 23:50:55,562 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 23:50:55,566 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-23 23:50:55,567 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-23 23:50:55,690 - __main__ - INFO - Client connected: 2Yp3VbtedXp-BL3GAAAx
+2025-06-23 23:50:55,692 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "POST /socket.io/?EIO=4&transport=polling&t=PUW3s-H&sid=EwSfFwr-KTxyOUkzAAAw HTTP/1.1" 200 -
+2025-06-23 23:50:55,692 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /socket.io/?EIO=4&transport=polling&t=PUW3s-I&sid=EwSfFwr-KTxyOUkzAAAw HTTP/1.1" 200 -
+2025-06-23 23:50:55,719 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-23 23:50:55,747 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-23 23:50:55,750 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "POST /socket.io/?EIO=4&transport=polling&t=PUW3s_G&sid=EwSfFwr-KTxyOUkzAAAw HTTP/1.1" 200 -
+2025-06-23 23:50:55,754 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /api/connection HTTP/1.1" 200 -
+2025-06-23 23:50:55,754 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:50:55] "GET /socket.io/?EIO=4&transport=polling&t=PUW3s_H&sid=EwSfFwr-KTxyOUkzAAAw HTTP/1.1" 200 -
+2025-06-23 23:50:55,778 - duet_client - ERROR - Error getting status: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+2025-06-23 23:52:33,317 - __main__ - INFO - Client disconnected: 2Yp3VbtedXp-BL3GAAAx
+2025-06-23 23:52:33,326 - werkzeug - INFO - 127.0.0.1 - - [23/Jun/2025 23:52:33] "GET /socket.io/?EIO=4&transport=websocket&sid=EwSfFwr-KTxyOUkzAAAw HTTP/1.1" 200 -
+2025-06-24 00:01:34,241 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:01:34,278 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:01:34,330 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:01:34,332 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:01:34,333 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:01:34,334 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:01:34,498 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /socket.io/?EIO=4&transport=polling&t=PUW6Ixd HTTP/1.1" 200 -
+2025-06-24 00:01:34,502 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:01:34,506 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:01:34,506 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:01:34,566 - __main__ - INFO - Client connected: hpKK6DUQdR_Q_cQjAAAz
+2025-06-24 00:01:34,568 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "POST /socket.io/?EIO=4&transport=polling&t=PUW6Iye&sid=K4pxn0XBN3QHkOXCAAAy HTTP/1.1" 200 -
+2025-06-24 00:01:34,574 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /socket.io/?EIO=4&transport=polling&t=PUW6Iyf&sid=K4pxn0XBN3QHkOXCAAAy HTTP/1.1" 200 -
+2025-06-24 00:01:34,717 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /socket.io/?EIO=4&transport=polling&t=PUW6I-s&sid=K4pxn0XBN3QHkOXCAAAy HTTP/1.1" 200 -
+2025-06-24 00:01:34,734 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:01:34,735 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:01:34,794 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:01:34] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:02:15,717 - duet_client - INFO - Disconnected from H.Airbrush Plotter at 192.168.86.43
+2025-06-24 00:02:18,895 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-24 00:02:18,897 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-24 00:02:18,899 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 00:02:18,950 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 00:02:18,953 - duet_client - INFO - API level: 1
+2025-06-24 00:02:18,981 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 00:02:18,982 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-24 00:02:18,989 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 00:02:19,046 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:02:19] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:11:10,145 - __main__ - INFO - Client disconnected: hpKK6DUQdR_Q_cQjAAAz
+2025-06-24 00:11:10,147 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /socket.io/?EIO=4&transport=websocket&sid=K4pxn0XBN3QHkOXCAAAy HTTP/1.1" 200 -
+2025-06-24 00:11:10,235 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:11:10,321 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:11:10,368 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:11:10,368 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:11:10,370 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:11:10,386 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:11:10,446 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /socket.io/?EIO=4&transport=polling&t=PUW8VYo HTTP/1.1" 200 -
+2025-06-24 00:11:10,466 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:11:10,478 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:11:10,482 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:11:10,506 - __main__ - INFO - Client connected: Ugg6ASXXIQ7hgQUbAAA1
+2025-06-24 00:11:10,508 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "POST /socket.io/?EIO=4&transport=polling&t=PUW8VZr&sid=-xirNajSvtUda0FqAAA0 HTTP/1.1" 200 -
+2025-06-24 00:11:10,508 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /socket.io/?EIO=4&transport=polling&t=PUW8VZs&sid=-xirNajSvtUda0FqAAA0 HTTP/1.1" 200 -
+2025-06-24 00:11:10,574 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:11:10,783 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:11:10,793 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:11:10] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:14:09,456 - __main__ - INFO - Client disconnected: Ugg6ASXXIQ7hgQUbAAA1
+2025-06-24 00:14:09,458 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /socket.io/?EIO=4&transport=websocket&sid=-xirNajSvtUda0FqAAA0 HTTP/1.1" 200 -
+2025-06-24 00:14:09,557 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:14:09,593 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:14:09,642 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:14:09,646 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:14:09,647 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:14:09,650 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:14:09,730 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /socket.io/?EIO=4&transport=polling&t=PUW9BK4 HTTP/1.1" 200 -
+2025-06-24 00:14:09,742 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:14:09,742 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:14:09,746 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:14:09,791 - __main__ - INFO - Client connected: 0nbriq-eg-gMHA5fAAA3
+2025-06-24 00:14:09,793 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "POST /socket.io/?EIO=4&transport=polling&t=PUW9BL6&sid=GkzHjt2DS-0Ur4f2AAA2 HTTP/1.1" 200 -
+2025-06-24 00:14:09,794 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /socket.io/?EIO=4&transport=polling&t=PUW9BL7&sid=GkzHjt2DS-0Ur4f2AAA2 HTTP/1.1" 200 -
+2025-06-24 00:14:09,898 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:09] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:14:10,096 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:10] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:14:10,121 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:14:10] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:22:40,215 - __main__ - INFO - Client disconnected: 0nbriq-eg-gMHA5fAAA3
+2025-06-24 00:22:40,216 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /socket.io/?EIO=4&transport=websocket&sid=GkzHjt2DS-0Ur4f2AAA2 HTTP/1.1" 200 -
+2025-06-24 00:22:40,322 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:22:40,369 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:22:40,418 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:22:40,418 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:22:40,420 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:22:40,470 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:22:40,602 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /socket.io/?EIO=4&transport=polling&t=PUWB82Y HTTP/1.1" 200 -
+2025-06-24 00:22:40,610 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:22:40,614 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:22:40,615 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:22:40,662 - __main__ - INFO - Client connected: kLm3q-s4wpIDulwAAAA5
+2025-06-24 00:22:40,663 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "POST /socket.io/?EIO=4&transport=polling&t=PUWB83T&sid=uqpPyNiPdZ2tjueZAAA4 HTTP/1.1" 200 -
+2025-06-24 00:22:40,665 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /socket.io/?EIO=4&transport=polling&t=PUWB83U&sid=uqpPyNiPdZ2tjueZAAA4 HTTP/1.1" 200 -
+2025-06-24 00:22:40,806 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "POST /socket.io/?EIO=4&transport=polling&t=PUWB85j&sid=uqpPyNiPdZ2tjueZAAA4 HTTP/1.1" 200 -
+2025-06-24 00:22:40,810 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:22:40,813 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /socket.io/?EIO=4&transport=polling&t=PUWB85l&sid=uqpPyNiPdZ2tjueZAAA4 HTTP/1.1" 200 -
+2025-06-24 00:22:40,843 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:22:40,845 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:22:40] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:36:00,691 - __main__ - INFO - Client disconnected: kLm3q-s4wpIDulwAAAA5
+2025-06-24 00:36:00,692 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "GET /socket.io/?EIO=4&transport=websocket&sid=uqpPyNiPdZ2tjueZAAA4 HTTP/1.1" 200 -
+2025-06-24 00:36:00,854 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:36:00,892 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:36:00,946 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:36:00,947 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:36:00,948 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:36:00,948 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:00] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:36:01,078 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /socket.io/?EIO=4&transport=polling&t=PUWEBTt HTTP/1.1" 200 -
+2025-06-24 00:36:01,102 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:36:01,106 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:36:01,110 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:36:01,146 - __main__ - INFO - Client connected: aenmP0r5DlQhIubzAAA7
+2025-06-24 00:36:01,148 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "POST /socket.io/?EIO=4&transport=polling&t=PUWEBU_&sid=PDznS8RlPdG7tiqFAAA6 HTTP/1.1" 200 -
+2025-06-24 00:36:01,153 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /socket.io/?EIO=4&transport=polling&t=PUWEBV0&sid=PDznS8RlPdG7tiqFAAA6 HTTP/1.1" 200 -
+2025-06-24 00:36:01,285 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /socket.io/?EIO=4&transport=polling&t=PUWEBX1&sid=PDznS8RlPdG7tiqFAAA6 HTTP/1.1" 200 -
+2025-06-24 00:36:01,314 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:36:01,337 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:36:01,358 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:01] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:36:46,081 - __main__ - INFO - Client disconnected: aenmP0r5DlQhIubzAAA7
+2025-06-24 00:36:46,083 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /socket.io/?EIO=4&transport=websocket&sid=PDznS8RlPdG7tiqFAAA6 HTTP/1.1" 200 -
+2025-06-24 00:36:46,159 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:36:46,212 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:36:46,281 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:36:46,282 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:36:46,283 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:36:46,283 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:36:46,398 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:36:46,398 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /socket.io/?EIO=4&transport=polling&t=PUWEMXZ HTTP/1.1" 200 -
+2025-06-24 00:36:46,399 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:36:46,402 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:36:46,526 - __main__ - INFO - Client connected: iYhNacJlDDn08_I5AAA9
+2025-06-24 00:36:46,527 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "POST /socket.io/?EIO=4&transport=polling&t=PUWEMa2&sid=e8fRAgkY-hRl0sWYAAA8 HTTP/1.1" 200 -
+2025-06-24 00:36:46,530 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /socket.io/?EIO=4&transport=polling&t=PUWEMa3&sid=e8fRAgkY-hRl0sWYAAA8 HTTP/1.1" 200 -
+2025-06-24 00:36:46,556 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:36:46,570 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:36:46,601 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /socket.io/?EIO=4&transport=polling&t=PUWEMbG&sid=e8fRAgkY-hRl0sWYAAA8 HTTP/1.1" 200 -
+2025-06-24 00:36:46,610 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:36:46,611 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:36:46] "POST /socket.io/?EIO=4&transport=polling&t=PUWEMbF&sid=e8fRAgkY-hRl0sWYAAA8 HTTP/1.1" 200 -
+2025-06-24 00:41:39,041 - __main__ - INFO - Client disconnected: iYhNacJlDDn08_I5AAA9
+2025-06-24 00:41:39,044 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /socket.io/?EIO=4&transport=websocket&sid=e8fRAgkY-hRl0sWYAAA8 HTTP/1.1" 200 -
+2025-06-24 00:41:39,225 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:41:39,263 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:41:39,318 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:41:39,318 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:41:39,321 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:41:39,321 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:41:39,386 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /socket.io/?EIO=4&transport=polling&t=PUWFU41 HTTP/1.1" 200 -
+2025-06-24 00:41:39,390 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:41:39,394 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:41:39,398 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:41:39,450 - __main__ - INFO - Client connected: mdkB1Jnzj5iFfLwBAAA_
+2025-06-24 00:41:39,452 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "POST /socket.io/?EIO=4&transport=polling&t=PUWFU4_&sid=l4p_fE3DImemFhOUAAA- HTTP/1.1" 200 -
+2025-06-24 00:41:39,453 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /socket.io/?EIO=4&transport=polling&t=PUWFU4_.0&sid=l4p_fE3DImemFhOUAAA- HTTP/1.1" 200 -
+2025-06-24 00:41:39,538 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /socket.io/?EIO=4&transport=polling&t=PUWFU6C&sid=l4p_fE3DImemFhOUAAA- HTTP/1.1" 200 -
+2025-06-24 00:41:39,726 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:41:39,726 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:41:39,727 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:41:39] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:48:10,360 - __main__ - INFO - Client disconnected: mdkB1Jnzj5iFfLwBAAA_
+2025-06-24 00:48:10,362 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /socket.io/?EIO=4&transport=websocket&sid=l4p_fE3DImemFhOUAAA- HTTP/1.1" 200 -
+2025-06-24 00:48:10,425 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:48:10,507 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:48:10,562 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:48:10,563 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:48:10,565 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:48:10,565 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:48:10,662 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /socket.io/?EIO=4&transport=polling&t=PUWGzbf HTTP/1.1" 200 -
+2025-06-24 00:48:10,674 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:48:10,674 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:48:10,678 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:48:10,746 - __main__ - INFO - Client connected: BJTUsktPf_KF_sGSAABB
+2025-06-24 00:48:10,747 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "POST /socket.io/?EIO=4&transport=polling&t=PUWGzcz&sid=ZciExAgY2ozdjMxgAABA HTTP/1.1" 200 -
+2025-06-24 00:48:10,750 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /socket.io/?EIO=4&transport=polling&t=PUWGzc-&sid=ZciExAgY2ozdjMxgAABA HTTP/1.1" 200 -
+2025-06-24 00:48:10,814 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:10] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:48:11,162 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:11] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:48:11,163 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:48:11] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:53:27,079 - __main__ - INFO - Client disconnected: BJTUsktPf_KF_sGSAABB
+2025-06-24 00:53:27,081 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /socket.io/?EIO=4&transport=websocket&sid=ZciExAgY2ozdjMxgAABA HTTP/1.1" 200 -
+2025-06-24 00:53:27,152 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:53:27,194 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:53:27,250 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:53:27,252 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:53:27,252 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:53:27,253 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:53:27,458 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /socket.io/?EIO=4&transport=polling&t=PUWIAxb HTTP/1.1" 200 -
+2025-06-24 00:53:27,466 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:53:27,467 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:53:27,470 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:53:27,522 - __main__ - INFO - Client connected: xtjtezuIBObJLBZOAABD
+2025-06-24 00:53:27,524 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "POST /socket.io/?EIO=4&transport=polling&t=PUWIAyd&sid=EcFlCmgmaB7GZutJAABC HTTP/1.1" 200 -
+2025-06-24 00:53:27,529 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /socket.io/?EIO=4&transport=polling&t=PUWIAye&sid=EcFlCmgmaB7GZutJAABC HTTP/1.1" 200 -
+2025-06-24 00:53:27,698 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /socket.io/?EIO=4&transport=polling&t=PUWIA_9&sid=EcFlCmgmaB7GZutJAABC HTTP/1.1" 200 -
+2025-06-24 00:53:27,712 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:53:27,715 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:53:27,762 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:27] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:53:55,634 - __main__ - INFO - Client disconnected: xtjtezuIBObJLBZOAABD
+2025-06-24 00:53:55,636 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /socket.io/?EIO=4&transport=websocket&sid=EcFlCmgmaB7GZutJAABC HTTP/1.1" 200 -
+2025-06-24 00:53:55,708 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:53:55,732 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:53:55,803 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:53:55,805 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:53:55,805 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:53:55,808 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:53:55,878 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /socket.io/?EIO=4&transport=polling&t=PUWIHtl HTTP/1.1" 200 -
+2025-06-24 00:53:55,886 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:53:55,890 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:53:55,894 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:55] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:53:56,019 - __main__ - INFO - Client connected: W8bDoeZdg1Rcn2IbAABF
+2025-06-24 00:53:56,020 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:56] "POST /socket.io/?EIO=4&transport=polling&t=PUWIHvx&sid=RGWOfEnygSXvgbZCAABE HTTP/1.1" 200 -
+2025-06-24 00:53:56,021 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:56] "GET /socket.io/?EIO=4&transport=polling&t=PUWIHvy&sid=RGWOfEnygSXvgbZCAABE HTTP/1.1" 200 -
+2025-06-24 00:53:56,079 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:56] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:53:56,081 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:56] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:53:56,130 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:53:56] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:56:37,448 - __main__ - INFO - Client disconnected: W8bDoeZdg1Rcn2IbAABF
+2025-06-24 00:56:37,450 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /socket.io/?EIO=4&transport=websocket&sid=RGWOfEnygSXvgbZCAABE HTTP/1.1" 200 -
+2025-06-24 00:56:37,530 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:56:37,590 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:56:37,637 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:56:37,638 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:56:37,638 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:56:37,642 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:56:37,730 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /socket.io/?EIO=4&transport=polling&t=PUWIvOf HTTP/1.1" 200 -
+2025-06-24 00:56:37,738 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:56:37,742 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:56:37,743 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:56:37,793 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "GET /socket.io/?EIO=4&transport=polling&t=PUWIvPg&sid=azvfPHWKL6kvippHAABG HTTP/1.1" 200 -
+2025-06-24 00:56:37,794 - __main__ - INFO - Client connected: 5Cr8tyhaxEaLPCdBAABH
+2025-06-24 00:56:37,796 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:37] "POST /socket.io/?EIO=4&transport=polling&t=PUWIvPe&sid=azvfPHWKL6kvippHAABG HTTP/1.1" 200 -
+2025-06-24 00:56:38,026 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:38] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:56:38,042 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:38] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:56:38,049 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:56:38] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:57:31,224 - __main__ - INFO - Client disconnected: 5Cr8tyhaxEaLPCdBAABH
+2025-06-24 00:57:31,226 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /socket.io/?EIO=4&transport=websocket&sid=azvfPHWKL6kvippHAABG HTTP/1.1" 200 -
+2025-06-24 00:57:31,309 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:57:31,387 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:57:31,438 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:57:31,444 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:57:31,445 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:57:31,446 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:57:31,538 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /socket.io/?EIO=4&transport=polling&t=PUWJ6XM HTTP/1.1" 200 -
+2025-06-24 00:57:31,546 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:57:31,551 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:57:31,552 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:57:31,614 - __main__ - INFO - Client connected: jkQZGdFGYB7LOKBfAABJ
+2025-06-24 00:57:31,616 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "POST /socket.io/?EIO=4&transport=polling&t=PUWJ6YX&sid=E-jYNYtH7wVDvdKlAABI HTTP/1.1" 200 -
+2025-06-24 00:57:31,618 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /socket.io/?EIO=4&transport=polling&t=PUWJ6YZ&sid=E-jYNYtH7wVDvdKlAABI HTTP/1.1" 200 -
+2025-06-24 00:57:31,857 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /socket.io/?EIO=4&transport=polling&t=PUWJ6cL&sid=E-jYNYtH7wVDvdKlAABI HTTP/1.1" 200 -
+2025-06-24 00:57:31,924 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:57:31,926 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:57:31,938 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:57:31] "GET /api/connection HTTP/1.1" 200 -

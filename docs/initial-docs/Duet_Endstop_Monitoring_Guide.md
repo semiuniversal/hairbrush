@@ -67,8 +67,15 @@ print(r.text.strip())
   Endstops - X: not stopped, Y: not stopped, Z: at max stop
   ```
 
+- With Z probe information (RepRapFirmware may include this even if disabled):
+  ```
+  Endstops - X: not stopped, Y: not stopped, Z: not stopped, Z probe: at min stop
+  ```
+
 ## 🧠 Notes
 
 - `M119` reflects **configured endstops only**; if an axis has no endstop defined, it will report `no endstop`.
 - Inverted logic requires normally closed switches or pull-up resistors.
 - You can safely poll `M119` during homing or troubleshooting.
+- RepRapFirmware may include **Z probe information** in the response even if not explicitly configured in your setup.
+- The H.Airbrush controller's web interface handles Z probe information automatically, focusing only on the X, Y, and Z endstop statuses.

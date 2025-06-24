@@ -10,7 +10,7 @@ import json
 import logging
 import requests
 import urllib.parse
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Union, Any, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +112,87 @@ class DuetClient:
         except requests.RequestException as e:
             logger.error(f"Failed to connect to H.Airbrush Plotter: {e}")
             logger.exception("Connection error details:")
+            self.connected = False
+            return False
+    
+    def test_connection(self) -> Tuple[bool, str]:
+        """
+        Test connection to the Duet board without establishing a session.
+        
+        Returns:
+            tuple: (success, message)
+        """
+        try:
+            logger.info(f"Testing connection to Duet at {self.host}:{self.http_port}")
+            
+            # Create a temporary session for testing
+            test_session = requests.Session()
+            
+            # Try to connect
+            connect_url = f"http://{self.host}:{self.http_port}/rr_connect?password={self.password}"
+            response = test_session.get(connect_url, timeout=self.connect_timeout)
+            
+            # Check response status
+            if response.status_code != 200:
+                return False, f"Connection failed with status code: {response.status_code}"
+            
+            # Try to parse response as JSON
+            try:
+                response_json = response.json()
+                
+                # Check for error in response
+                if response_json.get("err", 0) != 0:
+                    return False, f"Connection error: {response.text}"
+                
+                # Get board info if available
+                board_info = ""
+                if "boardType" in response_json:
+                    board_info += f"Board: {response_json['boardType']}, "
+                if "apiLevel" in response_json:
+                    board_info += f"API: {response_json['apiLevel']}"
+                
+                # Try to get status as well
+                try:
+                    status_url = f"http://{self.host}:{self.http_port}/rr_status?type=1"
+                    status_response = test_session.get(status_url, timeout=self.connect_timeout)
+                    status_response.raise_for_status()
+                    
+                    # Successfully got status
+                    return True, f"Connected successfully. {board_info}"
+                    
+                except requests.RequestException:
+                    # Status request failed but connect succeeded
+                    return True, f"Connected, but status request failed. {board_info}"
+                
+            except ValueError:
+                # Not JSON or invalid JSON
+                if "err" in response.text.lower():
+                    return False, f"Connection error: {response.text}"
+                else:
+                    # Non-JSON response but might still be valid
+                    return True, "Connected, but received unexpected response format"
+            
+        except requests.RequestException as e:
+            logger.error(f"Connection test failed: {e}")
+            return False, f"Connection failed: {str(e)}"
+    
+    def is_connected(self) -> bool:
+        """
+        Check if the client is connected to the Duet board.
+        
+        Returns:
+            bool: True if connected, False otherwise
+        """
+        if not self.connected:
+            return False
+            
+        # Try to get status to verify connection is still active
+        try:
+            status_url = f"http://{self.host}:{self.http_port}/rr_status?type=1"
+            response = self.session.get(status_url, timeout=self.connect_timeout)
+            response.raise_for_status()
+            return True
+        except:
             self.connected = False
             return False
     

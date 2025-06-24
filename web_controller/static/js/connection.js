@@ -54,11 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function loadConnectionStatus() {
     fetch('/api/connection')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.connected) {
-                currentIp = data.ip;
-                deviceIpDisplay.textContent = data.ip;
+                currentIp = data.host || data.ip; // Handle both host and ip fields
+                deviceIpDisplay.textContent = currentIp;
                 updateConnectionState(CONNECTION_STATES.CONNECTED);
             } else {
                 updateConnectionState(CONNECTION_STATES.DISCONNECTED);
@@ -124,7 +129,7 @@ function connectToDevice(ip, password = '') {
     }, CONNECTION_TIMEOUT);
     
     // Emit connection request to server
-    socket.emit('connect_device', { ip: ip, password: password }, (response) => {
+    socket.emit('connect_device', { host: ip, port: 80, password: password }, (response) => {
         // Clear timeout
         clearTimeout(connectionTimeoutId);
         
@@ -237,7 +242,12 @@ function showConnectionError(message) {
  */
 function loadIpHistory() {
     fetch('/api/connection/history')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             ipAddresses = data || [];
             updateIpHistoryDropdown();
@@ -256,25 +266,18 @@ function updateIpHistoryDropdown() {
     // Clear existing items
     ipHistory.innerHTML = '';
     
-    // Add IP addresses
-    if (ipAddresses.length > 0) {
-        ipAddresses.forEach(ip => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.className = 'dropdown-item';
-            a.href = '#';
-            a.textContent = ip;
-            li.appendChild(a);
-            ipHistory.appendChild(li);
-        });
+    if (ipAddresses.length === 0) {
+        // No history
+        const noHistory = document.createElement('li');
+        noHistory.innerHTML = '<span class="dropdown-item text-muted">No history</span>';
+        ipHistory.appendChild(noHistory);
     } else {
-        // Show empty message
-        const li = document.createElement('li');
-        const span = document.createElement('span');
-        span.className = 'dropdown-item-text text-muted';
-        span.textContent = 'No history';
-        li.appendChild(span);
-        ipHistory.appendChild(li);
+        // Add history items
+        ipAddresses.forEach(ip => {
+            const item = document.createElement('li');
+            item.innerHTML = `<a class="dropdown-item" href="#">${ip}</a>`;
+            ipHistory.appendChild(item);
+        });
     }
 }
 

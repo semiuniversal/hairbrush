@@ -6,126 +6,267 @@
 - **Hardware Control**: Duet 2 WiFi board running RepRapFirmware
 
 ## Development Environment
-- **Operating System**: WSL2 on Windows 10/11
-- **Python Version**: 3.8+
-- **Package Management**: uv with pyproject.toml
-- **IDE**: Visual Studio Code with WSL extension
+- **Operating System**: WSL2 (Ubuntu) on Windows
+- **Python Environment**: uv for virtual environment management
+- **Dependency Management**: pyproject.toml
+- **Web Server**: Flask with Flask-SocketIO
+- **Frontend**: HTML, CSS, JavaScript, Bootstrap 5
+- **Visualization**: HTML5 Canvas
+- **Communication**: HTTP API, WebSocket
+- **Configuration**: YAML with PyYAML
 
 ## Key Technologies
 
-### Inkscape Extension
-- **Language**: Python 3.8+
-- **Framework**: Inkscape Extension API
-- **Dependencies**: 
-  - lxml for SVG parsing
-  - numpy for mathematical operations
-  - inkex for Inkscape extension framework
+### Python Libraries
+- **Flask**: Web framework for the controller application
+- **Flask-SocketIO**: Real-time WebSocket communication
+- **PyYAML**: YAML configuration file handling
+- **Inkscape Extension API**: For the Inkscape plugin
 
-### Web Controller
-- **Language**: Python 3.8+
-- **Framework**: Flask with Flask-SocketIO
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap
-- **Dependencies**:
-  - Flask for web server
-  - Flask-SocketIO for WebSocket support
-  - requests for HTTP API calls
-  - socket for Telnet communication
+### JavaScript Libraries
+- **Bootstrap 5**: UI framework for responsive design
+- **Socket.IO Client**: Real-time communication with server
+- **HTML5 Canvas API**: For machine visualization
+- **Fetch API**: For HTTP requests to server endpoints
 
-### Duet 2 WiFi Communication
-- **Protocols**:
-  - Telnet (port 23) for G-code streaming
-  - HTTP (port 80) for status monitoring
-  - WebSocket for real-time updates
-- **G-code Dialect**: RepRap Firmware compatible
+### Communication Protocols
+- **HTTP API**: For Duet board communication
+- **WebSocket**: For real-time updates between server and browser
+- **G-code**: For machine control commands
 
-## Duet 2 WiFi Integration Details
+## Duet 2 WiFi Communication
 
-### Communication Constraints
-- Duet **does not push events** - no asynchronous signals when motion completes
-- Telnet communication is **stateless** and **line-buffered**
-- Must **poll or wait** explicitly using `M400` or `M114` to monitor status
+### HTTP API Endpoints
+- `/rr_gcode`: Send G-code commands
+- `/rr_reply`: Get command responses
+- `/rr_status`: Get machine status
+- `/rr_upload`: Upload files
 
-### Critical G-code Commands
-- **M400**: Wait for all buffered moves to complete
-  - Essential for synchronizing motion completion
-  - Duet responds only after all motion has physically finished
-- **M114**: Request current position
-  - Used for polling machine position for UI updates
-  - Returns coordinates in format `X:200.0 Y:200.0 Z:2.0`
-
-### Recommended Protocol Flow
-1. Open Telnet connection to Duet on port 23
-2. Send G-code commands
-3. Send M400 after motion commands to wait for completion
-4. Read responses until "ok" or newline is returned
-5. Proceed with next command set only after confirmation
-
-### Synchronization Strategy (IMPLEMENTED)
-- **Hybrid Approach**:
-  - Insert `M400` after each complete stroke or major motion block in G-code generator
-  - Recognize and act on `M400` commands as blocking synchronization points in controller
-  - Inject additional `M400` when needed for live-streamed operations
-
-### Implementation Pattern (IMPLEMENTED)
+### HTTP API Usage
 ```python
-# In duet_client.py
-def send_command_and_wait(self, command: str) -> Dict[str, Any]:
-    """Send command and wait for completion with M400"""
-    result = self.send_command(command)
-    if result["status"] == "error":
-        return result
+# Send G-code command
+encoded_gcode = urllib.parse.quote(gcode)
+url = f"http://{host}:{port}/rr_gcode?gcode={encoded_gcode}"
+response = session.get(url)
+
+# Get response
+reply_response = session.get(f"http://{host}:{port}/rr_reply")
+reply_text = reply_response.text.strip()
+```
+
+### WebSocket Communication
+```javascript
+// Client-side
+const socket = io();
+socket.on('connect', () => {
+    console.log('Connected to server');
+});
+socket.on('status_update', (data) => {
+    updateStatus(data);
+});
+```
+
+```python
+# Server-side
+@socketio.on('command')
+def handle_command(data):
+    command = data.get('command')
+    result = duet_client.send_command(command)
+    return {'status': 'success', 'result': result}
+```
+
+## Configuration Management
+
+### YAML Configuration
+```yaml
+# config.yaml
+duet:
+  host: 192.168.1.100
+  port: 80
+  
+brushes:
+  a:
+    offset_x: 0
+    offset_y: 0
+  b:
+    offset_x: 25
+    offset_y: 0
+```
+
+### Configuration Access
+```python
+# Load configuration
+with open('config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+
+# Access configuration
+host = config['duet']['host']
+port = config['duet']['port']
+brush_b_offset_x = config['brushes']['b']['offset_x']
+```
+
+### Settings API
+```python
+@app.route('/api/settings', methods=['GET'])
+def get_settings():
+    """Get all settings."""
+    return jsonify(config.config)
+
+@app.route('/api/settings', methods=['POST'])
+def update_settings():
+    """Update settings."""
+    settings = request.json
     
-    # Send M400 to wait for motion completion
-    return self.wait_for_motion_complete()
-
-def wait_for_motion_complete(self) -> Dict[str, Any]:
-    """Send M400 to wait for all buffered moves to complete"""
-    return self.send_command("M400")
-
-def get_position(self) -> Dict[str, Any]:
-    """Get current position using M114"""
-    result = self.send_command("M114")
-    # Parse position response
-    # ...
-
-# In machine_control.py
-def process_gcode_file(self, filename: str) -> Dict[str, Any]:
-    """Process G-code with M400 synchronization awareness"""
-    # Read file line by line
-    for line in lines:
-        command = line.split(';')[0].strip()
-        
-        if command.upper().startswith("M400"):
-            # Wait for all previous commands to complete
-            result = self.duet_client.wait_for_motion_complete()
+    # Update settings
+    for section, values in settings.items():
+        if isinstance(values, dict):
+            # Handle nested sections
+            for key, value in values.items():
+                config.set(f"{section}.{key}", value)
         else:
-            # Send command without waiting
-            result = self.duet_client.send_command(command)
+            # Handle top-level settings
+            config.set(section, values)
+    
+    # Save configuration to file
+    config.save()
+    
+    return jsonify({"success": True, "config": config.config})
 ```
 
-### G-code Generation with Synchronization (IMPLEMENTED)
-```python
-# In gcode_generator.py (Inkscape Extension)
-def add_path(self, path_data, brush, z_height, feedrate, curve_resolution=20, paint_flow=1.0):
-    # ...
+## Visualization
+
+### Canvas-based Visualization
+```javascript
+class MachineVisualization {
+    constructor(containerId, config = {}) {
+        // Initialize canvas
+        this.canvas = document.createElement('canvas');
+        this.container = document.getElementById(containerId);
+        this.container.appendChild(this.canvas);
+        
+        // Set up high-DPI support
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.scale(dpr, dpr);
+        
+        // Calculate scaling to fit paper in visualization
+        this.scale = Math.min(scaleX, scaleY);
+        
+        // Set origin to center of paper
+        this.originX = this.paperLeft + (this.paperWidthPx / 2);
+        this.originY = this.paperTop + (this.paperHeightPx / 2);
+    }
     
-    # STEP 1: Raise Z to travel height (G0 for rapid movement)
-    self.output_lines.append("G0 Z{:.2f} F3000".format(travel_z))
-    self.output_lines.append("M400 ; Wait for Z movement to complete")
+    // Draw grid with scale indicators
+    drawGrid() {
+        const ctx = this.ctx;
+        
+        // Draw major grid lines with labels
+        ctx.strokeStyle = '#888';
+        ctx.fillStyle = '#666';
+        ctx.font = '10px Arial';
+        
+        // Draw X grid lines and labels
+        for (let x = -100; x <= 100; x += 20) {
+            const xPos = this.originX + (x * this.scale);
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(xPos, 0);
+            ctx.lineTo(xPos, this.canvas.height);
+            ctx.stroke();
+            
+            // Draw label
+            ctx.fillText(`${x}`, xPos + 2, this.originY - 2);
+        }
+        
+        // Draw Y grid lines and labels
+        for (let y = -100; y <= 100; y += 20) {
+            const yPos = this.originY - (y * this.scale);
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(0, yPos);
+            ctx.lineTo(this.canvas.width, yPos);
+            ctx.stroke();
+            
+            // Draw label
+            ctx.fillText(`${y}`, this.originX + 2, yPos - 2);
+        }
+    }
     
-    # STEP 2: Move XY to start point with Z raised
-    self.output_lines.append("G0 X{:.2f} Y{:.2f} F3000".format(x + offset_x, y + offset_y))
-    self.output_lines.append("M400 ; Wait for XY movement to complete")
-    
-    # STEP 3: Lower Z to drawing height
-    self.output_lines.append("G1 Z{:.2f} F1500".format(transformed_z))
-    self.output_lines.append("M400 ; Wait for Z movement to complete")
-    
-    # ... Drawing commands ...
-    
-    # Add M400 after completing the drawing path
-    self.output_lines.append("M400 ; Wait for drawing to complete")
+    // Draw brush position
+    drawBrush() {
+        const ctx = this.ctx;
+        const x = this.originX + (this.position.X * this.scale);
+        const y = this.originY - (this.position.Y * this.scale);
+        
+        // Draw brush position
+        ctx.fillStyle = 'red';
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw brush B position (with offset)
+        if (this.config.brushBOffsetX || this.config.brushBOffsetY) {
+            const offsetX = this.position.X + this.config.brushBOffsetX;
+            const offsetY = this.position.Y + this.config.brushBOffsetY;
+            const offsetXPx = this.originX + (offsetX * this.scale);
+            const offsetYPx = this.originY - (offsetY * this.scale);
+            
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(offsetXPx, offsetYPx, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+}
 ```
+
+## G-code Command Structure
+
+### Basic G-code Commands
+- **G0/G1**: Linear move
+- **G28**: Home axes
+- **M400**: Wait for moves to complete
+- **M114**: Get current position
+- **M119**: Get endstop status
+- **M17**: Enable motors
+- **M18/M84**: Disable motors
+
+### Custom G-code Commands
+- **M280 P0 S0**: Brush A up
+- **M280 P0 S45**: Brush A down
+- **M280 P1 S0**: Brush B up
+- **M280 P1 S45**: Brush B down
+
+### Example G-code Sequence
+```
+G28 ; Home all axes
+G0 X0 Y0 Z5 ; Move to start position
+M400 ; Wait for move to complete
+M280 P0 S45 ; Lower brush A
+G1 X10 Y10 F1000 ; Draw line
+M400 ; Wait for move to complete
+M280 P0 S0 ; Raise brush A
+```
+
+## Development Requirements
+
+### Critical Requirements
+- All command-line operations MUST be executed in WSL, NOT in Windows
+- Use uv for virtual environment management
+- Use pyproject.toml for dependency management
+- Follow minimalist approach to dependencies
+
+### Best Practices
+- Implement proper error handling for hardware communication
+- Use WebSocket for real-time updates
+- Implement proper synchronization with M400 commands
+- Follow RESTful API design for HTTP endpoints
+- Use modular architecture with clear separation of concerns
 
 ## Hardware Specifications
 

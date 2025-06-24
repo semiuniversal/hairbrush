@@ -1,0 +1,512 @@
+2025-06-24 00:58:40,186 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 00:58:40,213 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 00:58:40,216 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 00:58:40,217 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 00:58:40,235 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:7000
+ * Running on http://172.30.59.103:7000
+2025-06-24 00:58:40,246 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 00:58:40,247 - werkzeug - INFO -  * Restarting with stat
+2025-06-24 00:58:42,850 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 00:58:42,900 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 00:58:42,907 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 00:58:42,909 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 00:58:42,917 - werkzeug - WARNING -  * Debugger is active!
+2025-06-24 00:58:42,919 - werkzeug - INFO -  * Debugger PIN: 895-245-613
+2025-06-24 00:58:52,424 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:58:52,468 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:58:52,490 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 00:58:52,490 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 00:58:52,491 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 00:58:52,491 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 00:58:52,517 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /socket.io/?EIO=4&transport=polling&t=PUWJQJX HTTP/1.1" 200 -
+2025-06-24 00:58:52,520 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:58:52,521 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:58:52,522 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:58:52,534 - __main__ - INFO - Client connected: ysh_fCX7ZApnaWekAAAB
+2025-06-24 00:58:52,538 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "POST /socket.io/?EIO=4&transport=polling&t=PUWJQJo&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:58:52,538 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /socket.io/?EIO=4&transport=polling&t=PUWJQJp&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:58:52,578 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "POST /socket.io/?EIO=4&transport=polling&t=PUWJQKT&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:58:52,578 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /socket.io/?EIO=4&transport=polling&t=PUWJQKU&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:58:52,579 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:58:52,703 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "POST /socket.io/?EIO=4&transport=polling&t=PUWJQMQ&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:58:52,705 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /socket.io/?EIO=4&transport=polling&t=PUWJQMS&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:58:52,723 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 00:58:52,723 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:58:52] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 00:59:07,341 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-24 00:59:07,343 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-24 00:59:07,345 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 00:59:07,370 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 00:59:07,372 - duet_client - INFO - API level: 1
+2025-06-24 00:59:07,394 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 00:59:07,396 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-24 00:59:07,405 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 00:59:07,409 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:07] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:59:28,767 - __main__ - INFO - Client disconnected: ysh_fCX7ZApnaWekAAAB
+2025-06-24 00:59:28,768 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "GET /socket.io/?EIO=4&transport=websocket&sid=xSn9eimvuraUuvhVAAAA HTTP/1.1" 200 -
+2025-06-24 00:59:28,849 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "GET /control HTTP/1.1" 200 -
+2025-06-24 00:59:28,966 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 00:59:28,987 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-24 00:59:28,988 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-24 00:59:28,988 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-24 00:59:28,990 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:28] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-24 00:59:29,070 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 00:59:29,070 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "GET /socket.io/?EIO=4&transport=polling&t=PUWJZDj HTTP/1.1" 200 -
+2025-06-24 00:59:29,074 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 00:59:29,082 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 00:59:29,214 - __main__ - INFO - Client connected: cezEALSX2n9QZP0kAAAD
+2025-06-24 00:59:29,215 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "POST /socket.io/?EIO=4&transport=polling&t=PUWJZG2&sid=tFKq0vzxpbBv_6BuAAAC HTTP/1.1" 200 -
+2025-06-24 00:59:29,225 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "GET /socket.io/?EIO=4&transport=polling&t=PUWJZG3&sid=tFKq0vzxpbBv_6BuAAAC HTTP/1.1" 200 -
+2025-06-24 00:59:29,261 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-24 00:59:29,346 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 00:59:29] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:01:22,385 - werkzeug - INFO -  * Detected change in '/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/routes.py', reloading
+2025-06-24 01:01:22,418 - werkzeug - INFO -  * Restarting with stat
+2025-06-24 01:01:25,596 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:01:25,621 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 01:01:25,627 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 01:01:25,628 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 01:01:25,634 - werkzeug - WARNING -  * Debugger is active!
+2025-06-24 01:01:25,635 - werkzeug - INFO -  * Debugger PIN: 895-245-613
+2025-06-24 01:01:26,454 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:26] "GET /socket.io/?EIO=4&transport=polling&t=PUWJ_9T HTTP/1.1" 200 -
+2025-06-24 01:01:26,511 - __main__ - INFO - Client connected: Fh9zTXCkcaj1PLP8AAAB
+2025-06-24 01:01:26,512 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:26] "POST /socket.io/?EIO=4&transport=polling&t=PUWJ_uu&sid=azf03a4EDMs4sM-HAAAA HTTP/1.1" 200 -
+2025-06-24 01:01:26,513 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:26] "GET /socket.io/?EIO=4&transport=polling&t=PUWJ_uv&sid=azf03a4EDMs4sM-HAAAA HTTP/1.1" 200 -
+2025-06-24 01:01:26,622 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:01:52,384 - werkzeug - INFO -  * Detected change in '/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/app.py', reloading
+2025-06-24 01:01:52,418 - werkzeug - INFO -  * Restarting with stat
+2025-06-24 01:01:55,884 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:01:55,924 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 01:01:55,930 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 01:01:55,932 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 01:01:55,940 - werkzeug - WARNING -  * Debugger is active!
+2025-06-24 01:01:55,942 - werkzeug - INFO -  * Debugger PIN: 895-245-613
+2025-06-24 01:01:56,980 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:56] "GET /socket.io/?EIO=4&transport=polling&t=PUWK6bd HTTP/1.1" 200 -
+2025-06-24 01:01:57,043 - __main__ - INFO - Client connected: lPhJxyxk9w43zO_uAAAB
+2025-06-24 01:01:57,044 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:57] "POST /socket.io/?EIO=4&transport=polling&t=PUWK7Ls&sid=RDKaSx6vhaq_s-LFAAAA HTTP/1.1" 200 -
+2025-06-24 01:01:57,045 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:57] "GET /socket.io/?EIO=4&transport=polling&t=PUWK7Lt&sid=RDKaSx6vhaq_s-LFAAAA HTTP/1.1" 200 -
+2025-06-24 01:01:57,150 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:01:57] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:02:27,665 - werkzeug - INFO -  * Detected change in '/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/utils/logger.py', reloading
+2025-06-24 01:02:27,703 - werkzeug - INFO -  * Restarting with stat
+2025-06-24 01:02:30,788 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:02:30,816 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 01:02:30,820 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 01:02:30,821 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 01:02:30,827 - werkzeug - WARNING -  * Debugger is active!
+2025-06-24 01:02:30,828 - werkzeug - INFO -  * Debugger PIN: 895-245-613
+2025-06-24 01:02:32,285 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:02:32] "GET /socket.io/?EIO=4&transport=polling&t=PUWKF5E HTTP/1.1" 200 -
+2025-06-24 01:02:32,343 - __main__ - INFO - Client connected: lN9Htq981tlAJyFIAAAB
+2025-06-24 01:02:32,345 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:02:32] "POST /socket.io/?EIO=4&transport=polling&t=PUWKFzW&sid=m865D7aAhc8BCDQzAAAA HTTP/1.1" 200 -
+2025-06-24 01:02:32,349 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:02:32] "GET /socket.io/?EIO=4&transport=polling&t=PUWKFzX&sid=m865D7aAhc8BCDQzAAAA HTTP/1.1" 200 -
+2025-06-24 01:02:32,450 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:02:32] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:11:15,299 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:11:15,326 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 01:11:15,329 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 01:11:15,330 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 01:11:15,345 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:7000
+ * Running on http://172.30.59.103:7000
+2025-06-24 01:11:15,346 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 01:11:15,346 - werkzeug - INFO -  * Restarting with stat
+2025-06-24 01:11:18,024 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:11:18,056 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 01:11:18,060 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 01:11:18,061 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 01:11:18,068 - werkzeug - WARNING -  * Debugger is active!
+2025-06-24 01:11:18,069 - werkzeug - INFO -  * Debugger PIN: 895-245-613
+2025-06-24 01:11:20,612 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "GET /control HTTP/1.1" 200 -
+2025-06-24 01:11:20,717 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 01:11:20,718 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 01:11:20,719 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 01:11:20,720 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 01:11:20,720 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "GET /static/js/command_history_direct_fix.js HTTP/1.1" 200 -
+2025-06-24 01:11:20,730 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:20] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 01:11:21,086 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /socket.io/?EIO=4&transport=polling&t=PUWMH34 HTTP/1.1" 200 -
+2025-06-24 01:11:21,090 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 01:11:21,090 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:11:21,091 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:11:21,146 - __main__ - INFO - Client connected: yNFKO30Ylex4IXN2AAAB
+2025-06-24 01:11:21,148 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "POST /socket.io/?EIO=4&transport=polling&t=PUWMH45&sid=tFD2PNHnf3c90r_NAAAA HTTP/1.1" 200 -
+2025-06-24 01:11:21,149 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /socket.io/?EIO=4&transport=polling&t=PUWMH46&sid=tFD2PNHnf3c90r_NAAAA HTTP/1.1" 200 -
+2025-06-24 01:11:21,278 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:11:21,282 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /socket.io/?EIO=4&transport=polling&t=PUWMH68&sid=tFD2PNHnf3c90r_NAAAA HTTP/1.1" 200 -
+2025-06-24 01:11:21,282 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "POST /socket.io/?EIO=4&transport=polling&t=PUWMH67&sid=tFD2PNHnf3c90r_NAAAA HTTP/1.1" 200 -
+2025-06-24 01:11:21,311 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 01:11:21,311 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:21] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 01:11:33,908 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-24 01:11:33,910 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-24 01:11:33,911 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 01:11:33,935 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 01:11:33,937 - duet_client - INFO - API level: 1
+2025-06-24 01:11:33,958 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 01:11:33,960 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-24 01:11:33,975 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:11:33,990 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:11:33] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:18:33,656 - __main__ - INFO - Client disconnected: yNFKO30Ylex4IXN2AAAB
+2025-06-24 01:18:33,658 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /socket.io/?EIO=4&transport=websocket&sid=tFD2PNHnf3c90r_NAAAA HTTP/1.1" 200 -
+2025-06-24 01:18:33,870 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /control HTTP/1.1" 200 -
+2025-06-24 01:18:33,913 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 01:18:33,966 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 01:18:33,967 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 01:18:33,968 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 01:18:33,970 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 01:18:33,972 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:33] "GET /static/js/command_history_direct_fix.js HTTP/1.1" 200 -
+2025-06-24 01:18:34,070 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:18:34,071 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:18:34,071 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /socket.io/?EIO=4&transport=polling&t=PUWNwmC HTTP/1.1" 200 -
+2025-06-24 01:18:34,074 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 01:18:34,134 - __main__ - INFO - Client connected: uhmwhKN-5JUu_ODJAAAD
+2025-06-24 01:18:34,136 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "POST /socket.io/?EIO=4&transport=polling&t=PUWNwnU&sid=XbqNBEq1tCRfOnp4AAAC HTTP/1.1" 200 -
+2025-06-24 01:18:34,141 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /socket.io/?EIO=4&transport=polling&t=PUWNwnV&sid=XbqNBEq1tCRfOnp4AAAC HTTP/1.1" 200 -
+2025-06-24 01:18:34,242 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:18:34,391 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 01:18:34,421 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:18:34] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 01:44:57,267 - duet_client - INFO - Disconnected from H.Airbrush Plotter at 192.168.86.43
+2025-06-24 01:45:01,999 - __main__ - INFO - Received connection request for device at 192.168.86.43
+2025-06-24 01:45:02,001 - __main__ - INFO - Attempting to connect to device at 192.168.86.43
+2025-06-24 01:45:02,003 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 01:45:02,025 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 01:45:02,027 - duet_client - INFO - API level: 1
+2025-06-24 01:45:02,049 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 01:45:02,052 - __main__ - INFO - Successfully connected to device at 192.168.86.43
+2025-06-24 01:45:02,064 - config - INFO - Saved configuration to /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 01:45:02,126 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:45:02] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:51:15,371 - __main__ - INFO - Client disconnected: uhmwhKN-5JUu_ODJAAAD
+2025-06-24 01:51:15,372 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /socket.io/?EIO=4&transport=websocket&sid=XbqNBEq1tCRfOnp4AAAC HTTP/1.1" 200 -
+2025-06-24 01:51:15,402 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /settings HTTP/1.1" 200 -
+2025-06-24 01:51:15,458 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-24 01:51:15,507 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-24 01:51:15,510 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-24 01:51:15,594 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /socket.io/?EIO=4&transport=polling&t=PUWVPfH HTTP/1.1" 200 -
+2025-06-24 01:51:15,602 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:51:15,602 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:51:15,682 - __main__ - INFO - Client connected: GzAYMUI1mySx7kRqAAAF
+2025-06-24 01:51:15,683 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "POST /socket.io/?EIO=4&transport=polling&t=PUWVPgj&sid=ZCbwpWthzrVza9-gAAAE HTTP/1.1" 200 -
+2025-06-24 01:51:15,686 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /socket.io/?EIO=4&transport=polling&t=PUWVPgk&sid=ZCbwpWthzrVza9-gAAAE HTTP/1.1" 200 -
+2025-06-24 01:51:15,778 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 01:51:15,858 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:51:15,860 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "GET /socket.io/?EIO=4&transport=polling&t=PUWVPj1.0&sid=ZCbwpWthzrVza9-gAAAE HTTP/1.1" 200 -
+2025-06-24 01:51:15,860 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "POST /socket.io/?EIO=4&transport=polling&t=PUWVPj1&sid=ZCbwpWthzrVza9-gAAAE HTTP/1.1" 200 -
+2025-06-24 01:51:15,871 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:51:15] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-24 01:52:22,574 - __main__ - INFO - Client disconnected: GzAYMUI1mySx7kRqAAAF
+2025-06-24 01:52:22,575 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /socket.io/?EIO=4&transport=websocket&sid=ZCbwpWthzrVza9-gAAAE HTTP/1.1" 200 -
+2025-06-24 01:52:22,592 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /control HTTP/1.1" 200 -
+2025-06-24 01:52:22,638 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 01:52:22,696 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-24 01:52:22,702 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-24 01:52:22,703 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-24 01:52:22,720 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[36mGET /static/js/command_history_direct_fix.js HTTP/1.1[0m" 304 -
+2025-06-24 01:52:22,723 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-24 01:52:22,790 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /socket.io/?EIO=4&transport=polling&t=PUWVg37 HTTP/1.1" 200 -
+2025-06-24 01:52:22,794 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:52:22,794 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:52:22,798 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 01:52:22,931 - __main__ - INFO - Client connected: P6FFn5cUliMicEGyAAAH
+2025-06-24 01:52:22,932 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "POST /socket.io/?EIO=4&transport=polling&t=PUWVg5O&sid=7Y6gdkdxxK7kuLdPAAAG HTTP/1.1" 200 -
+2025-06-24 01:52:22,933 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "GET /socket.io/?EIO=4&transport=polling&t=PUWVg5P&sid=7Y6gdkdxxK7kuLdPAAAG HTTP/1.1" 200 -
+2025-06-24 01:52:22,980 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:22] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-24 01:52:23,050 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:52:23] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:56:24,468 - __main__ - INFO - Client disconnected: P6FFn5cUliMicEGyAAAH
+2025-06-24 01:56:24,470 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:24] "GET /socket.io/?EIO=4&transport=websocket&sid=7Y6gdkdxxK7kuLdPAAAG HTTP/1.1" 200 -
+2025-06-24 01:56:26,182 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /control HTTP/1.1" 200 -
+2025-06-24 01:56:26,219 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 01:56:26,284 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 01:56:26,284 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 01:56:26,285 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 01:56:26,285 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 01:56:26,285 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/js/command_history_direct_fix.js HTTP/1.1" 200 -
+2025-06-24 01:56:26,394 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /socket.io/?EIO=4&transport=polling&t=PUWWbXQ HTTP/1.1" 200 -
+2025-06-24 01:56:26,418 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:56:26,419 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 01:56:26,422 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 01:56:26,462 - __main__ - INFO - Client connected: 9o0w3cljFXBd0LB_AAAJ
+2025-06-24 01:56:26,464 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "POST /socket.io/?EIO=4&transport=polling&t=PUWWbYa&sid=HNU7k1Pfy541rnqcAAAI HTTP/1.1" 200 -
+2025-06-24 01:56:26,464 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /socket.io/?EIO=4&transport=polling&t=PUWWbYb&sid=HNU7k1Pfy541rnqcAAAI HTTP/1.1" 200 -
+2025-06-24 01:56:26,502 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 01:56:26,654 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 01:56:26,655 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "POST /socket.io/?EIO=4&transport=polling&t=PUWWbba&sid=HNU7k1Pfy541rnqcAAAI HTTP/1.1" 200 -
+2025-06-24 01:56:26,658 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /socket.io/?EIO=4&transport=polling&t=PUWWbbb&sid=HNU7k1Pfy541rnqcAAAI HTTP/1.1" 200 -
+2025-06-24 01:56:26,690 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 01:56:26,691 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 01:56:26] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 02:00:49,874 - __main__ - INFO - Client disconnected: 9o0w3cljFXBd0LB_AAAJ
+2025-06-24 02:00:49,876 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:49] "GET /socket.io/?EIO=4&transport=websocket&sid=HNU7k1Pfy541rnqcAAAI HTTP/1.1" 200 -
+2025-06-24 02:00:49,968 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:49] "GET /control HTTP/1.1" 200 -
+2025-06-24 02:00:50,011 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 02:00:50,063 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 02:00:50,065 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 02:00:50,066 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/js/command_history_direct_fix.js HTTP/1.1" 200 -
+2025-06-24 02:00:50,066 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 02:00:50,067 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/js/canvas_visualization.js HTTP/1.1" 200 -
+2025-06-24 02:00:50,074 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 02:00:50,138 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /socket.io/?EIO=4&transport=polling&t=PUWXbwX HTTP/1.1" 200 -
+2025-06-24 02:00:50,150 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 02:00:50,154 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 02:00:50,159 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 02:00:50,160 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 02:00:50,199 - __main__ - INFO - Client connected: KOvKdJ5SQwbMmEj2AAAL
+2025-06-24 02:00:50,200 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "POST /socket.io/?EIO=4&transport=polling&t=PUWXbxW&sid=vrOlrgdmJCMNE46VAAAK HTTP/1.1" 200 -
+2025-06-24 02:00:50,200 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /socket.io/?EIO=4&transport=polling&t=PUWXbxX&sid=vrOlrgdmJCMNE46VAAAK HTTP/1.1" 200 -
+2025-06-24 02:00:50,331 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "POST /socket.io/?EIO=4&transport=polling&t=PUWXbza&sid=vrOlrgdmJCMNE46VAAAK HTTP/1.1" 200 -
+2025-06-24 02:00:50,334 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /socket.io/?EIO=4&transport=polling&t=PUWXbzc&sid=vrOlrgdmJCMNE46VAAAK HTTP/1.1" 200 -
+2025-06-24 02:00:50,334 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 02:00:50,362 - duet_client - ERROR - Error getting status: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+2025-06-24 02:00:50,377 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 02:00:50,391 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:00:50] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 02:16:16,389 - werkzeug - INFO -  * Detected change in '/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/app.py', reloading
+2025-06-24 02:16:16,432 - werkzeug - INFO -  * Restarting with stat
+2025-06-24 02:16:20,695 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 02:16:20,729 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 02:16:20,732 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 02:16:20,734 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 02:16:20,746 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:16:20] "GET /socket.io/?EIO=4&transport=polling&t=PUWb8PA HTTP/1.1" 200 -
+2025-06-24 02:16:20,806 - __main__ - INFO - Client connected: XimbqbH231971h-5AAAB
+2025-06-24 02:16:20,813 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:16:20] "GET /socket.io/?EIO=4&transport=polling&t=PUWb98L&sid=4kpVtvp3cHHbPMrMAAAA HTTP/1.1" 200 -
+2025-06-24 02:16:20,808 - engineio.server - ERROR - message handler error
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask_socketio/__init__.py", line 831, in _handle_event
+    ret = handler(auth)
+TypeError: handle_connect() takes 0 positional arguments but 1 was given
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/engineio/server.py", line 450, in run_handler
+    return self.handlers[event](*args)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/socketio/server.py", line 652, in _handle_eio_message
+    self._handle_connect(eio_sid, pkt.namespace, pkt.data)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/socketio/server.py", line 538, in _handle_connect
+    success = self._trigger_event(
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/socketio/server.py", line 617, in _trigger_event
+    return handler(*args)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask_socketio/__init__.py", line 292, in _handler
+    return self._handle_event(handler, message, real_ns, sid,
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask_socketio/__init__.py", line 833, in _handle_event
+    ret = handler()
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/app.py", line 321, in handle_connect
+    connected = duet_client.is_connected()
+AttributeError: 'DuetClient' object has no attribute 'is_connected'
+2025-06-24 02:16:20,842 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:16:20] "POST /socket.io/?EIO=4&transport=polling&t=PUWb98I&sid=4kpVtvp3cHHbPMrMAAAA HTTP/1.1" 200 -
+2025-06-24 02:21:09,922 - __main__ - INFO - Client disconnected: XimbqbH231971h-5AAAB
+2025-06-24 02:21:09,925 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:09] "GET /socket.io/?EIO=4&transport=websocket&sid=4kpVtvp3cHHbPMrMAAAA HTTP/1.1" 200 -
+2025-06-24 02:21:10,225 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /control HTTP/1.1" 200 -
+2025-06-24 02:21:10,268 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 02:21:10,323 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 02:21:10,324 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 02:21:10,324 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 02:21:10,329 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/js/command_history_direct_fix.js HTTP/1.1" 200 -
+2025-06-24 02:21:10,330 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 02:21:10,334 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/js/canvas_visualization.js HTTP/1.1" 200 -
+2025-06-24 02:21:10,418 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /socket.io/?EIO=4&transport=polling&t=PUWcFrN HTTP/1.1" 200 -
+2025-06-24 02:21:10,430 - app - ERROR - Exception on /api/connection [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/app.py", line 290, in get_connection_status
+    connected = duet_client.is_connected()
+AttributeError: 'DuetClient' object has no attribute 'is_connected'
+2025-06-24 02:21:10,431 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 02:21:10,434 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 02:21:10,435 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 02:21:10,450 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "[35m[1mGET /api/connection HTTP/1.1[0m" 500 -
+2025-06-24 02:21:10,490 - __main__ - INFO - Client connected: ANzZMMM8UAGDL4QQAAAD
+2025-06-24 02:21:10,491 - engineio.server - ERROR - message handler error
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask_socketio/__init__.py", line 831, in _handle_event
+    ret = handler(auth)
+TypeError: handle_connect() takes 0 positional arguments but 1 was given
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/engineio/server.py", line 450, in run_handler
+    return self.handlers[event](*args)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/socketio/server.py", line 652, in _handle_eio_message
+    self._handle_connect(eio_sid, pkt.namespace, pkt.data)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/socketio/server.py", line 538, in _handle_connect
+    success = self._trigger_event(
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/socketio/server.py", line 617, in _trigger_event
+    return handler(*args)
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask_socketio/__init__.py", line 292, in _handler
+    return self._handle_event(handler, message, real_ns, sid,
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/.venv/lib/python3.10/site-packages/flask_socketio/__init__.py", line 833, in _handle_event
+    ret = handler()
+  File "/mnt/c/Users/wtrem/Projects/hairbrush/web_controller/app.py", line 321, in handle_connect
+    connected = duet_client.is_connected()
+AttributeError: 'DuetClient' object has no attribute 'is_connected'
+2025-06-24 02:21:10,501 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "POST /socket.io/?EIO=4&transport=polling&t=PUWcFsO&sid=3nlZhTedCcNKfR9TAAAC HTTP/1.1" 200 -
+2025-06-24 02:21:10,586 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /socket.io/?EIO=4&transport=polling&t=PUWcFsP&sid=3nlZhTedCcNKfR9TAAAC HTTP/1.1" 200 -
+2025-06-24 02:21:10,684 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 02:21:10,704 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 02:21:10] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 02:26:06,104 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 02:26:06,152 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 02:26:06,156 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 02:26:06,157 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 02:26:06,170 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.30.59.103:5000
+2025-06-24 02:26:06,171 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 19:52:46,803 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 19:52:46,830 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 19:52:46,833 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 19:52:46,834 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 19:52:46,854 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.30.59.103:5000
+2025-06-24 19:52:46,854 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 19:53:03,752 - config - INFO - Loaded configuration from /mnt/c/Users/wtrem/Projects/hairbrush/web_controller/config.yaml
+2025-06-24 19:53:03,779 - job_manager - INFO - Loaded 2 existing jobs
+2025-06-24 19:53:03,783 - machine_control - INFO - Loaded machine configuration from /mnt/c/Users/wtrem/Projects/hairbrush/gcode_backend/command_templates.yaml
+2025-06-24 19:53:03,784 - __main__ - INFO - Initialized components with H.Airbrush Plotter host: 192.168.86.43:80
+2025-06-24 19:53:03,795 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.30.59.103:5000
+2025-06-24 19:53:03,796 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 19:54:03,153 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /control HTTP/1.1" 200 -
+2025-06-24 19:54:03,178 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 19:54:03,209 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/js/connection.js HTTP/1.1" 200 -
+2025-06-24 19:54:03,211 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/js/control.js HTTP/1.1" 200 -
+2025-06-24 19:54:03,211 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/js/websocket.js HTTP/1.1" 200 -
+2025-06-24 19:54:03,211 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-06-24 19:54:03,211 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/js/canvas_visualization.js HTTP/1.1" 200 -
+2025-06-24 19:54:03,211 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/js/command_history_direct_fix.js HTTP/1.1" 200 -
+2025-06-24 19:54:03,293 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /socket.io/?EIO=4&transport=polling&t=PUaNEwP HTTP/1.1" 200 -
+2025-06-24 19:54:03,307 - __main__ - INFO - Client connected: o_1bPPYcSgUyc4x5AAAB
+2025-06-24 19:54:03,309 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 19:54:03,310 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "POST /socket.io/?EIO=4&transport=polling&t=PUaNEwc&sid=SIwjnJSvyFgOmp0NAAAA HTTP/1.1" 200 -
+2025-06-24 19:54:03,311 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 19:54:03,311 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /socket.io/?EIO=4&transport=polling&t=PUaNEwd&sid=SIwjnJSvyFgOmp0NAAAA HTTP/1.1" 200 -
+2025-06-24 19:54:03,311 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 19:54:03,319 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 19:54:03,337 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "POST /socket.io/?EIO=4&transport=polling&t=PUaNEx6&sid=SIwjnJSvyFgOmp0NAAAA HTTP/1.1" 200 -
+2025-06-24 19:54:03,341 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /socket.io/?EIO=4&transport=polling&t=PUaNExA&sid=SIwjnJSvyFgOmp0NAAAA HTTP/1.1" 200 -
+2025-06-24 19:54:03,341 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 19:54:03,443 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 19:54:03,444 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 19:54:03,444 - duet_client - INFO - Sending G-code: M114
+2025-06-24 19:54:03,472 - duet_client - INFO - Attempting to connect to Duet at 192.168.86.43:80
+2025-06-24 19:54:03,484 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 19:54:03,485 - duet_client - INFO - API level: 1
+2025-06-24 19:54:03,497 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 19:54:03,498 - duet_client - INFO - API level: 1
+2025-06-24 19:54:03,503 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/favicon/site.webmanifest HTTP/1.1" 200 -
+2025-06-24 19:54:03,503 - duet_client - INFO - Connected to board type: duetwifi102
+2025-06-24 19:54:03,505 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /static/favicon/favicon.ico HTTP/1.1" 200 -
+2025-06-24 19:54:03,506 - duet_client - INFO - API level: 1
+2025-06-24 19:54:03,513 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:54:03,513 - __main__ - INFO - Client disconnected: o_1bPPYcSgUyc4x5AAAB
+2025-06-24 19:54:03,515 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:54:03] "GET /socket.io/?EIO=4&transport=websocket&sid=SIwjnJSvyFgOmp0NAAAA HTTP/1.1" 200 -
+2025-06-24 19:54:03,519 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 19:54:03,531 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 19:54:03,537 - duet_client - INFO - Successfully connected to H.Airbrush Plotter at 192.168.86.43:80
+2025-06-24 19:54:03,623 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:54:03,623 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:54:03,631 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:19,542 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /control HTTP/1.1" 200 -
+2025-06-24 19:58:19,591 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,592 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/js/command_history_direct_fix.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,592 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,592 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,593 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/js/canvas_visualization.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,593 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,598 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 19:58:19,609 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /socket.io/?EIO=4&transport=polling&t=PUaODVL HTTP/1.1" 200 -
+2025-06-24 19:58:19,615 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 19:58:19,616 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 19:58:19,621 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 19:58:19,638 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 19:58:19,646 - __main__ - INFO - Client connected: 7dbKWLt4hbkNEsZdAAAE
+2025-06-24 19:58:19,672 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "POST /socket.io/?EIO=4&transport=polling&t=PUaODVr&sid=KKAmx7OYbJ_sL3mRAAAD HTTP/1.1" 200 -
+2025-06-24 19:58:19,672 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /socket.io/?EIO=4&transport=polling&t=PUaODVr.0&sid=KKAmx7OYbJ_sL3mRAAAD HTTP/1.1" 200 -
+2025-06-24 19:58:19,777 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "POST /socket.io/?EIO=4&transport=polling&t=PUaODX-&sid=KKAmx7OYbJ_sL3mRAAAD HTTP/1.1" 200 -
+2025-06-24 19:58:19,778 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /socket.io/?EIO=4&transport=polling&t=PUaODX-.0&sid=KKAmx7OYbJ_sL3mRAAAD HTTP/1.1" 200 -
+2025-06-24 19:58:19,794 - duet_client - INFO - Sending G-code: M114
+2025-06-24 19:58:19,799 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 19:58:19,800 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/favicon/favicon.ico HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,809 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:19] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-24 19:58:19,830 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:19,841 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:20,440 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:20,784 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:21,854 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:23,836 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:24,776 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:25,849 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:25,921 - __main__ - INFO - Client disconnected: 7dbKWLt4hbkNEsZdAAAE
+2025-06-24 19:58:25,923 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "GET /socket.io/?EIO=4&transport=websocket&sid=KKAmx7OYbJ_sL3mRAAAD HTTP/1.1" 200 -
+2025-06-24 19:58:25,931 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "GET /control HTTP/1.1" 200 -
+2025-06-24 19:58:25,971 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-24 19:58:25,971 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[36mGET /static/js/websocket.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:25,972 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[36mGET /static/js/command_history_direct_fix.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:25,972 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[36mGET /static/js/connection.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:25,972 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[36mGET /static/js/canvas_visualization.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:25,972 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[36mGET /static/js/control.js HTTP/1.1[0m" 304 -
+2025-06-24 19:58:25,977 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:25] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-24 19:58:26,012 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /socket.io/?EIO=4&transport=polling&t=PUaOF3M HTTP/1.1" 200 -
+2025-06-24 19:58:26,014 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /api/connection/history HTTP/1.1" 200 -
+2025-06-24 19:58:26,015 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 19:58:26,020 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /api/machine/config HTTP/1.1" 200 -
+2025-06-24 19:58:26,032 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 19:58:26,037 - __main__ - INFO - Client connected: hIgew5WC1llepvHeAAAG
+2025-06-24 19:58:26,056 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "POST /socket.io/?EIO=4&transport=polling&t=PUaOF3l&sid=v7-4h7E4pcqC-Bl5AAAF HTTP/1.1" 200 -
+2025-06-24 19:58:26,056 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /socket.io/?EIO=4&transport=polling&t=PUaOF3m&sid=v7-4h7E4pcqC-Bl5AAAF HTTP/1.1" 200 -
+2025-06-24 19:58:26,129 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "POST /socket.io/?EIO=4&transport=polling&t=PUaOF5B&sid=v7-4h7E4pcqC-Bl5AAAF HTTP/1.1" 200 -
+2025-06-24 19:58:26,129 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /socket.io/?EIO=4&transport=polling&t=PUaOF5C&sid=v7-4h7E4pcqC-Bl5AAAF HTTP/1.1" 200 -
+2025-06-24 19:58:26,142 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "[36mGET /static/favicon/favicon.ico HTTP/1.1[0m" 304 -
+2025-06-24 19:58:26,142 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "[36mGET /static/favicon/site.webmanifest HTTP/1.1[0m" 304 -
+2025-06-24 19:58:26,153 - duet_client - INFO - Sending G-code: M114
+2025-06-24 19:58:26,155 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:26,156 - werkzeug - INFO - 127.0.0.1 - - [24/Jun/2025 19:58:26] "GET /api/connection HTTP/1.1" 200 -
+2025-06-24 19:58:26,178 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:26,185 - duet_client - ERROR - Error handling special command: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+2025-06-24 19:58:26,198 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:26,217 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:26,866 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:27,133 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:28,181 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:30,181 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:31,138 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:32,189 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:34,233 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:36,131 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:36,176 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:38,188 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:40,260 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:41,140 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:42,179 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:44,188 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:46,143 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:46,193 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:48,192 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:50,183 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:51,136 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:52,169 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:54,181 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:56,130 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:58:56,193 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:58:58,193 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:00,180 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:01,135 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:59:02,174 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:04,179 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:06,140 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:59:07,189 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:08,172 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:10,184 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:11,129 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:59:12,189 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:14,193 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:16,139 - duet_client - INFO - Sending G-code: M119
+2025-06-24 19:59:16,201 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:18,195 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:20,184 - __main__ - ERROR - Error getting status: 'MachineControl' object has no attribute 'get_brush_state'
+2025-06-24 19:59:21,127 - duet_client - INFO - Sending G-code: M119
