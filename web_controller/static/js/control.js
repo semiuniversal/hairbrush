@@ -58,15 +58,24 @@ const yEndstopStatus = document.getElementById('y-endstop');
 const zEndstopStatus = document.getElementById('z-endstop');
 
 // Machine configuration
-let machineConfig = {
+const machineConfig = {
     paper: {
-        width: 841,   // A0 width in mm (portrait)
-        height: 1189, // A0 height in mm (portrait)
-        orientation: 'portrait'
+        width: 841,
+        height: 1189
     },
     brushes: {
-        a: { offsetX: 0, offsetY: 0 },
-        b: { offsetX: 50, offsetY: 0 }
+        a: {
+            offset_x: 0,
+            offset_y: 0,
+            paint_min: 0,
+            paint_max: 90
+        },
+        b: {
+            offset_x: 50,
+            offset_y: 50,
+            paint_min: 0,
+            paint_max: 90
+        }
     }
 };
 
@@ -92,6 +101,35 @@ let brushBPaintValue = 50; // Default to 50%
 
 // Motor state variable
 let motorsEnabled = true; // Default to enabled
+
+// Function to disable/enable motion control buttons
+function disableMotionControls(disable) {
+    // Disable/enable jog buttons
+    document.querySelectorAll('.jog-btn').forEach(button => {
+        button.disabled = disable;
+        if (disable) {
+            button.classList.add('disabled');
+        } else {
+            button.classList.remove('disabled');
+        }
+    });
+    
+    // Disable/enable home buttons
+    const homeAllBtn = document.getElementById('home-all-btn');
+    const homeXYBtn = document.getElementById('home-xy-btn');
+    const homeZBtn = document.getElementById('home-z-btn');
+    
+    [homeAllBtn, homeXYBtn, homeZBtn].forEach(button => {
+        if (button) {
+            button.disabled = disable;
+            if (disable) {
+                button.classList.add('disabled');
+            } else {
+                button.classList.remove('disabled');
+            }
+        }
+    });
+}
 
 // Initialize control page
 function initControlPage() {
@@ -144,34 +182,91 @@ function initControlPage() {
 
 // Set up socket event listeners
 function setupSocketListeners() {
-    // Check if socket is available from the global scope (set by websocket.js)
-    if (typeof socket === 'undefined') {
-        console.error('Socket is not defined - make sure websocket.js is loaded');
-        return;
-    }
-    
     console.log('Setting up control-specific socket listeners');
     
-    // Listen for status updates - this is handled by websocket.js, 
-    // but we'll add our own listener to update the visualization
-    socket.on('status_update', function(data) {
-        console.log('Control: status update received:', data);
-        onMachineStatusUpdate(data);
-    });
-    
-    // Listen for command responses
-    socket.on('command_response', function(data) {
-        console.log('Control: command response received:', data);
-        if (data.command && data.response) {
-            addToCommandHistory(data.command, data.response);
+    // Use the global WebSocket manager if available
+    if (window.HairbrushWebSocket) {
+        // Add status listener to update the visualization
+        window.HairbrushWebSocket.addStatusListener(function(data) {
+            console.log('Control: status update received:', data);
+            onMachineStatusUpdate(data);
+        });
+        
+        // Add connection listener to handle connection changes
+        window.HairbrushWebSocket.addConnectionListener(function(isConnected) {
+            console.log('Control: connection status changed:', isConnected);
+            // Update UI elements based on connection status
+            if (!isConnected) {
+                // Disable controls when disconnected
+                disableMotionControls(true);
+                
+                // Update endstop indicators
+                if (xEndstopStatus) xEndstopStatus.className = 'endstop-status unknown';
+                if (yEndstopStatus) yEndstopStatus.className = 'endstop-status unknown';
+                if (zEndstopStatus) zEndstopStatus.className = 'endstop-status unknown';
+            }
+        });
+    } else {
+        // Fallback to direct socket access if global manager is not available
+        console.warn('Global WebSocket manager not available, falling back to direct socket access');
+        
+        // Check if socket is available from the global scope (set by websocket.js)
+        if (typeof socket === 'undefined') {
+            console.error('Socket is not defined - make sure websocket.js is loaded');
+            return;
         }
-    });
+        
+        // Listen for status updates
+        socket.on('status_update', function(data) {
+            console.log('Control: status update received:', data);
+            onMachineStatusUpdate(data);
+        });
+        
+        // Listen for command responses
+        socket.on('command_response', function(data) {
+            console.log('Control: command response received:', data);
+            if (data.command && data.response) {
+                addToCommandHistory(data.command, data.response);
+            }
+        });
+    }
+    
+    // Start polling for endstop status
+    startEndstopPolling();
+}
+
+// Start polling for endstop status
+function startEndstopPolling() {
+    // Clear any existing interval
+    if (endstopPollingInterval) {
+        clearInterval(endstopPollingInterval);
+    }
+    
+    // Poll every 5 seconds
+    endstopPollingInterval = setInterval(queryEndstopStatus, 5000);
+    
+    // Initial query
+    queryEndstopStatus();
 }
 
 // Initialize visualization
 function initVisualization() {
-    if (!visualization || !paperSheet || !brushA || !brushB || !origin) {
-        console.error('Visualization elements not found');
+    // Check if we're using the canvas visualization
+    if (typeof window.machineVisualization !== 'undefined') {
+        console.log('Using canvas-based visualization');
+        return; // Canvas visualization is already initialized elsewhere
+    }
+    
+    // Check for DOM-based visualization elements
+    const visualization = document.getElementById('visualization');
+    const paperSheet = document.getElementById('paper-sheet');
+    const brushA = document.getElementById('brush-a');
+    const brushB = document.getElementById('brush-b');
+    const origin = document.getElementById('origin');
+    const visualizationContainer = document.getElementById('visualization-container');
+    
+    if (!visualization || !paperSheet) {
+        console.warn('Visualization elements not found - this may be normal if using canvas visualization');
         return;
     }
     
@@ -185,18 +280,18 @@ function initVisualization() {
             if (config && config.brushes) {
                 machineConfig.brushes = config.brushes;
             }
-            setupVisualization();
+            setupVisualization(visualization, paperSheet, brushA, brushB, origin, visualizationContainer);
         })
         .catch(error => {
             console.error('Error loading machine configuration:', error);
-            setupVisualization();
+            setupVisualization(visualization, paperSheet, brushA, brushB, origin, visualizationContainer);
         });
 }
 
 // Set up visualization based on machine configuration
-function setupVisualization() {
+function setupVisualization(visualization, paperSheet, brushA, brushB, origin, visualizationContainer) {
     if (!visualization || !visualizationContainer || !paperSheet) {
-        console.error('Visualization elements not found');
+        console.warn('Visualization elements not found - this may be normal if using canvas visualization');
         return;
     }
     
@@ -500,31 +595,6 @@ function setupEventListeners() {
         });
     }
     
-    // Function to disable/enable motion control buttons
-    function disableMotionControls(disable) {
-        // Disable/enable jog buttons
-        document.querySelectorAll('.jog-btn').forEach(button => {
-            button.disabled = disable;
-            if (disable) {
-                button.classList.add('disabled');
-            } else {
-                button.classList.remove('disabled');
-            }
-        });
-        
-        // Disable/enable home buttons
-        [homeAllBtn, homeXYBtn, homeZBtn].forEach(button => {
-            if (button) {
-                button.disabled = disable;
-                if (disable) {
-                    button.classList.add('disabled');
-                } else {
-                    button.classList.remove('disabled');
-                }
-            }
-        });
-    }
-    
     // Brush A air toggle button
     if (brushAAirToggleBtn) {
         // Track state
@@ -564,12 +634,16 @@ function setupEventListeners() {
             // Toggle state
             brushAPaintState = !brushAPaintState;
             
-            // Calculate servo value based on slider
-            const servoValue = brushAPaintState ? brushAPaintValue : 0;
+            // Calculate servo value based on slider percentage
+            const servoValue = brushAPaintState ? 
+                calculateServoAngle(brushAPaintValue, 'a') : 
+                machineConfig.brushes.a.paint_min;
             
             // Send appropriate command based on state
             const command = `M280 P0 S${servoValue}`;
-            const statusText = brushAPaintState ? `Brush A paint on (${servoValue}%)` : 'Brush A paint off';
+            const statusText = brushAPaintState ? 
+                `Brush A paint on (${brushAPaintValue}%)` : 
+                'Brush A paint off';
             
             hairbrushController.sendCommand(command)
                 .then(() => {
@@ -621,7 +695,10 @@ function setupEventListeners() {
             brushAPaintSlider.addEventListener('change', debounce(() => {
                 // Only send command if paint is on
                 if (brushAPaintState) {
-                    const command = `M280 P0 S${brushAPaintValue}`;
+                    // Calculate servo angle from percentage
+                    const servoValue = calculateServoAngle(brushAPaintValue, 'a');
+                    
+                    const command = `M280 P0 S${servoValue}`;
                     const statusText = `Brush A paint set to ${brushAPaintValue}%`;
                     
                     hairbrushController.sendCommand(command)
@@ -674,12 +751,16 @@ function setupEventListeners() {
             // Toggle state
             brushBPaintState = !brushBPaintState;
             
-            // Calculate servo value based on slider
-            const servoValue = brushBPaintState ? brushBPaintValue : 0;
+            // Calculate servo value based on slider percentage
+            const servoValue = brushBPaintState ? 
+                calculateServoAngle(brushBPaintValue, 'b') : 
+                machineConfig.brushes.b.paint_min;
             
             // Send appropriate command based on state
             const command = `M280 P1 S${servoValue}`;
-            const statusText = brushBPaintState ? `Brush B paint on (${servoValue}%)` : 'Brush B paint off';
+            const statusText = brushBPaintState ? 
+                `Brush B paint on (${brushBPaintValue}%)` : 
+                'Brush B paint off';
             
             hairbrushController.sendCommand(command)
                 .then(() => {
@@ -731,7 +812,10 @@ function setupEventListeners() {
             brushBPaintSlider.addEventListener('change', debounce(() => {
                 // Only send command if paint is on
                 if (brushBPaintState) {
-                    const command = `M280 P1 S${brushBPaintValue}`;
+                    // Calculate servo angle from percentage
+                    const servoValue = calculateServoAngle(brushBPaintValue, 'b');
+                    
+                    const command = `M280 P1 S${servoValue}`;
                     const statusText = `Brush B paint set to ${brushBPaintValue}%`;
                     
                     hairbrushController.sendCommand(command)
@@ -773,27 +857,10 @@ function setupEventListeners() {
 // Handle jog button click
 function handleJogButtonClick(event) {
     const button = event.currentTarget;
-    
-    // If button is disabled, don't proceed
-    if (button.disabled || button.classList.contains('disabled')) {
-        console.log('Motion controls are disabled because motors are disabled');
-        return;
-    }
-    
     const axis = button.getAttribute('data-axis');
     
-    if (axis === 'home') {
-        // Check if specific axis to home
-        const homeAxis = button.getAttribute('data-home-axis');
-        const command = homeAxis ? `G28 ${homeAxis}` : 'G28';
-        
-        // Home specified axis or all axes
-        hairbrushController.sendCommand(command)
-            .then(() => {
-                console.log(`Homed ${homeAxis || 'all axes'}`);
-                addToCommandHistory(command, `Homed ${homeAxis || 'all axes'}`);
-            })
-            .catch(handleError);
+    if (!axis) {
+        console.error('No axis specified for jog button');
         return;
     }
     
@@ -810,13 +877,23 @@ function handleJogButtonClick(event) {
     // Calculate final distance with direction
     const distance = direction * selectedDistance;
     
-    // Send jog command
-    hairbrushController.sendJog(axis, distance, selectedSpeed)
-        .then(() => {
-            console.log(`Jogged ${axis} by ${distance}mm at ${selectedSpeed}mm/min`);
-            addToCommandHistory(`G1 ${axis}${distance} F${selectedSpeed}`, `Jogged ${axis} by ${distance}mm`);
-        })
-        .catch(handleError);
+    // Send jog command using the global WebSocket manager if available
+    if (window.HairbrushWebSocket) {
+        window.HairbrushWebSocket.sendJog(axis, distance, selectedSpeed)
+            .then(() => {
+                console.log(`Jogged ${axis} by ${distance}mm at ${selectedSpeed}mm/min`);
+                addToCommandHistory(`G1 ${axis}${distance} F${selectedSpeed}`, `Jogged ${axis} by ${distance}mm`);
+            })
+            .catch(handleError);
+    } else {
+        // Fallback to the legacy hairbrushController
+        hairbrushController.sendJog(axis, distance, selectedSpeed)
+            .then(() => {
+                console.log(`Jogged ${axis} by ${distance}mm at ${selectedSpeed}mm/min`);
+                addToCommandHistory(`G1 ${axis}${distance} F${selectedSpeed}`, `Jogged ${axis} by ${distance}mm`);
+            })
+            .catch(handleError);
+    }
 }
 
 // Send manual command
@@ -824,16 +901,31 @@ function sendManualCommand() {
     const command = manualCommandInput.value.trim();
     if (!command) return;
     
-    hairbrushController.sendCommand(command)
-        .then((result) => {
-            console.log(`Command sent: ${command}`);
-            addToCommandHistory(command, result || 'Command executed');
-            manualCommandInput.value = '';
-        })
-        .catch((error) => {
-            handleError(error);
-            addToCommandHistory(command, error.message, true);
-        });
+    // Use the global WebSocket manager if available
+    if (window.HairbrushWebSocket) {
+        window.HairbrushWebSocket.sendCommand(command)
+            .then((result) => {
+                console.log(`Command sent: ${command}`);
+                addToCommandHistory(command, result?.response || 'Command executed');
+                manualCommandInput.value = '';
+            })
+            .catch((error) => {
+                handleError(error);
+                addToCommandHistory(command, error.message, true);
+            });
+    } else {
+        // Fallback to the legacy hairbrushController
+        hairbrushController.sendCommand(command)
+            .then((result) => {
+                console.log(`Command sent: ${command}`);
+                addToCommandHistory(command, result || 'Command executed');
+                manualCommandInput.value = '';
+            })
+            .catch((error) => {
+                handleError(error);
+                addToCommandHistory(command, error.message, true);
+            });
+    }
 }
 
 // Add command to history
@@ -931,7 +1023,67 @@ function updateCommandCount() {
 // Handle errors
 function handleError(error) {
     console.error('Error:', error);
-    alert(`Error: ${error.message || 'Unknown error'}`);
+    
+    // Check if it's a connection error
+    if (error.message && (
+        error.message.includes('Not connected to server') || 
+        error.message.includes('Connection') ||
+        error.message.includes('timeout')
+    )) {
+        // For connection errors, show a toast notification instead of an alert
+        const toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '11';
+        
+        const toastElement = document.createElement('div');
+        toastElement.className = 'toast';
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        
+        toastElement.innerHTML = `
+            <div class="toast-header bg-danger text-white">
+                <strong class="me-auto">Connection Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${error.message}
+            </div>
+        `;
+        
+        toastContainer.appendChild(toastElement);
+        document.body.appendChild(toastContainer);
+        
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        // Remove toast element after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            document.body.removeChild(toastContainer);
+        });
+        
+        // Check if we need to update the connection button
+        updateConnectionStatusUI(false);
+    } else {
+        // For non-connection errors, use alert
+        alert(`Error: ${error.message || 'Unknown error'}`);
+    }
+}
+
+// Update connection status UI if needed
+function updateConnectionStatusUI(isConnected) {
+    // Find the connection button if it exists
+    const connectButton = document.getElementById('connect-button');
+    const connectionText = document.getElementById('connection-text');
+    
+    if (connectButton && connectionText) {
+        if (!isConnected) {
+            // Update button to show disconnected state
+            connectButton.classList.remove('btn-outline-success', 'btn-outline-warning');
+            connectButton.classList.add('btn-outline-danger');
+            connectionText.textContent = 'Connect';
+        }
+    }
 }
 
 // Machine status update handler
@@ -1197,7 +1349,7 @@ function sendCommand(command) {
                 setTimeout(() => {
                     // Call our local requestMachineStatus to avoid recursion
                     requestMachineStatus();
-                }, 500); // Small delay to allow machine to update position
+                }, 500);
                 
                 resolve(response.result);
             } else {
@@ -1232,14 +1384,51 @@ function sendJog(axis, distance, speed) {
     });
 }
 
-// Request machine status from server
+// Request machine status
 function requestMachineStatus() {
-    // Use the socket directly to avoid recursion
-    if (typeof socket !== 'undefined' && socket.connected) {
-        socket.emit('get_status', {}, (response) => {
-            if (response && response.status === 'success') {
-                onMachineStatusUpdate(response.data);
-            }
+    // Use the global WebSocket manager if available
+    if (window.HairbrushWebSocket) {
+        // Check if connected first
+        if (!window.HairbrushWebSocket.isConnected()) {
+            console.warn('Cannot request machine status: not connected to server');
+            return Promise.resolve(false); // Return a resolved promise to prevent unhandled promise rejections
+        }
+        
+        return window.HairbrushWebSocket.requestMachineStatus()
+            .then((data) => {
+                console.log('Machine status:', data);
+                onMachineStatusUpdate(data);
+                return data;
+            })
+            .catch((error) => {
+                console.error('Error requesting machine status:', error);
+                // Don't throw here to prevent unhandled promise rejections
+                return null;
+            });
+    } else {
+        // Fallback to direct socket access
+        if (typeof socket === 'undefined' || !socket.connected) {
+            console.warn('Cannot request machine status: not connected to server');
+            return Promise.resolve(false);
+        }
+        
+        return new Promise((resolve) => {
+            socket.emit('get_status', {}, (response) => {
+                if (response && response.status === 'success') {
+                    console.log('Machine status:', response.data);
+                    onMachineStatusUpdate(response.data);
+                    resolve(response.data);
+                } else {
+                    console.error('Error getting machine status:', response?.message || 'Unknown error');
+                    resolve(null);
+                }
+            });
+            
+            // Add timeout to prevent hanging if server doesn't respond
+            setTimeout(() => {
+                console.warn('Machine status request timed out');
+                resolve(null);
+            }, 5000);
         });
     }
 }
@@ -1253,53 +1442,46 @@ let previousEndstopStates = {
 
 // Query endstop status
 function queryEndstopStatus() {
-    if (!socket || !socket.connected) {
-        console.error('Socket not connected, cannot query endstops');
+    if (!xEndstopStatus || !yEndstopStatus || !zEndstopStatus) {
+        console.warn('Endstop status elements not found');
         return;
     }
     
-    // Only show loading state on first load when elements are empty
-    if (xEndstopStatus && !xEndstopStatus.textContent) {
-        xEndstopStatus.className = 'endstop-value badge bg-secondary';
-        xEndstopStatus.textContent = 'Checking...';
-    }
-    if (yEndstopStatus && !yEndstopStatus.textContent) {
-        yEndstopStatus.className = 'endstop-value badge bg-secondary';
-        yEndstopStatus.textContent = 'Checking...';
-    }
-    if (zEndstopStatus && !zEndstopStatus.textContent) {
-        zEndstopStatus.className = 'endstop-value badge bg-secondary';
-        zEndstopStatus.textContent = 'Checking...';
-    }
-    
-    // Send M119 command to query endstops
-    socket.emit('command', { command: 'M119' }, (response) => {
-        if (response && response.status === 'success' && response.result && response.result.response) {
-            updateEndstopUI(response.result.response);
-        } else {
-            console.error('Failed to query endstops:', response);
-            
-            // Only update UI to show error state if it's different from current state
-            const errorClass = 'endstop-value badge bg-danger';
-            const errorText = 'Error';
-            
-            if (xEndstopStatus && (xEndstopStatus.className !== errorClass || xEndstopStatus.textContent !== errorText)) {
-                xEndstopStatus.className = errorClass;
-                xEndstopStatus.textContent = errorText;
-                previousEndstopStates.x = { className: errorClass, textContent: errorText };
+    // Use the global WebSocket manager if available
+    if (window.HairbrushWebSocket && window.HairbrushWebSocket.isConnected()) {
+        window.HairbrushWebSocket.sendCommand('M119')
+            .then(result => {
+                if (result && result.response) {
+                    updateEndstopUI(result.response);
+                }
+            })
+            .catch(error => {
+                console.error('Error querying endstops:', error);
+                // Set endstops to unknown state
+                xEndstopStatus.className = 'endstop-status unknown';
+                yEndstopStatus.className = 'endstop-status unknown';
+                zEndstopStatus.className = 'endstop-status unknown';
+            });
+    } else if (typeof socket !== 'undefined' && socket.connected) {
+        // Fallback to direct socket access
+        socket.emit('command', { command: 'M119' }, (response) => {
+            if (response && response.status === 'success' && response.result) {
+                updateEndstopUI(response.result.response);
+            } else {
+                console.error('Error querying endstops:', response?.message || 'Unknown error');
+                // Set endstops to unknown state
+                xEndstopStatus.className = 'endstop-status unknown';
+                yEndstopStatus.className = 'endstop-status unknown';
+                zEndstopStatus.className = 'endstop-status unknown';
             }
-            if (yEndstopStatus && (yEndstopStatus.className !== errorClass || yEndstopStatus.textContent !== errorText)) {
-                yEndstopStatus.className = errorClass;
-                yEndstopStatus.textContent = errorText;
-                previousEndstopStates.y = { className: errorClass, textContent: errorText };
-            }
-            if (zEndstopStatus && (zEndstopStatus.className !== errorClass || zEndstopStatus.textContent !== errorText)) {
-                zEndstopStatus.className = errorClass;
-                zEndstopStatus.textContent = errorText;
-                previousEndstopStates.z = { className: errorClass, textContent: errorText };
-            }
-        }
-    });
+        });
+    } else {
+        console.warn('Not connected to server, cannot query endstops');
+        // Set endstops to unknown state
+        xEndstopStatus.className = 'endstop-status unknown';
+        yEndstopStatus.className = 'endstop-status unknown';
+        zEndstopStatus.className = 'endstop-status unknown';
+    }
 }
 
 // Update endstop UI based on M119 response
@@ -1557,27 +1739,54 @@ function updateEndstopUI(response) {
 
 // Socket connection
 function connectSocket() {
+    // First try to use the global WebSocket manager
+    if (window.HairbrushWebSocket) {
+        console.log('Using global WebSocket manager');
+        return; // Global manager handles connection automatically
+    }
+    
+    // Fall back to direct socket.io connection
     if (typeof io === 'undefined') {
-        console.error('Socket.IO not loaded');
+        console.error('Socket.IO not loaded - cannot establish connection');
+        // Show an error message to the user
+        handleError(new Error('Socket.IO library not loaded. Please refresh the page or check your connection.'));
         return;
     }
     
-    // Use the global socket variable without redeclaring it
-    if (typeof socket === 'undefined') {
-        console.warn('Global socket variable not defined, using window.socket');
+    // Check if socket already exists in global scope
+    if (typeof window.socket !== 'undefined') {
+        console.log('Using existing global socket connection');
+        socket = window.socket;
+        
+        // Make sure it's connected
+        if (!socket.connected) {
+            socket.connect();
+        }
+    } else {
+        // Create a new socket connection
+        console.log('Creating new socket connection');
         window.socket = io.connect(window.location.protocol + '//' + window.location.host, {
-            path: '/socket.io'
+            path: '/socket.io',
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000
         });
         socket = window.socket;
-    } else if (!socket.connected) {
-        // If socket exists but not connected, reconnect
-        socket.connect();
     }
 
+    // Set up socket event handlers
     socket.on('connect', function() {
         console.log('Connected to server');
+        
+        // Update UI to show connected state
+        updateConnectionStatusUI(true);
+        
         // Query position immediately after connection
-        sendCommand('M114');
+        setTimeout(() => {
+            requestMachineStatus();
+        }, 500);
         
         // Query endstops after connection
         setTimeout(() => {
@@ -1593,14 +1802,28 @@ function connectSocket() {
 
     socket.on('disconnect', function() {
         console.log('Disconnected from server');
+        
+        // Update UI to show disconnected state
+        updateConnectionStatusUI(false);
+        
+        // Stop polling when disconnected
         if (endstopPollingInterval) {
             clearInterval(endstopPollingInterval);
             endstopPollingInterval = null;
         }
     });
 
+    socket.on('connect_error', function(error) {
+        console.error('Connection error:', error);
+        handleError(new Error('Failed to connect to server: ' + (error.message || 'Unknown error')));
+    });
+
     socket.on('position_update', function(data) {
         updatePositionDisplay(data);
+    });
+    
+    socket.on('status_update', function(data) {
+        onMachineStatusUpdate(data);
     });
 }
 
@@ -1755,4 +1978,28 @@ function jogAxis(axis, direction, distance, speed) {
             console.error('Jog failed:', response);
         }
     });
+}
+
+// Calculate servo angle from percentage
+function calculateServoAngle(percentage, brush) {
+    const min = machineConfig.brushes[brush].paint_min;
+    const max = machineConfig.brushes[brush].paint_max;
+    
+    // Scale percentage to the range between min and max
+    return min + (percentage / 100) * (max - min);
+}
+
+// Calculate percentage from servo angle
+function calculatePercentage(angle, brush) {
+    const min = machineConfig.brushes[brush].paint_min;
+    const max = machineConfig.brushes[brush].paint_max;
+    
+    // If min and max are the same, avoid division by zero
+    if (min === max) return 0;
+    
+    // Scale angle to percentage
+    const percentage = ((angle - min) / (max - min)) * 100;
+    
+    // Clamp to 0-100 range
+    return Math.max(0, Math.min(100, percentage));
 } 

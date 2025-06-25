@@ -3,291 +3,487 @@
  * Handles real-time communication with the server
  */
 
-// Initialize socket connection
-const socket = io();
-let connected = false;
-let statusUpdateInterval;
-
-// Connection status indicator (now handled by connection.js)
-const machineStatus = document.getElementById('machine-status');
-
-// Emergency stop button
-const emergencyStopBtn = document.getElementById('emergency-stop');
-if (emergencyStopBtn) {
-    emergencyStopBtn.addEventListener('click', () => {
-        sendCommand('M112'); // Emergency stop command
-    });
-}
-
-// Connection events
-socket.on('connect', () => {
-    console.log('Connected to server');
-    connected = true;
+// Global WebSocket connection manager
+window.HairbrushWebSocket = (function() {
+    // Private variables
+    let socket = null;
+    let connected = false;
+    let statusUpdateInterval = null;
+    let reconnectingNotificationShown = false;
+    let connectionListeners = [];
+    let statusListeners = [];
+    let jobListeners = [];
+    let commandCallbacks = {};
+    let commandCounter = 0;
     
-    // Start status updates
-    startStatusUpdates();
-    
-    // Emit initial status request
-    requestMachineStatus();
-});
-
-socket.on('disconnect', () => {
-    console.log('Disconnected from server');
-    connected = false;
-    
-    // Stop status updates
-    stopStatusUpdates();
-});
-
-socket.on('connect_error', (error) => {
-    console.error('Connection error:', error);
-    connected = false;
-});
-
-// Status updates
-socket.on('status_update', (data) => {
-    console.log('Status update:', data);
-    updateMachineStatus(data);
-});
-
-// Job updates
-socket.on('job_update', (data) => {
-    console.log('Job update:', data);
-    updateJobStatus(data);
-});
-
-// Start periodic status updates
-function startStatusUpdates() {
-    // Clear existing interval if any
-    stopStatusUpdates();
-    
-    // Request status every 2 seconds
-    statusUpdateInterval = setInterval(() => {
-        if (connected) {
-            requestMachineStatus();
+    // Initialize socket connection
+    function initialize() {
+        if (socket) {
+            console.log('Socket already initialized');
+            return;
         }
-    }, 2000);
-}
-
-// Stop periodic status updates
-function stopStatusUpdates() {
-    if (statusUpdateInterval) {
-        clearInterval(statusUpdateInterval);
-        statusUpdateInterval = null;
+        
+        console.log('Initializing socket connection');
+        
+        // Create socket with reconnection options
+        socket = io({
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000
+        });
+        
+        // Set up event listeners
+        socket.on('connect', handleConnect);
+        socket.on('disconnect', handleDisconnect);
+        socket.on('connect_error', handleConnectError);
+        socket.on('reconnecting', handleReconnecting);
+        socket.on('reconnect', handleReconnect);
+        socket.on('reconnect_failed', handleReconnectFailed);
+        socket.on('status_update', handleStatusUpdate);
+        socket.on('job_update', handleJobUpdate);
+        socket.on('connection_status', handleConnectionStatus);
     }
-}
-
-// Request machine status from server
-function requestMachineStatus() {
-    socket.emit('get_status', {}, (response) => {
-        if (response && response.status === 'success') {
-            updateMachineStatus(response.data);
-        }
-    });
-}
-
-// Update machine status display
-function updateMachineStatus(data) {
-    if (!data) return;
     
-    // Update machine status text
+    // Connection event handlers
+    function handleConnect() {
+        console.log('Connected to server');
+        connected = true;
+        reconnectingNotificationShown = false;
+        
+        // Start status updates
+        startStatusUpdates();
+        
+        // Emit initial status request
+        requestMachineStatus();
+        
+        // Notify listeners
+        notifyConnectionListeners(true);
+    }
+    
+    function handleDisconnect() {
+        console.log('Disconnected from server');
+        connected = false;
+        
+        // Stop status updates
+        stopStatusUpdates();
+        
+        // Notify listeners
+        notifyConnectionListeners(false);
+        
+        // Show connection error message
+        showConnectionError('Connection to server lost. Please refresh the page.');
+    }
+    
+    function handleConnectError(error) {
+        console.error('Connection error:', error);
+        connected = false;
+        
+        // Notify listeners
+        notifyConnectionListeners(false, error);
+    }
+    
+    function handleReconnecting(attemptNumber) {
+        console.log(`Attempting to reconnect (${attemptNumber})...`);
+        
+        if (!reconnectingNotificationShown) {
+            showReconnectingNotification(attemptNumber);
+            reconnectingNotificationShown = true;
+        }
+    }
+    
+    function handleReconnect(attemptNumber) {
+        console.log(`Reconnected after ${attemptNumber} attempts`);
+        connected = true;
+        reconnectingNotificationShown = false;
+        
+        // Notify listeners
+        notifyConnectionListeners(true);
+    }
+    
+    function handleReconnectFailed() {
+        console.error('Failed to reconnect after multiple attempts');
+        showConnectionError('Failed to reconnect to server after multiple attempts. Please refresh the page.');
+    }
+    
+    // Status and job update handlers
+    function handleStatusUpdate(data) {
+        console.log('Status update:', data);
+        notifyStatusListeners(data);
+    }
+    
+    function handleJobUpdate(data) {
+        console.log('Job update:', data);
+        notifyJobListeners(data);
+    }
+    
+    function handleConnectionStatus(data) {
+        console.log('Connection status update:', data);
+        // This is handled by connection.js
+    }
+    
+    // Notify listeners
+    function notifyConnectionListeners(isConnected, error = null) {
+        connectionListeners.forEach(listener => {
+            try {
+                listener(isConnected, error);
+            } catch (e) {
+                console.error('Error in connection listener:', e);
+            }
+        });
+    }
+    
+    function notifyStatusListeners(data) {
+        // Ensure data has expected properties to prevent errors
+        const safeData = {
+            position: data?.position || {},
+            state: data?.state || 'unknown',
+            is_homed: data?.is_homed !== undefined ? data.is_homed : false,
+            motors_state: data?.motors_state || 'unknown',
+            brush_state: data?.brush_state || {
+                a: { air: false, paint: false },
+                b: { air: false, paint: false }
+            }
+        };
+        
+        // Notify all status listeners
+        statusListeners.forEach(listener => {
+            try {
+                listener(safeData);
+            } catch (error) {
+                console.error('Error in status listener:', error);
+            }
+        });
+    }
+    
+    function notifyJobListeners(data) {
+        jobListeners.forEach(listener => {
+            try {
+                listener(data);
+            } catch (e) {
+                console.error('Error in job listener:', e);
+            }
+        });
+    }
+    
+    // Status updates
+    function startStatusUpdates() {
+        // Clear existing interval if any
+        stopStatusUpdates();
+        
+        // Request status every 2 seconds
+        statusUpdateInterval = setInterval(() => {
+            if (connected) {
+                requestMachineStatus();
+            }
+        }, 2000);
+    }
+    
+    function stopStatusUpdates() {
+        if (statusUpdateInterval) {
+            clearInterval(statusUpdateInterval);
+            statusUpdateInterval = null;
+        }
+    }
+    
+    // Request machine status
+    function requestMachineStatus() {
+        if (!connected) {
+            console.warn('Cannot request machine status: not connected to server');
+            return Promise.reject(new Error('Not connected to server'));
+        }
+        
+        return new Promise((resolve, reject) => {
+            socket.emit('get_status', {}, (response) => {
+                if (response && response.status === 'success') {
+                    notifyStatusListeners(response.data);
+                    resolve(response.data);
+                } else {
+                    reject(new Error(response?.message || 'Failed to get status'));
+                }
+            });
+        });
+    }
+    
+    // Send command with error handling
+    function sendCommand(command) {
+        if (!connected) {
+            console.error('Not connected to server');
+            showConnectionError('Not connected to server. Cannot send command.');
+            return Promise.reject(new Error('Not connected to server'));
+        }
+        
+        return new Promise((resolve, reject) => {
+            // Set a timeout for the command
+            const timeout = setTimeout(() => {
+                reject(new Error('Command timed out'));
+            }, 10000);
+            
+            socket.emit('command', { command }, (response) => {
+                clearTimeout(timeout);
+                
+                if (response && response.status === 'success') {
+                    resolve(response.result);
+                } else {
+                    reject(new Error(response?.message || 'Command failed'));
+                }
+            });
+        });
+    }
+    
+    // Send jog command with error handling
+    function sendJog(axis, distance, speed) {
+        if (!connected) {
+            console.error('Not connected to server');
+            showConnectionError('Not connected to server. Cannot send jog command.');
+            return Promise.reject(new Error('Not connected to server'));
+        }
+        
+        return new Promise((resolve, reject) => {
+            // Set a timeout for the command
+            const timeout = setTimeout(() => {
+                reject(new Error('Jog command timed out'));
+            }, 10000);
+            
+            socket.emit('jog', { axis, distance, speed }, (response) => {
+                clearTimeout(timeout);
+                
+                if (response && response.status === 'success') {
+                    resolve(response.result);
+                } else {
+                    reject(new Error(response?.message || 'Jog command failed'));
+                }
+            });
+        });
+    }
+    
+    // Send job control command with error handling
+    function sendJobControl(action, job_id) {
+        if (!connected) {
+            console.error('Not connected to server');
+            showConnectionError('Not connected to server. Cannot send job control command.');
+            return Promise.reject(new Error('Not connected to server'));
+        }
+        
+        return new Promise((resolve, reject) => {
+            // Set a timeout for the command
+            const timeout = setTimeout(() => {
+                reject(new Error('Job control command timed out'));
+            }, 10000);
+            
+            socket.emit('job_control', { action, job_id }, (response) => {
+                clearTimeout(timeout);
+                
+                if (response && response.status === 'success') {
+                    resolve(response.result);
+                } else {
+                    reject(new Error(response?.message || 'Job control failed'));
+                }
+            });
+        });
+    }
+    
+    // Connect to device
+    function connectToDevice(host, port, password) {
+        if (!connected) {
+            console.error('Not connected to server');
+            return Promise.reject(new Error('Not connected to server'));
+        }
+        
+        return new Promise((resolve, reject) => {
+            // Set a timeout for the command
+            const timeout = setTimeout(() => {
+                reject(new Error('Connect command timed out'));
+            }, 10000);
+            
+            socket.emit('connect_device', { host, port, password }, (response) => {
+                clearTimeout(timeout);
+                
+                if (response && response.status === 'success') {
+                    resolve(response);
+                } else {
+                    reject(new Error(response?.message || 'Connect failed'));
+                }
+            });
+        });
+    }
+    
+    // Disconnect from device
+    function disconnectFromDevice() {
+        if (!connected) {
+            console.error('Not connected to server');
+            return Promise.reject(new Error('Not connected to server'));
+        }
+        
+        return new Promise((resolve, reject) => {
+            // Set a timeout for the command
+            const timeout = setTimeout(() => {
+                reject(new Error('Disconnect command timed out'));
+            }, 10000);
+            
+            socket.emit('disconnect_device', {}, (response) => {
+                clearTimeout(timeout);
+                
+                if (response && response.status === 'success') {
+                    resolve(response);
+                } else {
+                    reject(new Error(response?.message || 'Disconnect failed'));
+                }
+            });
+        });
+    }
+    
+    // Show reconnecting notification
+    function showReconnectingNotification(attemptNumber) {
+        // Create toast notification for reconnection attempts
+        const toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '11';
+        
+        const toastElement = document.createElement('div');
+        toastElement.className = 'toast';
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        
+        toastElement.innerHTML = `
+            <div class="toast-header bg-warning text-white">
+                <strong class="me-auto">Connection Warning</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Connection to server lost. Attempting to reconnect...
+            </div>
+        `;
+        
+        toastContainer.appendChild(toastElement);
+        document.body.appendChild(toastContainer);
+        
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: false
+        });
+        toast.show();
+        
+        // Store the toast element ID to remove it later if needed
+        window.reconnectingToastElement = toastElement;
+    }
+    
+    // Show connection error
+    function showConnectionError(message) {
+        // Create toast notification for connection errors
+        const toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '11';
+        
+        const toastElement = document.createElement('div');
+        toastElement.className = 'toast';
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        
+        toastElement.innerHTML = `
+            <div class="toast-header bg-danger text-white">
+                <strong class="me-auto">Connection Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+        
+        toastContainer.appendChild(toastElement);
+        document.body.appendChild(toastContainer);
+        
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        // Remove toast element after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            document.body.removeChild(toastContainer);
+        });
+    }
+    
+    // Public API
+    return {
+        initialize: initialize,
+        isConnected: function() { return connected; },
+        
+        // Command functions
+        sendCommand: sendCommand,
+        sendJog: sendJog,
+        sendJobControl: sendJobControl,
+        requestMachineStatus: requestMachineStatus,
+        connectToDevice: connectToDevice,
+        disconnectFromDevice: disconnectFromDevice,
+        
+        // Event listeners
+        addConnectionListener: function(listener) {
+            connectionListeners.push(listener);
+            // Immediately notify with current status
+            if (listener) listener(connected);
+        },
+        removeConnectionListener: function(listener) {
+            const index = connectionListeners.indexOf(listener);
+            if (index !== -1) connectionListeners.splice(index, 1);
+        },
+        
+        addStatusListener: function(listener) {
+            statusListeners.push(listener);
+        },
+        removeStatusListener: function(listener) {
+            const index = statusListeners.indexOf(listener);
+            if (index !== -1) statusListeners.splice(index, 1);
+        },
+        
+        addJobListener: function(listener) {
+            jobListeners.push(listener);
+        },
+        removeJobListener: function(listener) {
+            const index = jobListeners.indexOf(listener);
+            if (index !== -1) jobListeners.splice(index, 1);
+        }
+    };
+})();
+
+// Initialize the WebSocket manager when the document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.HairbrushWebSocket.initialize();
+    
+    // Set up emergency stop button if it exists
+    const emergencyStopBtn = document.getElementById('emergency-stop');
+    if (emergencyStopBtn) {
+        emergencyStopBtn.addEventListener('click', () => {
+            window.HairbrushWebSocket.sendCommand('M112'); // Emergency stop command
+        });
+    }
+    
+    // Set up machine status display if it exists
+    const machineStatus = document.getElementById('machine-status');
     if (machineStatus) {
-        machineStatus.textContent = `Status: ${data.state || 'Unknown'}`;
-    }
-    
-    // Update position if elements exist
-    const xPosition = document.getElementById('x-position');
-    const yPosition = document.getElementById('y-position');
-    const zPosition = document.getElementById('z-position');
-    
-    if (data.position) {
-        if (xPosition) xPosition.textContent = data.position.X.toFixed(2);
-        if (yPosition) yPosition.textContent = data.position.Y.toFixed(2);
-        if (zPosition) zPosition.textContent = data.position.Z.toFixed(2);
-    }
-    
-    // Update homed state
-    const homedState = document.getElementById('homed-state');
-    if (homedState && data.is_homed !== undefined) {
-        homedState.textContent = data.is_homed ? 'Yes' : 'No';
-    }
-    
-    // Update machine state
-    const machineState = document.getElementById('machine-state');
-    if (machineState && data.state) {
-        machineState.textContent = data.state;
-    }
-    
-    // Update brush status
-    const brushAStatus = document.getElementById('brush-a-status');
-    const brushBStatus = document.getElementById('brush-b-status');
-    
-    if (data.brush_state) {
-        if (brushAStatus) {
-            const brushA = data.brush_state.a;
-            let status = 'Inactive';
-            
-            if (brushA) {
-                if (brushA.air && brushA.paint) {
-                    status = 'Active (Air + Paint)';
-                } else if (brushA.air) {
-                    status = 'Air Only';
-                } else if (brushA.paint) {
-                    status = 'Paint Only';
-                }
-            }
-            
-            brushAStatus.textContent = status;
-        }
-        
-        if (brushBStatus) {
-            const brushB = data.brush_state.b;
-            let status = 'Inactive';
-            
-            if (brushB) {
-                if (brushB.air && brushB.paint) {
-                    status = 'Active (Air + Paint)';
-                } else if (brushB.air) {
-                    status = 'Air Only';
-                } else if (brushB.paint) {
-                    status = 'Paint Only';
-                }
-            }
-            
-            brushBStatus.textContent = status;
-        }
-    }
-    
-    // Call page-specific update function if it exists
-    if (typeof onMachineStatusUpdate === 'function') {
-        onMachineStatusUpdate(data);
-    }
-}
-
-// Update job status display
-function updateJobStatus(data) {
-    if (!data) return;
-    
-    const noJob = document.getElementById('no-job');
-    const activeJob = document.getElementById('active-job');
-    const jobName = document.getElementById('job-name');
-    const jobProgress = document.getElementById('job-progress');
-    const jobProgressText = document.getElementById('job-progress-text');
-    const jobTime = document.getElementById('job-time');
-    const pauseJobBtn = document.getElementById('pause-job');
-    const resumeJobBtn = document.getElementById('resume-job');
-    
-    if (!noJob || !activeJob) return;
-    
-    if (data.status === 'running' || data.status === 'paused') {
-        // Show active job
-        noJob.classList.add('d-none');
-        activeJob.classList.remove('d-none');
-        
-        // Update job details
-        if (jobName) jobName.textContent = data.filename;
-        if (jobProgress) jobProgress.style.width = `${data.progress}%`;
-        if (jobProgressText) jobProgressText.textContent = `${Math.round(data.progress)}%`;
-        
-        // Update time display
-        if (jobTime && data.start_time) {
-            const elapsed = Math.floor((Date.now() / 1000) - data.start_time);
-            jobTime.textContent = formatTime(elapsed);
-        }
-        
-        // Update pause/resume buttons
-        if (pauseJobBtn && resumeJobBtn) {
-            if (data.status === 'running') {
-                pauseJobBtn.classList.remove('d-none');
-                resumeJobBtn.classList.add('d-none');
-            } else {
-                pauseJobBtn.classList.add('d-none');
-                resumeJobBtn.classList.remove('d-none');
-            }
-        }
-    } else {
-        // No active job
-        noJob.classList.remove('d-none');
-        activeJob.classList.add('d-none');
-    }
-    
-    // Call page-specific update function if it exists
-    if (typeof onJobStatusUpdate === 'function') {
-        onJobStatusUpdate(data);
-    }
-}
-
-// Format time in HH:MM:SS
-function formatTime(seconds) {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    
-    return [
-        h.toString().padStart(2, '0'),
-        m.toString().padStart(2, '0'),
-        s.toString().padStart(2, '0')
-    ].join(':');
-}
-
-// Send command to server
-function sendCommand(command) {
-    if (!connected) {
-        console.error('Not connected to server');
-        return Promise.reject(new Error('Not connected to server'));
-    }
-    
-    return new Promise((resolve, reject) => {
-        socket.emit('command', { command }, (response) => {
-            if (response && response.status === 'success') {
-                resolve(response.result);
-            } else {
-                reject(new Error(response?.message || 'Command failed'));
+        window.HairbrushWebSocket.addStatusListener(function(data) {
+            if (data && data.state) {
+                machineStatus.textContent = `Status: ${data.state}`;
             }
         });
-    });
-}
-
-// Send jog command
-function sendJog(axis, distance, speed) {
-    if (!connected) {
-        console.error('Not connected to server');
-        return Promise.reject(new Error('Not connected to server'));
     }
-    
-    return new Promise((resolve, reject) => {
-        socket.emit('jog', { axis, distance, speed }, (response) => {
-            if (response && response.status === 'success') {
-                resolve(response.result);
-            } else {
-                reject(new Error(response?.message || 'Jog command failed'));
-            }
-        });
-    });
-}
+});
 
-// Send job control command
-function sendJobControl(action, job_id) {
-    if (!connected) {
-        console.error('Not connected to server');
-        return Promise.reject(new Error('Not connected to server'));
-    }
-    
-    return new Promise((resolve, reject) => {
-        socket.emit('job_control', { action, job_id }, (response) => {
-            if (response && response.status === 'success') {
-                resolve(response.result);
-            } else {
-                reject(new Error(response?.message || 'Job control failed'));
-            }
-        });
-    });
-}
-
-// Export functions for use in other scripts
+// For backward compatibility
 window.hairbrushController = {
-    sendCommand,
-    sendJog,
-    sendJobControl,
-    requestMachineStatus
+    sendCommand: function(command) {
+        return window.HairbrushWebSocket.sendCommand(command);
+    },
+    sendJog: function(axis, distance, speed) {
+        return window.HairbrushWebSocket.sendJog(axis, distance, speed);
+    },
+    sendJobControl: function(action, job_id) {
+        return window.HairbrushWebSocket.sendJobControl(action, job_id);
+    },
+    requestMachineStatus: function() {
+        return window.HairbrushWebSocket.requestMachineStatus();
+    },
+    isConnected: function() {
+        return window.HairbrushWebSocket.isConnected();
+    }
 }; 

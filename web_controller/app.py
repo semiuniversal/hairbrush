@@ -3,29 +3,43 @@
 H.Airbrush Web Controller
 
 A Flask-based web server for controlling the H.Airbrush machine in real-time,
-sending G-code commands via Telnet to the Duet 2 WiFi board.
+sending G-code commands via HTTP API to the Duet 2 WiFi board running RepRap firmware.
 """
 
 import os
 import logging
 import datetime
+import yaml
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_socketio import SocketIO
+import time
 
 # Configure logging
 log_dir = os.path.join(os.path.dirname(__file__), 'logs')
 os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, 'hairbrush_controller.log')
 
+# Set root logger to DEBUG level
+logging.getLogger().setLevel(logging.DEBUG)
+
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.DEBUG,  # Set to DEBUG to capture all messages
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler(log_file),
-        logging.StreamHandler()
+        logging.StreamHandler()  # This will output to console
     ]
 )
+
+# Ensure our specific loggers are set to DEBUG
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Set serial_service logger to DEBUG explicitly
+serial_logger = logging.getLogger('serial_service')
+serial_logger.setLevel(logging.DEBUG)
+
+logger.debug("Logging initialized at DEBUG level")
 
 # Create Flask application
 app = Flask(__name__)
@@ -49,15 +63,17 @@ from utils import logger as log_util
 from duet_client import DuetClient
 from job_manager import JobManager
 from machine_control import MachineControl
+from serial_service import SerialService
 from config import config
 
 # Initialize components
 duet_client = None
 job_manager = None
 machine_control = None
+serial_service = None
 
 def initialize_components():
-    global duet_client, job_manager, machine_control
+    global duet_client, job_manager, machine_control, serial_service
     
     # Load configuration
     duet_host = config.get('duet.host', '192.168.1.1')
@@ -75,8 +91,41 @@ def initialize_components():
     )
     job_manager = JobManager(app.config['UPLOAD_FOLDER'], duet_client)
     machine_control = MachineControl(duet_client)
+    serial_service = SerialService()
+    
+    # Set up job status update callback
+    if job_manager:
+        job_manager.set_status_callback(emit_job_status_update)
     
     logger.info(f"Initialized components with H.Airbrush Plotter host: {duet_host}:{duet_port}")
+
+# Function to emit job status updates via WebSocket
+def emit_job_status_update(job_data):
+    """
+    Emit job status update via WebSocket.
+    
+    Args:
+        job_data: Job data to emit
+    """
+    try:
+        socketio.emit('job_status', job_data)
+        logger.debug(f"Emitted job status update: {job_data.get('status')} - {job_data.get('progress')}%")
+    except Exception as e:
+        logger.error(f"Error emitting job status update: {e}")
+
+# Function to emit serial data via WebSocket
+def emit_serial_data(data):
+    """
+    Emit serial data via WebSocket.
+    
+    Args:
+        data: Serial data to emit
+    """
+    try:
+        socketio.emit('serial_data', {'data': data})
+        logger.debug(f"Emitted serial data: {data.strip()}")
+    except Exception as e:
+        logger.error(f"Error emitting serial data: {e}")
 
 # Routes
 @app.route('/')
@@ -119,12 +168,51 @@ def maintenance():
     """Render the maintenance page."""
     return render_template('maintenance.html')
 
+@app.route('/setup')
+def setup():
+    """Render the initial setup page."""
+    return render_template('setup.html')
+
 @app.route('/api/status')
 def get_status():
     """Get the current machine status."""
     if duet_client:
-        status = duet_client.get_status()
-        return jsonify(status)
+        try:
+            # Get position from Duet
+            position_result = duet_client.get_position()
+            
+            # Get machine state
+            state = duet_client.get_status().get('state', 'unknown')
+            
+            # Get homed state
+            is_homed = duet_client.is_homed()
+            
+            # Get motors state
+            motors_state = 'enabled' if duet_client.are_motors_enabled() else 'disabled'
+            
+            # Create status object
+            status = {
+                "position": position_result.get('position', {}),
+                "state": state,
+                "is_homed": is_homed,
+                "motors_state": motors_state
+            }
+            
+            # Try to get brush state if the method exists
+            if machine_control and hasattr(machine_control, 'get_brush_state'):
+                brush_state = machine_control.get_brush_state()
+                status["brush_state"] = brush_state
+            else:
+                # Provide default brush state
+                status["brush_state"] = {
+                    "a": {"air": False, "paint": False},
+                    "b": {"air": False, "paint": False}
+                }
+            
+            return jsonify(status)
+        except Exception as e:
+            logger.error(f"Error getting status: {e}")
+            return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Duet client not initialized"}), 500
 
 @app.route('/api/files', methods=['GET'])
@@ -214,6 +302,15 @@ def update_settings():
         if not settings:
             return jsonify({"error": "No settings provided"}), 400
         
+        # Validate settings before applying them
+        for section, values in settings.items():
+            if section not in config.config and section not in ['command_timeout', 'status_interval']:
+                logger.warning(f"Unknown settings section: {section}")
+        
+        # Create a backup of the current configuration
+        import copy
+        config_backup = copy.deepcopy(config.config)
+        
         # Update settings
         for section, values in settings.items():
             if isinstance(values, dict):
@@ -230,7 +327,13 @@ def update_settings():
                 config.set(section, values)
         
         # Save configuration to file
-        config.save()
+        try:
+            config.save()
+        except Exception as save_error:
+            logger.error(f"Failed to save configuration: {save_error}")
+            # Restore the backup
+            config.config = config_backup
+            return jsonify({"error": f"Failed to save configuration: {str(save_error)}"}), 500
         
         # Return updated configuration
         return jsonify({"success": True, "config": config.config})
@@ -306,25 +409,201 @@ def serve_static(filename):
     """Serve static files."""
     return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
-# Socket.IO event handlers
+@app.route('/api/machine/brush/<brush_id>/air', methods=['POST'])
+def set_brush_air(brush_id):
+    """Set brush air on/off."""
+    if machine_control:
+        try:
+            data = request.json
+            state = data.get('state', False)
+            result = machine_control.set_brush_air(brush_id, state)
+            return jsonify(result)
+        except Exception as e:
+            logger.error(f"Error setting brush {brush_id} air: {e}")
+            return jsonify({"error": str(e)}), 500
+    return jsonify({"error": "Machine control not initialized"}), 500
+
+@app.route('/api/machine/brush/<brush_id>/paint', methods=['POST'])
+def set_brush_paint(brush_id):
+    """Set brush paint on/off."""
+    if machine_control:
+        try:
+            data = request.json
+            state = data.get('state', False)
+            result = machine_control.set_brush_paint(brush_id, state)
+            return jsonify(result)
+        except Exception as e:
+            logger.error(f"Error setting brush {brush_id} paint: {e}")
+            return jsonify({"error": str(e)}), 500
+    return jsonify({"error": "Machine control not initialized"}), 500
+
+@app.route('/api/machine/brush/<brush_id>/flow', methods=['POST'])
+def set_brush_paint_flow(brush_id):
+    """Set brush paint flow percentage."""
+    if machine_control:
+        try:
+            data = request.json
+            percentage = float(data.get('percentage', 50))
+            result = machine_control.set_brush_paint_flow(brush_id, percentage)
+            return jsonify(result)
+        except Exception as e:
+            logger.error(f"Error setting brush {brush_id} paint flow: {e}")
+            return jsonify({"error": str(e)}), 500
+    return jsonify({"error": "Machine control not initialized"}), 500
+
+@app.route('/api/machine/home', methods=['POST'])
+
+# Serial communication API endpoints
+@app.route('/api/serial/ports', methods=['GET'])
+def list_serial_ports():
+    """List available serial ports."""
+    if not serial_service:
+        return jsonify({"error": "Serial service not initialized"}), 500
+    
+    ports = serial_service.list_ports()
+    return jsonify(ports)
+
+@app.route('/api/serial/connect', methods=['POST'])
+def connect_serial():
+    """Connect to a serial port."""
+    if not serial_service:
+        return jsonify({"error": "Serial service not initialized"}), 500
+    
+    data = request.json
+    port = data.get('port')
+    baud_rate = data.get('baud_rate', 115200)
+    
+    if not port:
+        return jsonify({"error": "Port is required"}), 400
+    
+    result = serial_service.connect(port, baud_rate, emit_serial_data)
+    
+    if result["status"] == "success":
+        return jsonify(result)
+    else:
+        return jsonify(result), 500
+
+@app.route('/api/serial/disconnect', methods=['POST'])
+def disconnect_serial():
+    """Disconnect from the serial port."""
+    if not serial_service:
+        return jsonify({"error": "Serial service not initialized"}), 500
+    
+    result = serial_service.disconnect()
+    
+    if result["status"] == "success":
+        return jsonify(result)
+    else:
+        return jsonify(result), 500
+
+@app.route('/api/serial/command', methods=['POST'])
+def send_serial_command():
+    """Send a command to the serial port."""
+    if not serial_service:
+        return jsonify({"error": "Serial service not initialized"}), 500
+    
+    if not serial_service.is_connected:
+        return jsonify({"error": "Not connected to a serial port"}), 400
+    
+    data = request.json
+    command = data.get('command')
+    
+    if not command:
+        return jsonify({"error": "Command is required"}), 400
+    
+    result = serial_service.send_command(command)
+    
+    if result["status"] == "success":
+        return jsonify(result)
+    else:
+        return jsonify(result), 500
+
+@app.route('/api/serial/ip', methods=['GET'])
+def get_ip_address():
+    """Get IP address from the Duet board."""
+    if not serial_service:
+        return jsonify({"error": "Serial service not initialized"}), 500
+    
+    if not serial_service.is_connected:
+        return jsonify({"error": "Not connected to a serial port"}), 400
+    
+    result = serial_service.get_ip_address()
+    
+    if result["status"] == "success":
+        # Add IP to connection history if found
+        if "ip_address" in result:
+            add_ip_to_history(result["ip_address"])
+        
+        return jsonify(result)
+    else:
+        return jsonify(result), 500
+
+def add_ip_to_history(ip_address):
+    """
+    Add IP address to connection history.
+    
+    Args:
+        ip_address: IP address to add
+    """
+    try:
+        # Get current connection history
+        connection_history = config.get('connection.history', [])
+        
+        # Add IP to history if not already present
+        if ip_address not in connection_history:
+            connection_history.insert(0, ip_address)
+            
+            # Keep only the 5 most recent IPs
+            if len(connection_history) > 5:
+                connection_history = connection_history[:5]
+            
+            # Update config
+            config.set('connection.history', connection_history)
+            config.save()
+            
+            logger.info(f"Added IP {ip_address} to connection history")
+    except Exception as e:
+        logger.error(f"Error adding IP to history: {e}")
+
 @socketio.on('connect')
 def handle_connect():
     """Handle client connection."""
     logger.info(f"Client connected: {request.sid}")
     
-    # Initialize components if not already initialized
-    if duet_client is None:
-        initialize_components()
-    
-    # Send initial status
-    if duet_client:
-        connected = duet_client.is_connected()
-        socketio.emit('connection_status', {"connected": connected}, room=request.sid)
+    try:
+        # Initialize components if not already initialized
+        if duet_client is None:
+            initialize_components()
+        
+        # Send initial status
+        if duet_client:
+            connected = duet_client.is_connected()
+            socketio.emit('connection_status', {"connected": connected}, room=request.sid)
+    except Exception as e:
+        logger.error(f"Error in handle_connect: {e}")
+        socketio.emit('connection_status', {"connected": False, "error": str(e)}, room=request.sid)
 
 @socketio.on('disconnect')
 def handle_disconnect():
     """Handle client disconnection."""
     logger.info(f"Client disconnected: {request.sid}")
+
+@socketio.on('error')
+def handle_error(error):
+    """Handle socket.io errors."""
+    logger.error(f"SocketIO error for {request.sid}: {error}")
+
+@socketio.on_error()
+def error_handler(e):
+    """Global error handler for all namespaces."""
+    logger.error(f"SocketIO global error: {e}")
+    return {"status": "error", "message": str(e)}
+
+@socketio.on_error_default
+def default_error_handler(e):
+    """Default error handler."""
+    logger.error(f"SocketIO default error: {e}")
+    return {"status": "error", "message": str(e)}
 
 @socketio.on('connect_device')
 def handle_connect_device(data):
@@ -514,36 +793,279 @@ def handle_job_control(data):
 
 @socketio.on('get_status')
 def handle_get_status(data):
-    """Handle status request."""
+    """Handle get status request."""
     if not duet_client:
         return {"status": "error", "message": "Not connected to device"}
     
     try:
-        # Get machine status
-        status = duet_client.get_status()
+        # Get position from Duet
+        position_result = duet_client.get_position()
         
-        # Get machine position
-        position = duet_client.get_position()
+        # Get machine state
+        state = duet_client.get_status().get('state', 'unknown')
         
-        # Get brush state
-        brush_state = machine_control.get_brush_state() if machine_control else None
+        # Get homed state
+        try:
+            is_homed = duet_client.is_homed()
+        except Exception as e:
+            logger.error(f"Error getting homed state: {e}")
+            is_homed = False
         
         # Get motors state
-        motors_state = machine_control.get_motors_state() if machine_control else None
+        try:
+            motors_state = 'enabled' if duet_client.are_motors_enabled() else 'disabled'
+        except Exception as e:
+            logger.error(f"Error getting motors state: {e}")
+            motors_state = 'unknown'
         
-        return {
-            "status": "success",
-            "data": {
-                "machine_status": status,
-                "position": position,
-                "brush_state": brush_state,
-                "motors_state": motors_state
-            }
+        # Create status object
+        status = {
+            "position": position_result.get('position', {}),
+            "state": state,
+            "is_homed": is_homed,
+            "motors_state": motors_state
         }
-    
+        
+        # Try to get brush state if the method exists
+        if machine_control and hasattr(machine_control, 'get_brush_state'):
+            brush_state = machine_control.get_brush_state()
+            status["brush_state"] = brush_state
+        else:
+            # Provide default brush state
+            status["brush_state"] = {
+                "a": {"air": False, "paint": False},
+                "b": {"air": False, "paint": False}
+            }
+        
+        return {"status": "success", "data": status}
     except Exception as e:
         logger.error(f"Error getting status: {e}")
         return {"status": "error", "message": str(e)}
+
+@socketio.on('brush_paint')
+def handle_brush_paint(data):
+    """Handle brush paint on/off."""
+    if not machine_control:
+        socketio.emit('error', {'message': 'Machine control not initialized'})
+        return
+    
+    try:
+        brush_id = data.get('brush', 'a')
+        state = data.get('state', False)
+        result = machine_control.set_brush_paint(brush_id, state)
+        socketio.emit('brush_paint_result', result)
+    except Exception as e:
+        logger.error(f"Error handling brush paint: {e}")
+        socketio.emit('error', {'message': str(e)})
+
+@socketio.on('brush_paint_flow')
+def handle_brush_paint_flow(data):
+    """Handle brush paint flow percentage."""
+    if not machine_control:
+        socketio.emit('error', {'message': 'Machine control not initialized'})
+        return
+    
+    try:
+        brush_id = data.get('brush', 'a')
+        percentage = float(data.get('percentage', 50))
+        result = machine_control.set_brush_paint_flow(brush_id, percentage)
+        socketio.emit('brush_paint_flow_result', result)
+    except Exception as e:
+        logger.error(f"Error handling brush paint flow: {e}")
+        socketio.emit('error', {'message': str(e)})
+
+@socketio.on('serial_connect')
+def handle_serial_connect(data):
+    """Handle serial connect request."""
+    if not serial_service:
+        socketio.emit('serial_status', {
+            "connected": False,
+            "error": "Serial service not initialized"
+        }, room=request.sid)
+        return
+    
+    port = data.get('port')
+    baud_rate = data.get('baud_rate', 115200)
+    
+    if not port:
+        socketio.emit('serial_status', {
+            "connected": False,
+            "error": "Port is required"
+        }, room=request.sid)
+        return
+    
+    result = serial_service.connect(port, baud_rate, emit_serial_data)
+    
+    socketio.emit('serial_status', {
+        "connected": result["status"] == "success",
+        "port": port if result["status"] == "success" else None,
+        "message": result["message"],
+        "error": result["message"] if result["status"] != "success" else None
+    }, room=request.sid)
+
+@socketio.on('serial_disconnect')
+def handle_serial_disconnect():
+    """Handle serial disconnect request."""
+    if not serial_service:
+        socketio.emit('serial_status', {
+            "connected": False,
+            "error": "Serial service not initialized"
+        }, room=request.sid)
+        return
+    
+    result = serial_service.disconnect()
+    
+    socketio.emit('serial_status', {
+        "connected": False,
+        "message": result["message"],
+        "error": result["message"] if result["status"] != "success" else None
+    }, room=request.sid)
+
+@socketio.on('serial_command')
+def handle_serial_command(data):
+    """Handle serial command request."""
+    if not serial_service:
+        socketio.emit('error', {
+            "message": "Serial service not initialized"
+        }, room=request.sid)
+        return
+    
+    command = data.get('command')
+    
+    if not command:
+        socketio.emit('error', {
+            "message": "Command is required"
+        }, room=request.sid)
+        return
+    
+    result = serial_service.send_command(command)
+    
+    if result["status"] != "success":
+        socketio.emit('error', {
+            "message": result["message"]
+        }, room=request.sid)
+
+@socketio.on('get_ip_address')
+def handle_get_ip_address():
+    """Handle get IP address request."""
+    if not serial_service:
+        socketio.emit('ip_address_result', {
+            "status": "error",
+            "message": "Serial service not initialized"
+        }, room=request.sid)
+        return
+    
+    if not serial_service.is_connected:
+        socketio.emit('ip_address_result', {
+            "status": "error",
+            "message": "Not connected to a serial port"
+        }, room=request.sid)
+        return
+    
+    # Get the IP address
+    result = serial_service.get_ip_address()
+    
+    # Add IP to connection history if found
+    if result["status"] == "success" and "ip_address" in result:
+        add_ip_to_history(result["ip_address"])
+    
+    socketio.emit('ip_address_result', result, room=request.sid)
+
+@app.route('/api/settings/get', methods=['GET'])
+def get_setting():
+    """Get a specific setting by key."""
+    key = request.args.get('key')
+    if not key:
+        return jsonify({"error": "Key is required"}), 400
+    
+    try:
+        value = config.get(key, None)
+        return jsonify({"key": key, "value": value})
+    except Exception as e:
+        logger.error(f"Error getting setting {key}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/settings/set', methods=['POST'])
+def set_setting():
+    """Set a specific setting."""
+    data = request.json
+    if not data or 'key' not in data or 'value' not in data:
+        return jsonify({"error": "Key and value are required"}), 400
+    
+    key = data['key']
+    value = data['value']
+    
+    try:
+        config.set(key, value)
+        config.save()
+        return jsonify({"success": True, "key": key, "value": value})
+    except Exception as e:
+        logger.error(f"Error setting {key}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/connect', methods=['POST'])
+def connect_to_duet():
+    """Connect to the Duet board."""
+    data = request.json
+    if not data:
+        return jsonify({"error": "No connection data provided"}), 400
+    
+    host = data.get('host')
+    port = data.get('port', 80)
+    
+    if not host:
+        return jsonify({"error": "Host is required"}), 400
+    
+    try:
+        # Update configuration
+        config.set('duet.host', host)
+        config.set('duet.http_port', port)
+        config.save()
+        
+        # Initialize Duet client with new settings
+        global duet_client
+        if duet_client:
+            duet_client.disconnect()
+        
+        duet_client = DuetClient(
+            host=host,
+            http_port=port,
+            connect_timeout=int(config.get('duet.connect_timeout', 5)),
+            password=config.get('duet.password', ''),
+            auto_connect=True
+        )
+        
+        # Test connection
+        if duet_client.is_connected():
+            # Add to connection history
+            add_ip_to_history(host)
+            
+            return jsonify({"success": True, "message": f"Connected to {host}"})
+        else:
+            return jsonify({"success": False, "message": "Failed to connect to Duet board"}), 500
+    except Exception as e:
+        logger.error(f"Error connecting to Duet: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/api/commands')
+def get_commands():
+    """Get available Duet commands."""
+    try:
+        # Path to the YAML file
+        commands_file = os.path.join(os.path.dirname(__file__), 'duet_status_commands.yaml')
+        
+        # Check if file exists
+        if not os.path.exists(commands_file):
+            return jsonify({"error": "Commands file not found"}), 404
+        
+        # Load commands from YAML
+        with open(commands_file, 'r') as f:
+            commands = yaml.safe_load(f)
+        
+        return jsonify(commands)
+    except Exception as e:
+        logger.error(f"Error loading commands: {e}")
+        return jsonify({"error": str(e)}), 500
 
 # Run the application if executed directly
 if __name__ == '__main__':

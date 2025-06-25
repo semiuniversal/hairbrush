@@ -52,19 +52,46 @@ class Config:
     def save(self) -> None:
         """Save configuration to file."""
         try:
+            # Create a backup of the current config file if it exists
+            if os.path.exists(self.config_path):
+                backup_path = f"{self.config_path}.bak"
+                try:
+                    with open(self.config_path, 'r') as src, open(backup_path, 'w') as dst:
+                        dst.write(src.read())
+                    logger.info(f"Created backup of configuration at {backup_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to create backup of configuration: {e}")
+            
             # Ensure directory exists
             os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
             
-            with open(self.config_path, 'w') as f:
+            # Write to a temporary file first
+            temp_path = f"{self.config_path}.tmp"
+            with open(temp_path, 'w') as f:
                 if self.config_path.endswith('.json'):
                     json.dump(self.config, f, indent=2)
                 else:
                     yaml.dump(self.config, f, default_flow_style=False)
             
+            # Rename the temporary file to the actual config file
+            # This is an atomic operation that prevents corruption if interrupted
+            import shutil
+            shutil.move(temp_path, self.config_path)
+            
             logger.info(f"Saved configuration to {self.config_path}")
         
         except Exception as e:
             logger.error(f"Error saving configuration: {e}")
+            # If we have a backup, try to restore it
+            backup_path = f"{self.config_path}.bak"
+            if os.path.exists(backup_path):
+                try:
+                    import shutil
+                    shutil.copy(backup_path, self.config_path)
+                    logger.info(f"Restored configuration from backup")
+                except Exception as restore_error:
+                    logger.error(f"Failed to restore configuration from backup: {restore_error}")
+            raise
     
     def get(self, key: str, default: Any = None) -> Any:
         """
@@ -114,7 +141,6 @@ class Config:
         self.config = {
             'duet': {
                 'host': '192.168.1.1',
-                'telnet_port': 23,
                 'http_port': 80,
                 'connect_timeout': 5
             },

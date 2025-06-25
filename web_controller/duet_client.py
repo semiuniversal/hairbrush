@@ -439,6 +439,42 @@ class DuetClient:
             logger.error(f"Error getting status: {e}")
             return self.last_status or {"status": "error", "message": str(e)}
     
+    def is_homed(self) -> bool:
+        """
+        Check if all axes are homed.
+        
+        Returns:
+            bool: True if all axes are homed, False otherwise
+        """
+        try:
+            status = self.get_status()
+            if isinstance(status, dict) and "axesHomed" in status:
+                return all(status["axesHomed"])
+            return False
+        except Exception as e:
+            logger.error(f"Error checking homed status: {e}")
+            return False
+    
+    def are_motors_enabled(self) -> bool:
+        """
+        Check if motors are enabled.
+        
+        Returns:
+            bool: True if motors are enabled, False otherwise
+        """
+        try:
+            status = self.get_status()
+            if isinstance(status, dict) and "status" in status:
+                # Different firmware versions use different fields
+                if "motors" in status:
+                    return status["motors"] == 1
+                elif "drive" in status:
+                    return status["drive"] == 1
+            return False
+        except Exception as e:
+            logger.error(f"Error checking motor status: {e}")
+            return False
+    
     def get_file_list(self) -> List[Dict[str, Any]]:
         """
         Get the list of files on the Duet board.

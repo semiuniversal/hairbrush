@@ -64,6 +64,7 @@
   - [x] Add endstop monitoring with real-time status display
   - [x] Optimize machine control layout for better usability
   - [x] Fix JavaScript errors and improve error handling
+  - [x] Implement calibrated paint flow control with min/max servo angle settings
 - [x] Develop web UI
   - [x] Create responsive dashboard layout
   - [x] Implement G-code visualization
@@ -76,12 +77,20 @@
   - [x] Add scale indicators to visualization
   - [x] Implement settings persistence to config.yaml
   - [x] Connect settings changes to visualization updates
+  - [x] Implement global WebSocket manager for persistent connections across tabs
+  - [x] Create settings.js to handle loading and saving settings
+  - [x] Add API endpoints for getting and setting configuration
+  - [x] Implement setup page with IP address discovery
+  - [x] Add diagnostic command menu to setup page
 - [ ] Testing and optimization
   - [ ] Test with real hardware
-  - [ ] Optimize performance for real-time control
-  - [ ] Implement error recovery mechanisms
-  - [ ] Add comprehensive logging
+  - [x] Optimize performance for real-time control
+  - [x] Implement error recovery mechanisms
+  - [x] Add comprehensive logging
   - [x] Fix endstop monitoring parsing for Z probe information
+  - [x] Fix WebSocket connection reliability issues
+  - [x] Improve settings persistence reliability
+  - [x] Fix tab-switching disconnection issues
   - [ ] Test endstop monitoring and homing procedures
 - [ ] Documentation and deployment
   - [x] Create endstop monitoring documentation
@@ -163,6 +172,51 @@
 - [x] Connect settings changes to visualization updates
 - [x] Create settings.js to handle loading and saving settings
 - [x] Add API endpoints for getting and setting configuration
+- [x] Fix "DuetClient object has no attribute 'is_homed'" error by implementing the missing method
+- [x] Add error handling for machine status requests in both client and server code
+- [x] Improve JavaScript status notification with safe default values
+- [x] Remove Telnet port settings from UI and config.yaml (no longer needed with RepRap firmware)
+- [x] Implement calibrated paint flow control with min/max servo angle settings for each brush
+- [x] Add test buttons for min/max paint flow settings with real-time feedback
+- [x] Implement percentage-to-servo-angle scaling for intuitive user control
+- [x] Add safety features to reset servos to minimum position when saving settings
+- [x] Fix USB serial connection for device discovery
+- [x] Add reliable IP address detection via serial communication
+- [x] Implement background thread for capturing IP address from serial data
+- [x] Add hierarchical diagnostic command menu with commands from YAML file
+- [x] Fix connection history management and persistence
+- [x] Add automatic disconnection when leaving or reloading the page
+- [x] Improve error handling for serial communication
+- [x] Fix "Already connected" errors with proper resource management
+
+## Future Improvements
+
+### JavaScript Architecture Refactoring
+- [ ] Eliminate global variable dependencies and improve module structure
+  - [ ] Implement proper dependency injection
+  - [ ] Create a module pattern for key components
+  - [ ] Reduce coupling between components
+- [ ] Consolidate duplicate event listeners and DOM setup
+  - [ ] Merge overlapping DOMContentLoaded event listeners
+  - [ ] Standardize command sending logic
+  - [ ] Create consistent initialization sequence
+- [ ] Implement proper error boundaries and state management
+  - [ ] Centralize state tracking (brush states, motor states)
+  - [ ] Implement consistent error handling patterns
+  - [ ] Improve UI state synchronization
+- [ ] Extract magic numbers and improve configuration management
+  - [ ] Create central configuration object for timeouts and intervals
+  - [ ] Move grid spacing and visualization parameters to config
+  - [ ] Make delay values configurable
+- [ ] Optimize DOM manipulation and reduce layout thrashing
+  - [ ] Batch DOM style changes
+  - [ ] Optimize endstop update logic
+  - [ ] Implement requestAnimationFrame for animations
+
+### Connection Handling Improvements
+- [ ] Implement proper IP address validation
+- [ ] Add cleanup for unmanaged event listeners and timeouts
+- [ ] Create a ConnectionManager class with proper dependency injection
 
 ## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
 - All command-line operations MUST be executed in WSL, NOT in Windows

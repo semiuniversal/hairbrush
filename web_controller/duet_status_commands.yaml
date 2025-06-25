@@ -1,0 +1,30 @@
+System Info:
+- command: M115
+  description: Firmware and hardware version info
+- command: M122
+  description: Full diagnostics (CPU, movement, temps, I2C, etc.)
+- command: M503
+  description: Echo current configuration values
+Network:
+- command: M540
+  description: MAC address of the Duet board
+- command: M587
+  description: List saved Wi-Fi networks
+Machine Status:
+- command: M408
+  description: JSON-style machine state summary
+- command: M408 S0
+  description: Lightweight machine status query
+Motion & Endstops:
+- command: M119
+  description: Endstop state
+- command: M574
+  description: Display endstop configuration
+Files & Macros:
+- command: M20
+  description: List files on SD card
+- command: M98 P"config.g"
+  description: Re-run configuration and output startup info
+- command: M98 P"custom.g"
+  description: Run custom diagnostic macros
+

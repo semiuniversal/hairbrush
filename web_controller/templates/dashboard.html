@@ -132,17 +132,74 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Visualization</h5>
+                <h5 class="mb-0">Job Status</h5>
             </div>
             <div class="card-body">
-                <div id="visualization-container" class="visualization-container">
-                    <canvas id="visualization-canvas"></canvas>
-                </div>
-                <div class="text-center mt-2">
-                    <div class="btn-group btn-group-sm">
-                        <button id="view-top" class="btn btn-outline-secondary active">Top</button>
-                        <button id="view-front" class="btn btn-outline-secondary">Front</button>
-                        <button id="view-side" class="btn btn-outline-secondary">Side</button>
+                <div id="job-status-container">
+                    <div id="no-job-status" class="text-center py-3">
+                        <i class="bi bi-clipboard-data fs-1 text-muted"></i>
+                        <p class="mt-2">No active job statistics available.</p>
+                    </div>
+                    <div id="active-job-status" class="d-none">
+                        <div class="job-stats mb-3">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Status</div>
+                                        <div id="job-status" class="stat-value">Ready</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Elapsed</div>
+                                        <div id="job-elapsed" class="stat-value">00:00:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Lines</div>
+                                        <div id="job-lines" class="stat-value">0 / 0</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Est. Remaining</div>
+                                        <div id="job-remaining" class="stat-value">--:--:--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="job-visualization mb-3">
+                            <h6 class="mb-2">Progress Visualization</h6>
+                            <div class="progress-canvas-container">
+                                <canvas id="progress-canvas" height="150"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="brush-usage mb-3">
+                            <h6 class="mb-2">Brush Usage</h6>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="brush-usage-item">
+                                        <span class="brush-label">Brush A (Black):</span>
+                                        <div class="progress" style="height: 10px;">
+                                            <div id="brush-a-usage" class="progress-bar bg-dark" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="brush-usage-item">
+                                        <span class="brush-label">Brush B (White):</span>
+                                        <div class="progress" style="height: 10px;">
+                                            <div id="brush-b-usage" class="progress-bar bg-light border" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,6 +222,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %} 

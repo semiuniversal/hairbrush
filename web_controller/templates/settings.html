@@ -8,6 +8,17 @@
         <div class="col-12">
             <h1 class="mb-4">Settings</h1>
             
+            <!-- Duet Web Control -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Duet Web Control (DWC)</h5>
+                </div>
+                <div class="card-body">
+                    <p>If you need to configure the Duet 2 Wi-Fi board at a hardware level, including changing config.gcode and macros, visit the DWC.</p>
+                    <button id="open-dwc" class="btn btn-primary">Open Duet Web Control</button>
+                </div>
+            </div>
+            
             <!-- Connection Settings -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -21,14 +32,9 @@
                             <div class="form-text">IP address or hostname of the Duet 2 WiFi board</div>
                         </div>
                         <div class="mb-3">
-                            <label for="duet-port" class="form-label">Telnet Port</label>
-                            <input type="number" class="form-control" id="duet-port" value="23">
-                            <div class="form-text">Telnet port for G-code streaming (default: 23)</div>
-                        </div>
-                        <div class="mb-3">
                             <label for="duet-http-port" class="form-label">HTTP Port</label>
                             <input type="number" class="form-control" id="duet-http-port" value="80">
-                            <div class="form-text">HTTP port for status monitoring (default: 80)</div>
+                            <div class="form-text">HTTP port for RepRap firmware communication (default: 80)</div>
                         </div>
                         <div class="mb-3">
                             <label for="connection-timeout" class="form-label">Connection Timeout</label>
@@ -123,10 +129,23 @@
                                     <input type="number" class="form-control" id="brush-a-paint-servo" value="0">
                                     <div class="form-text">Servo index for paint control (M280 P0)</div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="brush-a-paint-angle" class="form-label">Paint Servo Angle</label>
-                                    <input type="number" class="form-control" id="brush-a-paint-angle" value="90">
-                                    <div class="form-text">Servo angle for paint on (0-180)</div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="brush-a-paint-min" class="form-label">Paint Servo Lower Limit</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="brush-a-paint-min" value="0" min="0" max="180">
+                                            <button class="btn btn-outline-secondary" type="button" id="brush-a-test-min">Test Min</button>
+                                        </div>
+                                        <div class="form-text">This value corresponds to 0% paint flow</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="brush-a-paint-max" class="form-label">Paint Servo Upper Limit</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="brush-a-paint-max" value="90" min="0" max="180">
+                                            <button class="btn btn-outline-secondary" type="button" id="brush-a-test-max">Test Max</button>
+                                        </div>
+                                        <div class="form-text">This value corresponds to 100% paint flow</div>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save Brush A Settings</button>
                             </form>
@@ -154,10 +173,23 @@
                                     <input type="number" class="form-control" id="brush-b-paint-servo" value="1">
                                     <div class="form-text">Servo index for paint control (M280 P1)</div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="brush-b-paint-angle" class="form-label">Paint Servo Angle</label>
-                                    <input type="number" class="form-control" id="brush-b-paint-angle" value="90">
-                                    <div class="form-text">Servo angle for paint on (0-180)</div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="brush-b-paint-min" class="form-label">Paint Servo Lower Limit</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="brush-b-paint-min" value="0" min="0" max="180">
+                                            <button class="btn btn-outline-secondary" type="button" id="brush-b-test-min">Test Min</button>
+                                        </div>
+                                        <div class="form-text">This value corresponds to 0% paint flow</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="brush-b-paint-max" class="form-label">Paint Servo Upper Limit</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="brush-b-paint-max" value="90" min="0" max="180">
+                                            <button class="btn btn-outline-secondary" type="button" id="brush-b-test-max">Test Max</button>
+                                        </div>
+                                        <div class="form-text">This value corresponds to 100% paint flow</div>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save Brush B Settings</button>
                             </form>

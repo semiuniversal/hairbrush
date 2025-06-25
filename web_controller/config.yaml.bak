@@ -5,10 +5,10 @@ brushes:
     name: Black
     offset_x: 0
     offset_y: 0
-    paint_max: 74
-    paint_min: 67
     paint_off: M280 P0 S0
     paint_on: M280 P0 S90
+    paint_min: 0
+    paint_max: 90
   b:
     air_off: M42 P1 S0
     air_on: M42 P1 S1
@@ -17,6 +17,8 @@ brushes:
     offset_y: 25
     paint_off: M280 P1 S0
     paint_on: M280 P1 S90
+    paint_min: 0
+    paint_max: 90
 connection:
   history:
   - 192.168.86.43

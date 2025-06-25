@@ -19,6 +19,7 @@ dependencies = [
     "flask>=2.2.0",  # Web server for controller interface
     "flask-socketio>=5.3.0",  # WebSocket support for real-time updates
     "requests>=2.28.0",  # HTTP client for Duet communication
+    "pyserial>=3.5",  # Serial communication for setup and configuration
     # inkex is provided by Inkscape runtime, don't add here
 ]
 
@@ -34,6 +35,7 @@ web = [
     "flask-socketio>=5.3.0",
     "requests>=2.28.0",
     "eventlet>=0.33.0",  # Async server for Flask-SocketIO
+    "pyserial>=3.5",  # Serial communication for setup and configuration
 ]
 
 # Note: inkex is not included as a dependency because it's provided by Inkscape

@@ -6,7 +6,7 @@ We are implementing the three-component H.Airbrush architecture:
 2. **Web Controller** (95% complete)
 3. **Duet 2 WiFi Integration** (20% complete)
 
-Current focus is on completing the Web Controller implementation with testing, optimization, and documentation. The core functionality has been implemented, including Flask application structure, Duet communication client, job management system, machine control interface, web UI, visualization, and settings persistence.
+Current focus is on completing the Web Controller implementation with testing, optimization, and documentation. The core functionality has been implemented, including Flask application structure, Duet communication client, job management system, machine control interface, web UI, visualization, settings persistence, and setup page improvements.
 
 ## Completed Work
 
@@ -20,12 +20,14 @@ Current focus is on completing the Web Controller implementation with testing, o
 ### Web Controller Component
 - [x] Created Flask application structure with WebSocket support
 - [x] Implemented Duet client for HTTP API communication
-- [x] Developed job management system for G-code file handling
-- [x] Created machine control interface for manual operation
+- [x] Developed job management system with file handling
+- [x] Created machine control interface with jog controls and brush commands
 - [x] Built responsive web UI with dashboard and control pages
 - [x] Implemented endstop monitoring with real-time status display
 - [x] Created canvas-based visualization with proper scaling
 - [x] Added settings persistence to config.yaml
+- [x] Fixed setup page with reliable IP address discovery
+- [x] Added diagnostic command menu for device troubleshooting
 
 ### Architecture Planning
 - [x] Defined three-component system architecture
@@ -54,6 +56,7 @@ Current focus is on completing the Web Controller implementation with testing, o
   - Core functionality implemented
   - Canvas visualization working with proper scaling
   - Settings persistence implemented
+  - Setup page with IP discovery working
   - Testing, optimization, and documentation needed
   
 - **Duet Integration**: 20% complete
@@ -69,7 +72,19 @@ Current focus is on completing the Web Controller implementation with testing, o
 
 ## Recent Improvements
 
-### Visualization Improvements (Today)
+### Setup Page Improvements (June 30, 2024)
+- Fixed USB serial connection for device discovery
+- Added reliable IP address detection via serial communication
+- Implemented background thread for capturing IP address from serial data
+- Added hierarchical diagnostic command menu with commands from YAML file
+- Fixed connection history management and persistence
+- Added automatic disconnection when leaving or reloading the page
+- Improved error handling for serial communication
+- Fixed "Already connected" errors with proper resource management
+- Implemented API endpoints for settings management
+- Fixed dependency management with consolidated pyproject.toml
+
+### Visualization Improvements (June 24, 2024)
 - Replaced DOM/CSS-based visualization with HTML5 Canvas implementation
 - Fixed brush position visualization with proper offsets
 - Added grid lines with numeric scale indicators
@@ -79,7 +94,7 @@ Current focus is on completing the Web Controller implementation with testing, o
 - Added position and brush offset text display
 - Ensured visualization updates when brush offsets change in settings
 
-### Settings Persistence Implementation (Today)
+### Settings Persistence Implementation (June 24, 2024)
 - Created settings.js to handle loading and saving settings
 - Added API endpoints for getting and setting configuration
 - Implemented settings persistence to config.yaml file
@@ -88,7 +103,7 @@ Current focus is on completing the Web Controller implementation with testing, o
 - Fixed connection handling in the settings page
 - Implemented test connection functionality
 
-### Control Interface Improvements
+### Control Interface Improvements (June 23, 2024)
 - Added Enable Motors button as toggle counterpart to Disable Motors
 - Implemented M17 command handling for enabling motors
 - Created toggle functionality between Enable/Disable buttons
@@ -102,7 +117,7 @@ Current focus is on completing the Web Controller implementation with testing, o
 - Synchronized button appearance with actual machine state
 - Added debounced slider events to prevent excessive commands
 
-### Command History Improvements
+### Command History Improvements (June 23, 2024)
 - Fixed "removeChild" error that occurred when sending G-code commands
 - Expanded command history to support up to 100 entries (up from 10)
 - Added command count badge to show number of commands in history
@@ -111,18 +126,9 @@ Current focus is on completing the Web Controller implementation with testing, o
 - Added error handling to prevent UI disruption from DOM exceptions
 - Improved the overall command history user experience
 
-### Endstop Monitoring Improvements
-- Fixed Z endstop status parsing to handle RepRapFirmware's Z probe information
-- Implemented more robust regex pattern for M119 response parsing
-- Added fallback parsing approach for complex endstop responses
-- Updated documentation to include information about Z probe responses
-- Improved error handling for endstop status parsing
-- Eliminated UI blinking by only updating endstop indicators when status changes
-- Implemented state tracking to prevent unnecessary DOM updates
-
 ## Working Features
 - **Inkscape Extension**: SVG parsing, G-code generation with M400 sync points
-- **Web Controller**: HTTP API communication, machine control, file management, status monitoring, endstop monitoring, canvas visualization, settings persistence
+- **Web Controller**: HTTP API communication, machine control, file management, status monitoring, endstop monitoring, canvas visualization, settings persistence, setup page with IP discovery
 - **Duet Integration**: HTTP API communication, position monitoring, endstop monitoring
 
 ## What's Left
@@ -227,3 +233,153 @@ We've successfully implemented the hybrid approach for motion synchronization:
 - Use uv for virtual environment management
 - Use pyproject.toml for dependency management
 - Follow minimalist approach to dependencies 
+
+## Current Progress
+
+### Web Controller
+- **Status**: 95% complete
+- **Working Features**:
+  - G-code file upload and management
+  - Machine control interface with jog controls
+  - Brush control commands
+  - Real-time machine status monitoring
+  - Global WebSocket manager with persistent connections across tabs
+  - WebSocket communication with reconnection handling
+  - Settings persistence with backup and atomic writes
+  - Canvas-based visualization with grid and position display
+  - Command history with improved error handling
+  - Endstop monitoring with real-time status display
+  - Configuration management with YAML file
+  - Error recovery mechanisms for WebSocket connections
+  - Comprehensive logging
+
+- **Implementation Details**:
+  - Used Flask with Flask-SocketIO for the web server
+  - Implemented HTTP API client for Duet communication
+  - Created responsive UI with Bootstrap 5
+  - Used HTML5 Canvas for machine visualization
+  - Implemented global WebSocket manager using module pattern
+  - Added event listener system for connection, status, and job updates
+  - Added WebSocket reconnection handling with user feedback
+  - Implemented settings persistence with backup and atomic writes
+  - Added comprehensive error handling for WebSocket commands
+  - Improved UI state synchronization during connection issues
+
+- **Remaining Tasks**:
+  - Test with real hardware
+  - Create comprehensive documentation
+  - Test endstop monitoring and homing procedures
+  - Create deployment instructions 
+
+## Recent Progress
+
+### JavaScript Console Error Fixes
+- Fixed "disableMotionControls is not defined" error by moving function to global scope
+- Improved initialization sequence to handle cases where elements might not be available
+- Fixed visualization elements check with proper fallback for canvas visualization
+- Enhanced socket initialization to use the global WebSocket manager with better error handling
+- Fixed requestMachineStatus function to handle connection errors properly
+- Added proper connection state checks before attempting status requests
+- Implemented timeout handling for requests that might hang
+- Added graceful error handling to prevent unhandled promise rejections
+- Documented architectural improvements needed for future refactoring
+
+### Machine Status Handling Improvements
+- Fixed "DuetClient object has no attribute 'is_homed'" error by implementing the missing method in DuetClient class
+- Added error handling for status requests in both client and server code
+- Improved JavaScript status notification with safe default values
+- Added graceful fallbacks for missing status attributes
+- Enhanced error handling in handle_get_status socket handler
+- Implemented client-side data sanitization to prevent UI errors
+
+### WebSocket Connection Reliability
+- Implemented global WebSocket manager using module pattern
+- Created singleton pattern to maintain one connection across all tabs
+- Added event listener system for connection, status, and job updates
+- Implemented automatic reconnection with user feedback
+- Added comprehensive error handling with timeouts
+- Ensured backward compatibility with existing code
+- Fixed tab-switching disconnection issues
+- Added toast notifications for connection status
+
+## Working Features
+- **Inkscape Extension**:
+  - SVG parsing with layer detection
+  - Path processing with all SVG command support
+  - G-code generation with Z-optimization
+  - M400 synchronization points at strategic locations
+
+- **Web Controller**:
+  - Flask-based web server with WebSocket support
+  - Duet client with Telnet, HTTP, and WebSocket communication
+  - Job management system with file handling
+  - Machine control interface with jog controls and brush commands
+  - G-code processing with M400 synchronization awareness
+  - Web UI with dashboard, control panel, and file management
+
+## Remaining Work
+- **Testing and Optimization**:
+  - Test with real hardware
+  - Optimize performance for real-time control
+  - Implement error recovery mechanisms
+  - Add comprehensive logging
+
+- **Documentation and Deployment**:
+  - Create user guide for web controller
+  - Document API endpoints
+  - Create deployment instructions
+  - Add configuration examples
+
+- **Integration Testing**:
+  - Test end-to-end workflow from Inkscape to hardware
+  - Verify brush control commands
+  - Document hardware-specific considerations
+
+## Next Steps
+1. Complete testing and optimization of the web controller
+2. Create comprehensive documentation for the web controller
+3. Perform integration testing with real hardware
+4. Prepare for GitHub repository setup and public release
+
+## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
+- All command-line operations MUST be executed in WSL, NOT in Windows
+- Use uv for virtual environment management
+- Use pyproject.toml for dependency management
+- Follow minimalist approach to dependencies 
+
+## Current Progress
+
+### Web Controller
+- **Status**: 95% complete
+- **Working Features**:
+  - G-code file upload and management
+  - Machine control interface with jog controls
+  - Brush control commands
+  - Real-time machine status monitoring
+  - Global WebSocket manager with persistent connections across tabs
+  - WebSocket communication with reconnection handling
+  - Settings persistence with backup and atomic writes
+  - Canvas-based visualization with grid and position display
+  - Command history with improved error handling
+  - Endstop monitoring with real-time status display
+  - Configuration management with YAML file
+  - Error recovery mechanisms for WebSocket connections
+  - Comprehensive logging
+
+- **Implementation Details**:
+  - Used Flask with Flask-SocketIO for the web server
+  - Implemented HTTP API client for Duet communication
+  - Created responsive UI with Bootstrap 5
+  - Used HTML5 Canvas for machine visualization
+  - Implemented global WebSocket manager using module pattern
+  - Added event listener system for connection, status, and job updates
+  - Added WebSocket reconnection handling with user feedback
+  - Implemented settings persistence with backup and atomic writes
+  - Added comprehensive error handling for WebSocket commands
+  - Improved UI state synchronization during connection issues
+
+- **Remaining Tasks**:
+  - Test with real hardware
+  - Create comprehensive documentation
+  - Test endstop monitoring and homing procedures
+  - Create deployment instructions 

@@ -35,7 +35,136 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Test connection button
     document.getElementById('test-connection').addEventListener('click', testConnection);
+    
+    // Duet Web Control button
+    const openDwcBtn = document.getElementById('open-dwc');
+    if (openDwcBtn) {
+        openDwcBtn.addEventListener('click', openDWC);
+    }
+    
+    // Set up brush test buttons
+    setupBrushTestButtons('a');
+    setupBrushTestButtons('b');
 });
+
+/**
+ * Open Duet Web Control in a new window
+ */
+function openDWC() {
+    // Get the current Duet host from the input field
+    const duetHost = document.getElementById('duet-host').value;
+    
+    // Ensure we have a valid host
+    if (!duetHost) {
+        showToast('Please enter a valid Duet host address', 'error');
+        return;
+    }
+    
+    // Construct the URL (using protocol-relative URL if the host doesn't include http/https)
+    let url = duetHost;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'http://' + url;
+    }
+    
+    // Open in a new window/tab
+    window.open(url, '_blank');
+}
+
+/**
+ * Set up brush test buttons for a specific brush
+ * @param {string} brush - Brush identifier ('a' or 'b')
+ */
+function setupBrushTestButtons(brush) {
+    const testMinBtn = document.getElementById(`brush-${brush}-test-min`);
+    const testMaxBtn = document.getElementById(`brush-${brush}-test-max`);
+    const servoPin = brush === 'a' ? 0 : 1;
+    const airPin = brush === 'a' ? 0 : 1;
+    
+    if (testMinBtn) {
+        // Test Min button - mousedown activates, mouseup/mouseleave deactivates
+        testMinBtn.addEventListener('mousedown', function() {
+            const minValue = parseInt(document.getElementById(`brush-${brush}-paint-min`).value);
+            testPaintFlow(servoPin, airPin, minValue, true);
+        });
+        
+        testMinBtn.addEventListener('mouseup', function() {
+            testPaintFlow(servoPin, airPin, null, false);
+        });
+        
+        testMinBtn.addEventListener('mouseleave', function() {
+            testPaintFlow(servoPin, airPin, null, false);
+        });
+    }
+    
+    if (testMaxBtn) {
+        // Test Max button - mousedown activates, mouseup/mouseleave deactivates
+        testMaxBtn.addEventListener('mousedown', function() {
+            const maxValue = parseInt(document.getElementById(`brush-${brush}-paint-max`).value);
+            testPaintFlow(servoPin, airPin, maxValue, true);
+        });
+        
+        testMaxBtn.addEventListener('mouseup', function() {
+            testPaintFlow(servoPin, airPin, null, false);
+        });
+        
+        testMaxBtn.addEventListener('mouseleave', function() {
+            testPaintFlow(servoPin, airPin, null, false);
+        });
+    }
+}
+
+/**
+ * Test paint flow by controlling servo and air
+ * @param {number} servoPin - Servo pin number
+ * @param {number} airPin - Air pin number
+ * @param {number|null} servoValue - Servo angle value (null to keep current)
+ * @param {boolean} airOn - Whether to turn air on or off
+ */
+function testPaintFlow(servoPin, airPin, servoValue, airOn) {
+    // Use global WebSocket manager if available
+    if (window.HairbrushWebSocket) {
+        // Send servo command if a value is provided
+        if (servoValue !== null) {
+            window.HairbrushWebSocket.sendCommand(`M280 P${servoPin} S${servoValue}`)
+                .catch(error => {
+                    console.error('Error sending servo command:', error);
+                    showToast('Error sending servo command', 'error');
+                });
+        }
+        
+        // Send air command
+        const airCommand = airOn ? `M42 P${airPin} S1` : `M42 P${airPin} S0`;
+        window.HairbrushWebSocket.sendCommand(airCommand)
+            .catch(error => {
+                console.error('Error sending air command:', error);
+                showToast('Error sending air command', 'error');
+            });
+    } else {
+        // Fallback to direct fetch API
+        fetch('/api/command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                commands: [
+                    servoValue !== null ? `M280 P${servoPin} S${servoValue}` : null,
+                    airOn ? `M42 P${airPin} S1` : `M42 P${airPin} S0`
+                ].filter(Boolean)
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send test command');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error testing paint flow:', error);
+            showToast('Error testing paint flow', 'error');
+        });
+    }
+}
 
 /**
  * Load settings from the server
@@ -57,7 +186,6 @@ function loadSettings() {
             // Populate connection settings
             if (settings.duet) {
                 document.getElementById('duet-host').value = settings.duet.host || '';
-                document.getElementById('duet-port').value = settings.duet.telnet_port || 23;
                 document.getElementById('duet-http-port').value = settings.duet.http_port || 80;
                 document.getElementById('connection-timeout').value = settings.duet.connect_timeout || 5;
             }
@@ -78,7 +206,10 @@ function loadSettings() {
                 document.getElementById('brush-a-offset-y').value = settings.brushes.a.offset_y || 0;
                 document.getElementById('brush-a-air-pin').value = 0; // Always 0 for brush A
                 document.getElementById('brush-a-paint-servo').value = 0; // Always 0 for brush A
-                document.getElementById('brush-a-paint-angle').value = 90; // Default angle
+                
+                // Set paint servo limits
+                document.getElementById('brush-a-paint-min').value = settings.brushes.a.paint_min || 0;
+                document.getElementById('brush-a-paint-max').value = settings.brushes.a.paint_max || 90;
             }
             
             // Populate brush B settings
@@ -87,7 +218,10 @@ function loadSettings() {
                 document.getElementById('brush-b-offset-y').value = settings.brushes.b.offset_y || 50;
                 document.getElementById('brush-b-air-pin').value = 1; // Always 1 for brush B
                 document.getElementById('brush-b-paint-servo').value = 1; // Always 1 for brush B
-                document.getElementById('brush-b-paint-angle').value = 90; // Default angle
+                
+                // Set paint servo limits
+                document.getElementById('brush-b-paint-min').value = settings.brushes.b.paint_min || 0;
+                document.getElementById('brush-b-paint-max').value = settings.brushes.b.paint_max || 90;
             }
             
             // Populate advanced settings
@@ -114,7 +248,6 @@ function saveConnectionSettings() {
     const settings = {
         duet: {
             host: document.getElementById('duet-host').value,
-            telnet_port: parseInt(document.getElementById('duet-port').value),
             http_port: parseInt(document.getElementById('duet-http-port').value),
             connect_timeout: parseInt(document.getElementById('connection-timeout').value)
         }
@@ -151,6 +284,7 @@ function saveMachineSettings() {
  */
 function saveBrushSettings(brush) {
     const prefix = `brush-${brush}`;
+    const servoPin = brush === 'a' ? 0 : 1;
     
     // Create settings object with the brush key
     const settings = {
@@ -160,12 +294,29 @@ function saveBrushSettings(brush) {
     // Add the specific brush settings
     settings.brushes[brush] = {
         offset_x: parseFloat(document.getElementById(`${prefix}-offset-x`).value),
-        offset_y: parseFloat(document.getElementById(`${prefix}-offset-y`).value)
+        offset_y: parseFloat(document.getElementById(`${prefix}-offset-y`).value),
+        paint_min: parseInt(document.getElementById(`${prefix}-paint-min`).value),
+        paint_max: parseInt(document.getElementById(`${prefix}-paint-max`).value)
     };
     
     console.log(`Saving brush ${brush} settings:`, settings);
     
-    saveSettings(settings, `Brush ${brush.toUpperCase()} settings saved successfully`);
+    // Save settings and reset servo to minimum position when done
+    saveSettings(settings, `Brush ${brush.toUpperCase()} settings saved successfully`)
+        .then(() => {
+            // Reset servo to minimum position and ensure air is off
+            const minValue = parseInt(document.getElementById(`${prefix}-paint-min`).value);
+            const airPin = brush === 'a' ? 0 : 1;
+            
+            // Send commands to reset servo and turn off air
+            if (window.HairbrushWebSocket) {
+                window.HairbrushWebSocket.sendCommand(`M280 P${servoPin} S${minValue}`)
+                    .then(() => window.HairbrushWebSocket.sendCommand(`M42 P${airPin} S0`))
+                    .catch(error => {
+                        console.error('Error resetting servo position:', error);
+                    });
+            }
+        });
 }
 
 /**
@@ -189,9 +340,10 @@ function saveAdvancedSettings() {
  * Generic function to save settings to the server
  * @param {Object} settings - Settings object to save
  * @param {string} successMessage - Message to show on success
+ * @returns {Promise} Promise that resolves when settings are saved
  */
 function saveSettings(settings, successMessage) {
-    fetch('/api/settings', {
+    return fetch('/api/settings', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -219,10 +371,13 @@ function saveSettings(settings, successMessage) {
             
             window.machineVisualization.updateConfig(config);
         }
+        
+        return data; // Return data for chaining
     })
     .catch(error => {
         console.error('Error saving settings:', error);
         showToast('Error saving settings: ' + error.message, 'error');
+        throw error; // Re-throw for promise chaining
     });
 }
 

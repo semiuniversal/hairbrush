@@ -1,6 +1,18 @@
 # Completed Tasks Archive
 
 ## June 2024
+- [x] Setup Page Improvements - Completed: June 30, 2024
+  - Fixed USB serial connection for device discovery
+  - Added reliable IP address detection via serial communication
+  - Implemented background thread for capturing IP address from serial data
+  - Added hierarchical diagnostic command menu with commands from YAML file
+  - Fixed connection history management and persistence
+  - Added automatic disconnection when leaving/reloading the page
+  - Improved error handling for serial communication
+  - Fixed "Already connected" errors with proper resource management
+  - Implemented API endpoints for settings management
+  - Fixed dependency management with consolidated pyproject.toml
+
 - [x] Canvas Visualization Implementation - Completed: June 24, 2024
   - Replaced DOM/CSS-based visualization with HTML5 Canvas implementation
   - Added grid lines with numeric scale indicators showing coordinates in mm

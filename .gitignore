@@ -4,3 +4,4 @@ __pycache__/
 axidraw_code/
 .specstory/.what-is-this.md
 .cursorrules
+*.log

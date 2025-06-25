@@ -278,6 +278,68 @@ class MachineControl:
             logger.error(f"Failed to set brush {brush} paint: {result.get('message')}")
             return {"status": "error", "message": result.get("message")}
     
+    def set_brush_paint_flow(self, brush: str, percentage: float) -> Dict[str, Any]:
+        """
+        Set brush paint flow percentage.
+        
+        Args:
+            brush: Brush ID ('a' or 'b')
+            percentage: Flow percentage (0-100)
+            
+        Returns:
+            dict: Response with status and message
+        """
+        if brush not in ["a", "b"]:
+            return {"status": "error", "message": f"Invalid brush: {brush}"}
+        
+        # Ensure percentage is within valid range
+        percentage = max(0, min(100, percentage))
+        
+        # Get brush configuration
+        try:
+            # Load config directly from config.yaml
+            config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+                
+            # Get brush configuration
+            if "brushes" in config and brush in config["brushes"]:
+                brush_config = config["brushes"][brush]
+            else:
+                return {"status": "error", "message": f"Brush {brush} not configured in config.yaml"}
+                
+            # Get paint min and max values
+            paint_min = brush_config.get("paint_min", 0)
+            paint_max = brush_config.get("paint_max", 90)
+            
+        except Exception as e:
+            logger.error(f"Error loading brush configuration: {e}")
+            # Use default values
+            paint_min = 0
+            paint_max = 90
+        
+        # Calculate servo angle based on percentage
+        servo_angle = paint_min + (percentage / 100) * (paint_max - paint_min)
+        servo_angle = round(servo_angle)  # Round to nearest integer
+        
+        # Determine servo pin based on brush
+        servo_pin = 0 if brush == "a" else 1
+        
+        # Send command to set servo angle
+        command = f"M280 P{servo_pin} S{servo_angle}"
+        result = self.duet_client.send_command_and_wait(command)
+        
+        if result.get("status") == "success":
+            logger.info(f"Set brush {brush} paint flow to {percentage}% (servo angle: {servo_angle})")
+            return {
+                "status": "success", 
+                "message": f"Brush {brush} paint flow set to {percentage}%",
+                "servo_angle": servo_angle
+            }
+        else:
+            logger.error(f"Failed to set brush {brush} paint flow: {result.get('message')}")
+            return {"status": "error", "message": result.get("message")}
+    
     def park(self) -> Dict[str, Any]:
         """
         Park the machine (move to a safe position).

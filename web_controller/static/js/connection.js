@@ -47,7 +47,31 @@ document.addEventListener('DOMContentLoaded', () => {
             deviceIpInput.value = e.target.textContent;
         }
     });
+    
+    // Add connection listener to the global WebSocket manager
+    if (window.HairbrushWebSocket) {
+        window.HairbrushWebSocket.addConnectionListener(handleConnectionChange);
+    }
 });
+
+/**
+ * Handle connection status changes from the WebSocket manager
+ */
+function handleConnectionChange(isConnected, error) {
+    if (isConnected) {
+        // Check connection status with the device
+        loadConnectionStatus();
+    } else {
+        // Update UI to show disconnected state
+        updateConnectionState(CONNECTION_STATES.DISCONNECTED);
+        deviceIpDisplay.textContent = '';
+        
+        // If there's an error, show it
+        if (error) {
+            showConnectionError(`Connection error: ${error.message || 'Unknown error'}`);
+        }
+    }
+}
 
 /**
  * Load current connection status from server
@@ -128,32 +152,66 @@ function connectToDevice(ip, password = '') {
         showConnectionError('Connection timeout');
     }, CONNECTION_TIMEOUT);
     
-    // Emit connection request to server
-    socket.emit('connect_device', { host: ip, port: 80, password: password }, (response) => {
-        // Clear timeout
-        clearTimeout(connectionTimeoutId);
-        
-        if (response && response.status === 'success') {
-            // Connection successful
-            updateConnectionState(CONNECTION_STATES.CONNECTED);
-            // Refresh IP history
-            loadIpHistory();
-        } else {
-            // Connection failed
-            updateConnectionState(CONNECTION_STATES.ERROR);
-            showConnectionError(response?.message || 'Failed to connect');
-        }
-    });
+    // Use the global WebSocket manager to connect to the device
+    if (window.HairbrushWebSocket) {
+        window.HairbrushWebSocket.connectToDevice(ip, 80, password)
+            .then(response => {
+                // Clear timeout
+                clearTimeout(connectionTimeoutId);
+                
+                // Connection successful
+                updateConnectionState(CONNECTION_STATES.CONNECTED);
+                // Refresh IP history
+                loadIpHistory();
+            })
+            .catch(error => {
+                // Clear timeout
+                clearTimeout(connectionTimeoutId);
+                
+                // Connection failed
+                updateConnectionState(CONNECTION_STATES.ERROR);
+                showConnectionError(error.message || 'Failed to connect');
+            });
+    } else {
+        // Fallback to direct socket.io if global manager is not available
+        socket.emit('connect_device', { host: ip, port: 80, password: password }, (response) => {
+            // Clear timeout
+            clearTimeout(connectionTimeoutId);
+            
+            if (response && response.status === 'success') {
+                // Connection successful
+                updateConnectionState(CONNECTION_STATES.CONNECTED);
+                // Refresh IP history
+                loadIpHistory();
+            } else {
+                // Connection failed
+                updateConnectionState(CONNECTION_STATES.ERROR);
+                showConnectionError(response?.message || 'Failed to connect');
+            }
+        });
+    }
 }
 
 /**
  * Disconnect from device
  */
 function disconnectFromDevice() {
-    socket.emit('disconnect_device', {}, (response) => {
-        updateConnectionState(CONNECTION_STATES.DISCONNECTED);
-        deviceIpDisplay.textContent = '';
-    });
+    if (window.HairbrushWebSocket) {
+        window.HairbrushWebSocket.disconnectFromDevice()
+            .then(response => {
+                updateConnectionState(CONNECTION_STATES.DISCONNECTED);
+                deviceIpDisplay.textContent = '';
+            })
+            .catch(error => {
+                showConnectionError(error.message || 'Failed to disconnect');
+            });
+    } else {
+        // Fallback to direct socket.io if global manager is not available
+        socket.emit('disconnect_device', {}, (response) => {
+            updateConnectionState(CONNECTION_STATES.DISCONNECTED);
+            deviceIpDisplay.textContent = '';
+        });
+    }
 }
 
 /**
@@ -284,23 +342,59 @@ function updateIpHistoryDropdown() {
 // Additional socket event handlers for connection status
 socket.on('connect', () => {
     // Check connection status when socket connects
+    console.log('Socket connected - checking connection status');
     loadConnectionStatus();
 });
 
 socket.on('disconnect', () => {
     // Update UI to disconnected state
+    console.log('Socket disconnected - updating UI');
     updateConnectionState(CONNECTION_STATES.DISCONNECTED);
     deviceIpDisplay.textContent = '';
+    
+    // Show connection error message
+    showConnectionError('Connection to server lost. Please refresh the page.');
+});
+
+// Handle connection errors
+socket.on('connect_error', (error) => {
+    console.error('Socket connection error:', error);
+    updateConnectionState(CONNECTION_STATES.ERROR);
+    showConnectionError('Connection error: ' + (error.message || 'Unknown error'));
+});
+
+// Handle reconnection attempts
+socket.on('reconnecting', (attemptNumber) => {
+    console.log(`Socket reconnecting (attempt ${attemptNumber})...`);
+    updateConnectionState(CONNECTION_STATES.CONNECTING);
+});
+
+// Handle successful reconnection
+socket.on('reconnect', (attemptNumber) => {
+    console.log(`Socket reconnected after ${attemptNumber} attempts`);
+    loadConnectionStatus(); // Refresh connection status
+});
+
+// Handle reconnection failure
+socket.on('reconnect_failed', () => {
+    console.error('Socket reconnection failed after multiple attempts');
+    updateConnectionState(CONNECTION_STATES.ERROR);
+    showConnectionError('Failed to reconnect after multiple attempts. Please refresh the page.');
 });
 
 // Handle connection status updates from server
 socket.on('connection_status', (data) => {
     if (data.connected) {
         updateConnectionState(CONNECTION_STATES.CONNECTED);
-        currentIp = data.ip;
-        deviceIpDisplay.textContent = data.ip;
+        currentIp = data.ip || data.host;
+        deviceIpDisplay.textContent = currentIp;
     } else {
         updateConnectionState(CONNECTION_STATES.DISCONNECTED);
         deviceIpDisplay.textContent = '';
+        
+        // If there's an error message, show it
+        if (data.error) {
+            showConnectionError(data.error);
+        }
     }
 }); 
