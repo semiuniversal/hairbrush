@@ -1,5 +1,4 @@
-.venv/
-__pycache__/
+gst__pycache__/
 *.pyc
 axidraw_code/
 .specstory/.what-is-this.md
