@@ -135,6 +135,14 @@ function disableMotionControls(disable) {
 function initControlPage() {
     console.log('Initializing machine control page');
     
+    // Initialize brush values
+    brushAPaintValue = 50; // Default to 50%
+    brushBPaintValue = 50; // Default to 50%
+    
+    // Initialize brush state
+    brushAPaintState = false;
+    brushBPaintState = false;
+    
     // Get machine configuration
     fetch('/api/machine/config')
         .then(response => response.json())
@@ -167,6 +175,27 @@ function initControlPage() {
             
             // Query endstop status
             queryEndstopStatus();
+            
+            // Synchronize UI state with brush state
+            synchronizeBrushUIState();
+            
+            // Set up periodic UI synchronization
+            setInterval(synchronizeBrushUIState, 5000);
+            
+            // Initialize slider values
+            if (brushAPaintSlider) {
+                brushAPaintSlider.value = brushAPaintValue;
+                if (brushAPaintValueElem) {
+                    brushAPaintValueElem.textContent = `${brushAPaintValue}%`;
+                }
+            }
+            
+            if (brushBPaintSlider) {
+                brushBPaintSlider.value = brushBPaintValue;
+                if (brushBPaintValueElem) {
+                    brushBPaintValueElem.textContent = `${brushBPaintValue}%`;
+                }
+            }
         })
         .catch(error => {
             console.error('Error loading machine configuration:', error);
@@ -177,7 +206,74 @@ function initControlPage() {
             setupSocketListeners();
             requestMachineStatus();
             queryEndstopStatus();
+            
+            // Synchronize UI state with brush state
+            synchronizeBrushUIState();
+            
+            // Set up periodic UI synchronization
+            setInterval(synchronizeBrushUIState, 5000);
+            
+            // Initialize slider values
+            if (brushAPaintSlider) {
+                brushAPaintSlider.value = brushAPaintValue;
+                if (brushAPaintValueElem) {
+                    brushAPaintValueElem.textContent = `${brushAPaintValue}%`;
+                }
+            }
+            
+            if (brushBPaintSlider) {
+                brushBPaintSlider.value = brushBPaintValue;
+                if (brushBPaintValueElem) {
+                    brushBPaintValueElem.textContent = `${brushBPaintValue}%`;
+                }
+            }
         });
+}
+
+// Synchronize UI state with brush state
+function synchronizeBrushUIState() {
+    console.log('Synchronizing brush UI state');
+    
+    // Brush A Paint slider visibility
+    const brushAPaintState = window.brushAPaintState || brushAPaintState;
+    const brushAPaintSliderContainer = document.getElementById('brush-a-paint-slider-container');
+    if (brushAPaintSliderContainer && brushAPaintState) {
+        brushAPaintSliderContainer.style.display = 'flex';
+    }
+    
+    // Brush B Paint slider visibility
+    const brushBPaintState = window.brushBPaintState || brushBPaintState;
+    const brushBPaintSliderContainer = document.getElementById('brush-b-paint-slider-container');
+    if (brushBPaintSliderContainer && brushBPaintState) {
+        brushBPaintSliderContainer.style.display = 'flex';
+    }
+    
+    // Check button states to match
+    const brushAPaintToggleBtn = document.getElementById('brush-a-paint-toggle');
+    if (brushAPaintToggleBtn && brushAPaintState) {
+        brushAPaintToggleBtn.classList.remove('btn-outline-primary');
+        brushAPaintToggleBtn.classList.add('btn-primary');
+        const brushAPaintText = document.getElementById('brush-a-paint-text');
+        if (brushAPaintText) brushAPaintText.textContent = 'Paint Off';
+        const brushAPaintIcon = document.getElementById('brush-a-paint-icon');
+        if (brushAPaintIcon) {
+            brushAPaintIcon.classList.remove('bi-droplet');
+            brushAPaintIcon.classList.add('bi-droplet-fill');
+        }
+    }
+    
+    const brushBPaintToggleBtn = document.getElementById('brush-b-paint-toggle');
+    if (brushBPaintToggleBtn && brushBPaintState) {
+        brushBPaintToggleBtn.classList.remove('btn-outline-primary');
+        brushBPaintToggleBtn.classList.add('btn-primary');
+        const brushBPaintText = document.getElementById('brush-b-paint-text');
+        if (brushBPaintText) brushBPaintText.textContent = 'Paint Off';
+        const brushBPaintIcon = document.getElementById('brush-b-paint-icon');
+        if (brushBPaintIcon) {
+            brushBPaintIcon.classList.remove('bi-droplet');
+            brushBPaintIcon.classList.add('bi-droplet-fill');
+        }
+    }
 }
 
 // Set up socket event listeners
@@ -635,49 +731,98 @@ function setupEventListeners() {
             brushAPaintState = !brushAPaintState;
             
             // Calculate servo value based on slider percentage
-            const servoValue = brushAPaintState ? 
-                calculateServoAngle(brushAPaintValue, 'a') : 
-                machineConfig.brushes.a.paint_min;
+            let servoValue;
+            if (brushAPaintState) {
+                // When turning on, use the current slider percentage
+                servoValue = calculateServoAngle(brushAPaintValue, 'a');
+            } else {
+                // When turning off, use the paint_min value
+                // For reversed servos, we need to use the higher value to turn off
+                const min = machineConfig.brushes.a.paint_min;
+                const max = machineConfig.brushes.a.paint_max;
+                servoValue = min > max ? min : max;
+            }
+            
+            // Log the actual values being used
+            console.log(`Brush A paint toggle: state=${brushAPaintState}, value=${brushAPaintValue}%, servoValue=${servoValue}`);
             
             // Send appropriate command based on state
-            const command = `M280 P0 S${servoValue}`;
+            const command = `M280 P0 S${servoValue.toFixed(1)}`;
             const statusText = brushAPaintState ? 
                 `Brush A paint on (${brushAPaintValue}%)` : 
                 'Brush A paint off';
             
-            hairbrushController.sendCommand(command)
-                .then(() => {
-                    console.log(statusText);
-                    addToCommandHistory(command, statusText);
-                    
-                    // Update button appearance
-                    if (brushAPaintState) {
-                        brushAPaintToggleBtn.classList.remove('btn-outline-primary');
-                        brushAPaintToggleBtn.classList.add('btn-primary');
-                        if (brushAPaintText) brushAPaintText.textContent = 'Paint Off';
-                        if (brushAPaintIcon) {
-                            brushAPaintIcon.classList.remove('bi-droplet');
-                            brushAPaintIcon.classList.add('bi-droplet-fill');
+            // Use the global WebSocket manager if available
+            if (window.HairbrushWebSocket) {
+                window.HairbrushWebSocket.sendCommand(command)
+                    .then((result) => {
+                        console.log(statusText);
+                        addToCommandHistory(command, statusText);
+                        
+                        // Update button appearance
+                        if (brushAPaintState) {
+                            brushAPaintToggleBtn.classList.remove('btn-outline-primary');
+                            brushAPaintToggleBtn.classList.add('btn-primary');
+                            if (brushAPaintText) brushAPaintText.textContent = 'Paint Off';
+                            if (brushAPaintIcon) {
+                                brushAPaintIcon.classList.remove('bi-droplet');
+                                brushAPaintIcon.classList.add('bi-droplet-fill');
+                            }
+                            // Show slider
+                            if (brushAPaintSliderContainer) {
+                                brushAPaintSliderContainer.style.display = 'flex';
+                            }
+                        } else {
+                            brushAPaintToggleBtn.classList.remove('btn-primary');
+                            brushAPaintToggleBtn.classList.add('btn-outline-primary');
+                            if (brushAPaintText) brushAPaintText.textContent = 'Paint On';
+                            if (brushAPaintIcon) {
+                                brushAPaintIcon.classList.remove('bi-droplet-fill');
+                                brushAPaintIcon.classList.add('bi-droplet');
+                            }
+                            // Hide slider
+                            if (brushAPaintSliderContainer) {
+                                brushAPaintSliderContainer.style.display = 'none';
+                            }
                         }
-                        // Show slider
-                        if (brushAPaintSliderContainer) {
-                            brushAPaintSliderContainer.style.display = 'flex';
+                    })
+                    .catch(handleError);
+            } else {
+                // Fallback to direct socket access
+                sendCommand(command)
+                    .then((result) => {
+                        console.log(statusText);
+                        addToCommandHistory(command, statusText);
+                        
+                        // Update button appearance
+                        if (brushAPaintState) {
+                            brushAPaintToggleBtn.classList.remove('btn-outline-primary');
+                            brushAPaintToggleBtn.classList.add('btn-primary');
+                            if (brushAPaintText) brushAPaintText.textContent = 'Paint Off';
+                            if (brushAPaintIcon) {
+                                brushAPaintIcon.classList.remove('bi-droplet');
+                                brushAPaintIcon.classList.add('bi-droplet-fill');
+                            }
+                            // Show slider
+                            if (brushAPaintSliderContainer) {
+                                brushAPaintSliderContainer.style.display = 'flex';
+                            }
+                        } else {
+                            brushAPaintToggleBtn.classList.remove('btn-primary');
+                            brushAPaintToggleBtn.classList.add('btn-outline-primary');
+                            if (brushAPaintText) brushAPaintText.textContent = 'Paint On';
+                            if (brushAPaintIcon) {
+                                brushAPaintIcon.classList.remove('bi-droplet-fill');
+                                brushAPaintIcon.classList.add('bi-droplet');
+                            }
+                            // Hide slider
+                            if (brushAPaintSliderContainer) {
+                                brushAPaintSliderContainer.style.display = 'none';
+                            }
                         }
-                    } else {
-                        brushAPaintToggleBtn.classList.remove('btn-primary');
-                        brushAPaintToggleBtn.classList.add('btn-outline-primary');
-                        if (brushAPaintText) brushAPaintText.textContent = 'Paint On';
-                        if (brushAPaintIcon) {
-                            brushAPaintIcon.classList.remove('bi-droplet-fill');
-                            brushAPaintIcon.classList.add('bi-droplet');
-                        }
-                        // Hide slider
-                        if (brushAPaintSliderContainer) {
-                            brushAPaintSliderContainer.style.display = 'none';
-                        }
-                    }
-                })
-                .catch(handleError);
+                    })
+                    .catch(handleError);
+            }
         });
         
         // Add event listener for slider
@@ -698,15 +843,26 @@ function setupEventListeners() {
                     // Calculate servo angle from percentage
                     const servoValue = calculateServoAngle(brushAPaintValue, 'a');
                     
-                    const command = `M280 P0 S${servoValue}`;
+                    const command = `M280 P0 S${servoValue.toFixed(1)}`;
                     const statusText = `Brush A paint set to ${brushAPaintValue}%`;
                     
-                    hairbrushController.sendCommand(command)
-                        .then(() => {
-                            console.log(statusText);
-                            addToCommandHistory(command, statusText);
-                        })
-                        .catch(handleError);
+                    // Use the global WebSocket manager if available
+                    if (window.HairbrushWebSocket) {
+                        window.HairbrushWebSocket.sendCommand(command)
+                            .then((result) => {
+                                console.log(statusText);
+                                addToCommandHistory(command, statusText);
+                            })
+                            .catch(handleError);
+                    } else {
+                        // Fallback to direct socket access
+                        sendCommand(command)
+                            .then((result) => {
+                                console.log(statusText);
+                                addToCommandHistory(command, statusText);
+                            })
+                            .catch(handleError);
+                    }
                 }
             }, 300));
         }
@@ -752,49 +908,98 @@ function setupEventListeners() {
             brushBPaintState = !brushBPaintState;
             
             // Calculate servo value based on slider percentage
-            const servoValue = brushBPaintState ? 
-                calculateServoAngle(brushBPaintValue, 'b') : 
-                machineConfig.brushes.b.paint_min;
+            let servoValue;
+            if (brushBPaintState) {
+                // When turning on, use the current slider percentage
+                servoValue = calculateServoAngle(brushBPaintValue, 'b');
+            } else {
+                // When turning off, use the paint_min value
+                // For reversed servos, we need to use the higher value to turn off
+                const min = machineConfig.brushes.b.paint_min;
+                const max = machineConfig.brushes.b.paint_max;
+                servoValue = min > max ? min : max;
+            }
+            
+            // Log the actual values being used
+            console.log(`Brush B paint toggle: state=${brushBPaintState}, value=${brushBPaintValue}%, servoValue=${servoValue}`);
             
             // Send appropriate command based on state
-            const command = `M280 P1 S${servoValue}`;
+            const command = `M280 P1 S${servoValue.toFixed(1)}`;
             const statusText = brushBPaintState ? 
                 `Brush B paint on (${brushBPaintValue}%)` : 
                 'Brush B paint off';
             
-            hairbrushController.sendCommand(command)
-                .then(() => {
-                    console.log(statusText);
-                    addToCommandHistory(command, statusText);
-                    
-                    // Update button appearance
-                    if (brushBPaintState) {
-                        brushBPaintToggleBtn.classList.remove('btn-outline-primary');
-                        brushBPaintToggleBtn.classList.add('btn-primary');
-                        if (brushBPaintText) brushBPaintText.textContent = 'Paint Off';
-                        if (brushBPaintIcon) {
-                            brushBPaintIcon.classList.remove('bi-droplet');
-                            brushBPaintIcon.classList.add('bi-droplet-fill');
+            // Use the global WebSocket manager if available
+            if (window.HairbrushWebSocket) {
+                window.HairbrushWebSocket.sendCommand(command)
+                    .then((result) => {
+                        console.log(statusText);
+                        addToCommandHistory(command, statusText);
+                        
+                        // Update button appearance
+                        if (brushBPaintState) {
+                            brushBPaintToggleBtn.classList.remove('btn-outline-primary');
+                            brushBPaintToggleBtn.classList.add('btn-primary');
+                            if (brushBPaintText) brushBPaintText.textContent = 'Paint Off';
+                            if (brushBPaintIcon) {
+                                brushBPaintIcon.classList.remove('bi-droplet');
+                                brushBPaintIcon.classList.add('bi-droplet-fill');
+                            }
+                            // Show slider
+                            if (brushBPaintSliderContainer) {
+                                brushBPaintSliderContainer.style.display = 'flex';
+                            }
+                        } else {
+                            brushBPaintToggleBtn.classList.remove('btn-primary');
+                            brushBPaintToggleBtn.classList.add('btn-outline-primary');
+                            if (brushBPaintText) brushBPaintText.textContent = 'Paint On';
+                            if (brushBPaintIcon) {
+                                brushBPaintIcon.classList.remove('bi-droplet-fill');
+                                brushBPaintIcon.classList.add('bi-droplet');
+                            }
+                            // Hide slider
+                            if (brushBPaintSliderContainer) {
+                                brushBPaintSliderContainer.style.display = 'none';
+                            }
                         }
-                        // Show slider
-                        if (brushBPaintSliderContainer) {
-                            brushBPaintSliderContainer.style.display = 'flex';
+                    })
+                    .catch(handleError);
+            } else {
+                // Fallback to direct socket access
+                sendCommand(command)
+                    .then((result) => {
+                        console.log(statusText);
+                        addToCommandHistory(command, statusText);
+                        
+                        // Update button appearance
+                        if (brushBPaintState) {
+                            brushBPaintToggleBtn.classList.remove('btn-outline-primary');
+                            brushBPaintToggleBtn.classList.add('btn-primary');
+                            if (brushBPaintText) brushBPaintText.textContent = 'Paint Off';
+                            if (brushBPaintIcon) {
+                                brushBPaintIcon.classList.remove('bi-droplet');
+                                brushBPaintIcon.classList.add('bi-droplet-fill');
+                            }
+                            // Show slider
+                            if (brushBPaintSliderContainer) {
+                                brushBPaintSliderContainer.style.display = 'flex';
+                            }
+                        } else {
+                            brushBPaintToggleBtn.classList.remove('btn-primary');
+                            brushBPaintToggleBtn.classList.add('btn-outline-primary');
+                            if (brushBPaintText) brushBPaintText.textContent = 'Paint On';
+                            if (brushBPaintIcon) {
+                                brushBPaintIcon.classList.remove('bi-droplet-fill');
+                                brushBPaintIcon.classList.add('bi-droplet');
+                            }
+                            // Hide slider
+                            if (brushBPaintSliderContainer) {
+                                brushBPaintSliderContainer.style.display = 'none';
+                            }
                         }
-                    } else {
-                        brushBPaintToggleBtn.classList.remove('btn-primary');
-                        brushBPaintToggleBtn.classList.add('btn-outline-primary');
-                        if (brushBPaintText) brushBPaintText.textContent = 'Paint On';
-                        if (brushBPaintIcon) {
-                            brushBPaintIcon.classList.remove('bi-droplet-fill');
-                            brushBPaintIcon.classList.add('bi-droplet');
-                        }
-                        // Hide slider
-                        if (brushBPaintSliderContainer) {
-                            brushBPaintSliderContainer.style.display = 'none';
-                        }
-                    }
-                })
-                .catch(handleError);
+                    })
+                    .catch(handleError);
+            }
         });
         
         // Add event listener for slider
@@ -815,15 +1020,26 @@ function setupEventListeners() {
                     // Calculate servo angle from percentage
                     const servoValue = calculateServoAngle(brushBPaintValue, 'b');
                     
-                    const command = `M280 P1 S${servoValue}`;
+                    const command = `M280 P1 S${servoValue.toFixed(1)}`;
                     const statusText = `Brush B paint set to ${brushBPaintValue}%`;
                     
-                    hairbrushController.sendCommand(command)
-                        .then(() => {
-                            console.log(statusText);
-                            addToCommandHistory(command, statusText);
-                        })
-                        .catch(handleError);
+                    // Use the global WebSocket manager if available
+                    if (window.HairbrushWebSocket) {
+                        window.HairbrushWebSocket.sendCommand(command)
+                            .then((result) => {
+                                console.log(statusText);
+                                addToCommandHistory(command, statusText);
+                            })
+                            .catch(handleError);
+                    } else {
+                        // Fallback to direct socket access
+                        sendCommand(command)
+                            .then((result) => {
+                                console.log(statusText);
+                                addToCommandHistory(command, statusText);
+                            })
+                            .catch(handleError);
+                    }
                 }
             }, 300));
         }
@@ -1088,91 +1304,73 @@ function updateConnectionStatusUI(isConnected) {
 
 // Machine status update handler
 function onMachineStatusUpdate(data) {
-    console.log('Control: Processing machine status update', data);
-    if (!data) {
-        console.warn('Control: Empty data received in status update');
-        return;
-    }
+    console.log('Machine status update:', data);
     
-    // Check motor state
-    if (data.motors_state !== undefined) {
-        const newMotorsState = data.motors_state === 'enabled';
-        
-        // Only update if state has changed
-        if (motorsEnabled !== newMotorsState) {
-            motorsEnabled = newMotorsState;
-            
-            // Update button visibility
-            if (disableMotorsBtn && enableMotorsBtn) {
-                if (motorsEnabled) {
-                    disableMotorsBtn.style.display = 'inline-block';
-                    enableMotorsBtn.style.display = 'none';
-                } else {
-                    disableMotorsBtn.style.display = 'none';
-                    enableMotorsBtn.style.display = 'inline-block';
-                }
-            }
-            
-            // Update motion control buttons
-            disableMotionControls(!motorsEnabled);
-        }
-    }
-    
-    // Update position visualization
+    // Update position display
     if (data.position) {
-        // Update position display elements if they exist
-        if (document.getElementById('x-position')) {
-            document.getElementById('x-position').textContent = data.position.X.toFixed(2);
-        }
-        if (document.getElementById('y-position')) {
-            document.getElementById('y-position').textContent = data.position.Y.toFixed(2);
-        }
-        if (document.getElementById('z-position')) {
-            document.getElementById('z-position').textContent = data.position.Z.toFixed(2);
-        }
+        updatePositionDisplay(data.position);
+    }
+    
+    // Update machine state
+    const machineStateEl = document.getElementById('machine-state');
+    if (machineStateEl && data.state) {
+        machineStateEl.textContent = data.state.toUpperCase();
         
-        // Update canvas visualization if available
-        if (window.machineVisualization && typeof window.machineVisualization.updatePosition === 'function') {
-            window.machineVisualization.updatePosition(data.position);
+        // Update state indicator color
+        if (data.state === 'idle') {
+            machineStateEl.className = 'badge bg-success';
+        } else if (data.state === 'printing') {
+            machineStateEl.className = 'badge bg-primary';
+        } else if (data.state === 'paused') {
+            machineStateEl.className = 'badge bg-warning';
+        } else if (data.state === 'error') {
+            machineStateEl.className = 'badge bg-danger';
+        } else {
+            machineStateEl.className = 'badge bg-secondary';
         }
     }
     
-    // Update brush state indicators
-    if (data.brush_state) {
-        // Update brush A status
-        const brushAStatus = document.getElementById('brush-a-status');
-        const brushAStatusIndicator = document.getElementById('brush-a-status-indicator');
+    // Update homed status
+    const homedStatusEl = document.getElementById('homed-status');
+    if (homedStatusEl && data.is_homed !== undefined) {
+        homedStatusEl.textContent = data.is_homed ? 'HOMED' : 'NOT HOMED';
+        homedStatusEl.className = data.is_homed ? 'badge bg-success' : 'badge bg-warning';
+    }
+    
+    // Update motors state
+    const motorsStateEl = document.getElementById('motors-state');
+    if (motorsStateEl && data.motors_state) {
+        motorsStateEl.textContent = data.motors_state.toUpperCase();
+        motorsStateEl.className = data.motors_state === 'enabled' ? 'badge bg-success' : 'badge bg-secondary';
         
-        if (brushAStatus && data.brush_state.a) {
-            let status = 'Inactive';
-            let isActive = false;
-            
-            if (data.brush_state.a.air && data.brush_state.a.paint) {
-                status = 'Active (Air + Paint)';
-                isActive = true;
-            } else if (data.brush_state.a.air) {
-                status = 'Air Only';
-                isActive = true;
-            } else if (data.brush_state.a.paint) {
-                status = 'Paint Only';
-                isActive = true;
+        // Update motors buttons
+        const disableMotorsBtn = document.getElementById('disable-motors');
+        const enableMotorsBtn = document.getElementById('enable-motors');
+        
+        if (disableMotorsBtn && enableMotorsBtn) {
+            if (data.motors_state === 'enabled') {
+                disableMotorsBtn.style.display = 'inline-block';
+                enableMotorsBtn.style.display = 'none';
+                disableMotionControls(false);
+            } else {
+                disableMotorsBtn.style.display = 'none';
+                enableMotorsBtn.style.display = 'inline-block';
+                disableMotionControls(true);
             }
+        }
+    }
+    
+    // Update brush states
+    if (data.brush_state) {
+        // Brush A
+        if (data.brush_state.a) {
+            // Air state
+            const brushAAirState = data.brush_state.a.air;
+            const brushAAirToggleBtn = document.getElementById('brush-a-air-toggle');
+            const brushAAirText = document.getElementById('brush-a-air-text');
             
-            brushAStatus.textContent = status;
-            
-            if (brushAStatusIndicator) {
-                if (isActive) {
-                    brushAStatusIndicator.classList.remove('status-inactive');
-                    brushAStatusIndicator.classList.add('status-active');
-                } else {
-                    brushAStatusIndicator.classList.remove('status-active');
-                    brushAStatusIndicator.classList.add('status-inactive');
-                }
-            }
-            
-            // Update toggle buttons to match machine state
             if (brushAAirToggleBtn) {
-                if (data.brush_state.a.air) {
+                if (brushAAirState) {
                     brushAAirToggleBtn.classList.remove('btn-outline-primary');
                     brushAAirToggleBtn.classList.add('btn-primary');
                     if (brushAAirText) brushAAirText.textContent = 'Air Off';
@@ -1183,10 +1381,21 @@ function onMachineStatusUpdate(data) {
                 }
             }
             
+            // Paint state
+            const brushAPaintState = data.brush_state.a.paint;
+            const brushAPaintValue = data.brush_state.a.paint_value !== undefined ? 
+                data.brush_state.a.paint_value : 50;
+            const brushAPaintToggleBtn = document.getElementById('brush-a-paint-toggle');
+            const brushAPaintText = document.getElementById('brush-a-paint-text');
+            const brushAPaintIcon = document.getElementById('brush-a-paint-icon');
+            const brushAPaintSliderContainer = document.getElementById('brush-a-paint-slider-container');
+            const brushAPaintSlider = document.getElementById('brush-a-paint-slider');
+            const brushAPaintValueElem = document.getElementById('brush-a-paint-value');
+            
+            // Store current state in global variable
+            window.brushAPaintState = brushAPaintState;
+            
             if (brushAPaintToggleBtn) {
-                // Update paint state
-                brushAPaintState = data.brush_state.a.paint;
-                
                 if (brushAPaintState) {
                     brushAPaintToggleBtn.classList.remove('btn-outline-primary');
                     brushAPaintToggleBtn.classList.add('btn-primary');
@@ -1195,7 +1404,7 @@ function onMachineStatusUpdate(data) {
                         brushAPaintIcon.classList.remove('bi-droplet');
                         brushAPaintIcon.classList.add('bi-droplet-fill');
                     }
-                    // Show slider
+                    // Show slider - ensure it stays visible when paint is on
                     if (brushAPaintSliderContainer) {
                         brushAPaintSliderContainer.style.display = 'flex';
                     }
@@ -1212,51 +1421,44 @@ function onMachineStatusUpdate(data) {
                         brushAPaintSliderContainer.style.display = 'none';
                     }
                 }
+            }
+            
+            // Update slider value
+            if (brushAPaintSlider && brushAPaintValue !== undefined) {
+                // Calculate percentage from servo angle
+                const percentage = calculatePercentage(brushAPaintValue, 'a');
+                // Create a new variable instead of reassigning to the constant
+                const calculatedValue = percentage;
+                
+                // Update slider value
+                brushAPaintSlider.value = calculatedValue;
                 
                 // Update slider value display
                 if (brushAPaintValueElem) {
-                    brushAPaintValueElem.textContent = `${brushAPaintValue}%`;
+                    brushAPaintValueElem.textContent = `${calculatedValue}%`;
                 }
-                if (brushAPaintSlider) {
-                    brushAPaintSlider.value = brushAPaintValue;
-                }
+            }
+            
+            // Update status indicator
+            const brushAStatusIndicator = document.getElementById('brush-a-status-indicator');
+            const brushAStatus = document.getElementById('brush-a-status');
+            
+            if (brushAStatusIndicator && brushAStatus) {
+                const isActive = brushAAirState || brushAPaintState;
+                brushAStatusIndicator.className = `status-indicator ${isActive ? 'status-active' : 'status-inactive'}`;
+                brushAStatus.textContent = isActive ? 'Active' : 'Inactive';
             }
         }
         
-        // Update brush B status
-        const brushBStatus = document.getElementById('brush-b-status');
-        const brushBStatusIndicator = document.getElementById('brush-b-status-indicator');
-        
-        if (brushBStatus && data.brush_state.b) {
-            let status = 'Inactive';
-            let isActive = false;
+        // Brush B
+        if (data.brush_state.b) {
+            // Air state
+            const brushBAirState = data.brush_state.b.air;
+            const brushBAirToggleBtn = document.getElementById('brush-b-air-toggle');
+            const brushBAirText = document.getElementById('brush-b-air-text');
             
-            if (data.brush_state.b.air && data.brush_state.b.paint) {
-                status = 'Active (Air + Paint)';
-                isActive = true;
-            } else if (data.brush_state.b.air) {
-                status = 'Air Only';
-                isActive = true;
-            } else if (data.brush_state.b.paint) {
-                status = 'Paint Only';
-                isActive = true;
-            }
-            
-            brushBStatus.textContent = status;
-            
-            if (brushBStatusIndicator) {
-                if (isActive) {
-                    brushBStatusIndicator.classList.remove('status-inactive');
-                    brushBStatusIndicator.classList.add('status-active');
-                } else {
-                    brushBStatusIndicator.classList.remove('status-active');
-                    brushBStatusIndicator.classList.add('status-inactive');
-                }
-            }
-            
-            // Update toggle buttons to match machine state
             if (brushBAirToggleBtn) {
-                if (data.brush_state.b.air) {
+                if (brushBAirState) {
                     brushBAirToggleBtn.classList.remove('btn-outline-primary');
                     brushBAirToggleBtn.classList.add('btn-primary');
                     if (brushBAirText) brushBAirText.textContent = 'Air Off';
@@ -1267,10 +1469,21 @@ function onMachineStatusUpdate(data) {
                 }
             }
             
+            // Paint state
+            const brushBPaintState = data.brush_state.b.paint;
+            const brushBPaintValue = data.brush_state.b.paint_value !== undefined ? 
+                data.brush_state.b.paint_value : 50;
+            const brushBPaintToggleBtn = document.getElementById('brush-b-paint-toggle');
+            const brushBPaintText = document.getElementById('brush-b-paint-text');
+            const brushBPaintIcon = document.getElementById('brush-b-paint-icon');
+            const brushBPaintSliderContainer = document.getElementById('brush-b-paint-slider-container');
+            const brushBPaintSlider = document.getElementById('brush-b-paint-slider');
+            const brushBPaintValueElem = document.getElementById('brush-b-paint-value');
+            
+            // Store current state in global variable
+            window.brushBPaintState = brushBPaintState;
+            
             if (brushBPaintToggleBtn) {
-                // Update paint state
-                brushBPaintState = data.brush_state.b.paint;
-                
                 if (brushBPaintState) {
                     brushBPaintToggleBtn.classList.remove('btn-outline-primary');
                     brushBPaintToggleBtn.classList.add('btn-primary');
@@ -1279,7 +1492,7 @@ function onMachineStatusUpdate(data) {
                         brushBPaintIcon.classList.remove('bi-droplet');
                         brushBPaintIcon.classList.add('bi-droplet-fill');
                     }
-                    // Show slider
+                    // Show slider - ensure it stays visible when paint is on
                     if (brushBPaintSliderContainer) {
                         brushBPaintSliderContainer.style.display = 'flex';
                     }
@@ -1296,14 +1509,32 @@ function onMachineStatusUpdate(data) {
                         brushBPaintSliderContainer.style.display = 'none';
                     }
                 }
+            }
+            
+            // Update slider value
+            if (brushBPaintSlider && brushBPaintValue !== undefined) {
+                // Calculate percentage from servo angle
+                const percentage = calculatePercentage(brushBPaintValue, 'b');
+                // Create a new variable instead of reassigning to the constant
+                const calculatedValue = percentage;
+                
+                // Update slider value
+                brushBPaintSlider.value = calculatedValue;
                 
                 // Update slider value display
                 if (brushBPaintValueElem) {
-                    brushBPaintValueElem.textContent = `${brushBPaintValue}%`;
+                    brushBPaintValueElem.textContent = `${calculatedValue}%`;
                 }
-                if (brushBPaintSlider) {
-                    brushBPaintSlider.value = brushBPaintValue;
-                }
+            }
+            
+            // Update status indicator
+            const brushBStatusIndicator = document.getElementById('brush-b-status-indicator');
+            const brushBStatus = document.getElementById('brush-b-status');
+            
+            if (brushBStatusIndicator && brushBStatus) {
+                const isActive = brushBAirState || brushBPaintState;
+                brushBStatusIndicator.className = `status-indicator ${isActive ? 'status-active' : 'status-inactive'}`;
+                brushBStatus.textContent = isActive ? 'Active' : 'Inactive';
             }
         }
     }
@@ -1337,7 +1568,25 @@ if (typeof window.hairbrushController !== 'undefined') {
 // Send command to server
 function sendCommand(command) {
     return new Promise((resolve, reject) => {
-        // Use the global socket from websocket.js
+        // Use the global WebSocket manager if available
+        if (window.HairbrushWebSocket) {
+            window.HairbrushWebSocket.sendCommand(command)
+                .then(result => {
+                    // Request updated status after command completes
+                    setTimeout(() => {
+                        // Call our local requestMachineStatus to avoid recursion
+                        requestMachineStatus();
+                    }, 500);
+                    
+                    resolve(result);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+            return;
+        }
+        
+        // Fallback to direct socket access
         if (typeof socket === 'undefined' || !socket.connected) {
             reject(new Error('Not connected to server'));
             return;
@@ -1362,7 +1611,25 @@ function sendCommand(command) {
 // Send jog command to server
 function sendJog(axis, distance, speed) {
     return new Promise((resolve, reject) => {
-        // Use the global socket from websocket.js
+        // Use the global WebSocket manager if available
+        if (window.HairbrushWebSocket) {
+            window.HairbrushWebSocket.sendJog(axis, distance, speed)
+                .then(result => {
+                    // Request updated status after command completes
+                    setTimeout(() => {
+                        // Call our local requestMachineStatus to avoid recursion
+                        requestMachineStatus();
+                    }, 500);
+                    
+                    resolve(result);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+            return;
+        }
+        
+        // Fallback to direct socket access
         if (typeof socket === 'undefined' || !socket.connected) {
             reject(new Error('Not connected to server'));
             return;
@@ -1880,30 +2147,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Brush control buttons
-    if (brushAAirToggleBtn) {
-        brushAAirToggleBtn.addEventListener('click', function() {
-            sendCommand('M42 P0 S1');
-        });
-    }
-    
-    if (brushAPaintToggleBtn) {
-        brushAPaintToggleBtn.addEventListener('click', function() {
-            sendCommand('M280 P0 S90');
-        });
-    }
-
-    if (brushBAirToggleBtn) {
-        brushBAirToggleBtn.addEventListener('click', function() {
-            sendCommand('M42 P1 S1');
-        });
-    }
-    
-    if (brushBPaintToggleBtn) {
-        brushBPaintToggleBtn.addEventListener('click', function() {
-            sendCommand('M280 P1 S90');
-        });
-    }
+    // Note: Brush control buttons are handled in setupEventListeners function
+    // to properly manage state and sliders
 
     // Socket connection
     connectSocket();
@@ -1911,8 +2156,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Update position display
 function updatePositionDisplay(data) {
-    if (!data || !data.position) {
+    if (!data) {
         console.warn('No position data provided');
+        return;
+    }
+    
+    // Handle different position data formats
+    let position = data;
+    if (data.position) {
+        position = data.position;
+    }
+    
+    // Check if position data is valid
+    if (!position || (position.x === undefined && position.X === undefined)) {
+        console.warn('Invalid position data format:', data);
         return;
     }
     
@@ -1921,28 +2178,33 @@ function updatePositionDisplay(data) {
     const yPos = document.getElementById('y-position');
     const zPos = document.getElementById('z-position');
     
-    if (xPos && data.position.x !== undefined) {
-        xPos.textContent = parseFloat(data.position.x).toFixed(2);
+    // Handle both lowercase and uppercase position keys
+    const x = position.x !== undefined ? position.x : position.X;
+    const y = position.y !== undefined ? position.y : position.Y;
+    const z = position.z !== undefined ? position.z : position.Z;
+    
+    if (xPos && x !== undefined) {
+        xPos.textContent = parseFloat(x).toFixed(2);
     }
     
-    if (yPos && data.position.y !== undefined) {
-        yPos.textContent = parseFloat(data.position.y).toFixed(2);
+    if (yPos && y !== undefined) {
+        yPos.textContent = parseFloat(y).toFixed(2);
     }
     
-    if (zPos && data.position.z !== undefined) {
-        zPos.textContent = parseFloat(data.position.z).toFixed(2);
+    if (zPos && z !== undefined) {
+        zPos.textContent = parseFloat(z).toFixed(2);
     }
     
     // Update brush positions in visualization
     if (brushA && brushB) {
-        updateBrushPosition(brushA, data.position.x || 0, data.position.y || 0);
+        updateBrushPosition(brushA, x || 0, y || 0);
         
         // Get brush B offsets
         const offsetX = machineConfig.brushes.b.offsetX || 50;
         const offsetY = machineConfig.brushes.b.offsetY || 0;
         
         // Update brush B position
-        updateBrushPosition(brushB, (data.position.x || 0) + offsetX, (data.position.y || 0) + offsetY);
+        updateBrushPosition(brushB, (x || 0) + offsetX, (y || 0) + offsetY);
     }
 }
 
@@ -1960,24 +2222,20 @@ function getSelectedSpeed() {
 
 // Update jogAxis function to handle the jog button clicks
 function jogAxis(axis, direction, distance, speed) {
-    if (!socket || !socket.connected) {
-        console.error('Socket not connected, cannot jog');
-        return;
-    }
-    
     // If direction is provided, apply it to the distance
     if (direction !== undefined) {
         distance = distance * direction;
     }
     
-    // Emit jog command
-    socket.emit('jog', { axis, distance, speed }, (response) => {
-        if (response && response.status === 'success') {
+    // Use the sendJog function which handles both global WebSocket and direct socket
+    sendJog(axis, distance, speed)
+        .then(result => {
             console.log(`Jog successful: ${axis} ${distance}mm at ${speed}mm/min`);
-        } else {
-            console.error('Jog failed:', response);
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Jog failed:', error);
+            handleError(error);
+        });
 }
 
 // Calculate servo angle from percentage
@@ -1985,8 +2243,23 @@ function calculateServoAngle(percentage, brush) {
     const min = machineConfig.brushes[brush].paint_min;
     const max = machineConfig.brushes[brush].paint_max;
     
-    // Scale percentage to the range between min and max
-    return min + (percentage / 100) * (max - min);
+    console.log(`calculateServoAngle: brush=${brush}, percentage=${percentage}, min=${min}, max=${max}`);
+    
+    // Ensure percentage is a number between 0 and 100
+    const validPercentage = Math.max(0, Math.min(100, Number(percentage) || 0));
+    
+    // Handle case where upper limit is lower than lower limit (reversed servo direction)
+    let result;
+    if (max > min) {
+        // Normal case: min to max
+        result = min + (validPercentage / 100) * (max - min);
+    } else {
+        // Reversed case: max is lower than min
+        result = min - (validPercentage / 100) * (min - max);
+    }
+    
+    console.log(`calculateServoAngle result: ${result}`);
+    return result;
 }
 
 // Calculate percentage from servo angle
@@ -1994,12 +2267,23 @@ function calculatePercentage(angle, brush) {
     const min = machineConfig.brushes[brush].paint_min;
     const max = machineConfig.brushes[brush].paint_max;
     
+    console.log(`calculatePercentage: brush=${brush}, angle=${angle}, min=${min}, max=${max}`);
+    
     // If min and max are the same, avoid division by zero
     if (min === max) return 0;
     
-    // Scale angle to percentage
-    const percentage = ((angle - min) / (max - min)) * 100;
+    // Handle case where upper limit is lower than lower limit (reversed servo direction)
+    let percentage;
+    if (max > min) {
+        // Normal case: min to max
+        percentage = ((angle - min) / (max - min)) * 100;
+    } else {
+        // Reversed case: max is lower than min
+        percentage = ((min - angle) / (min - max)) * 100;
+    }
     
     // Clamp to 0-100 range
-    return Math.max(0, Math.min(100, percentage));
+    const result = Math.max(0, Math.min(100, percentage));
+    console.log(`calculatePercentage result: ${result}`);
+    return result;
 } 

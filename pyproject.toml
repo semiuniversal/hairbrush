@@ -21,6 +21,7 @@ dependencies = [
     "requests>=2.28.0",  # HTTP client for Duet communication
     "pyserial>=3.5",  # Serial communication for setup and configuration
     # inkex is provided by Inkscape runtime, don't add here
+    "flask-autoindex<=0.6.6",  # For serving static files in development
 ]
 
 [project.optional-dependencies]

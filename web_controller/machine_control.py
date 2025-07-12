@@ -11,6 +11,9 @@ import yaml
 import os
 from typing import Dict, List, Optional, Any, Tuple
 
+# Import the config module directly
+import config
+
 logger = logging.getLogger(__name__)
 
 class MachineControl:
@@ -32,7 +35,7 @@ class MachineControl:
             duet_client: Duet client instance
         """
         self.duet_client = duet_client
-        self.config = self._load_config()
+        self.config = config.config
         
         # Machine state
         self.is_homed = False
@@ -41,41 +44,6 @@ class MachineControl:
             "a": {"air": False, "paint": False},
             "b": {"air": False, "paint": False}
         }
-    
-    def _load_config(self) -> Dict[str, Any]:
-        """
-        Load machine configuration from file.
-        
-        Returns:
-            dict: Machine configuration
-        """
-        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 
-                                 "gcode_backend", "command_templates.yaml")
-        
-        try:
-            with open(config_path, 'r') as f:
-                config = yaml.safe_load(f)
-                logger.info(f"Loaded machine configuration from {config_path}")
-                return config
-        except Exception as e:
-            logger.error(f"Error loading machine configuration: {e}")
-            # Return default configuration
-            return {
-                "brush_a": {
-                    "offset": [0, 0],
-                    "air_on": "M42 P0 S1",
-                    "air_off": "M42 P0 S0",
-                    "paint_on": "M280 P0 S90",
-                    "paint_off": "M280 P0 S0"
-                },
-                "brush_b": {
-                    "offset": [50, 50],
-                    "air_on": "M42 P1 S1",
-                    "air_off": "M42 P1 S0",
-                    "paint_on": "M280 P1 S90",
-                    "paint_off": "M280 P1 S0"
-                }
-            }
     
     def update_status(self) -> Dict[str, Any]:
         """
@@ -280,7 +248,7 @@ class MachineControl:
     
     def set_brush_paint_flow(self, brush: str, percentage: float) -> Dict[str, Any]:
         """
-        Set brush paint flow percentage.
+        Set the paint flow for a brush as a percentage.
         
         Args:
             brush: Brush ID ('a' or 'b')
@@ -292,34 +260,21 @@ class MachineControl:
         if brush not in ["a", "b"]:
             return {"status": "error", "message": f"Invalid brush: {brush}"}
         
-        # Ensure percentage is within valid range
+        # Clamp percentage to 0-100 range
         percentage = max(0, min(100, percentage))
         
-        # Get brush configuration
-        try:
-            # Load config directly from config.yaml
-            config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
-            with open(config_path, 'r') as f:
-                config = yaml.safe_load(f)
-                
-            # Get brush configuration
-            if "brushes" in config and brush in config["brushes"]:
-                brush_config = config["brushes"][brush]
-            else:
-                return {"status": "error", "message": f"Brush {brush} not configured in config.yaml"}
-                
-            # Get paint min and max values
-            paint_min = brush_config.get("paint_min", 0)
-            paint_max = brush_config.get("paint_max", 90)
-            
-        except Exception as e:
-            logger.error(f"Error loading brush configuration: {e}")
-            # Use default values
-            paint_min = 0
-            paint_max = 90
+        # Get min and max servo angles from config
+        paint_min = self.config["brushes"][brush]["paint_min"]
+        paint_max = self.config["brushes"][brush]["paint_max"]
         
-        # Calculate servo angle based on percentage
-        servo_angle = paint_min + (percentage / 100) * (paint_max - paint_min)
+        # Calculate servo angle based on percentage, handling reversed limits
+        if paint_max > paint_min:
+            # Normal case: min to max
+            servo_angle = paint_min + (percentage / 100) * (paint_max - paint_min)
+        else:
+            # Reversed case: max is lower than min
+            servo_angle = paint_min - (percentage / 100) * (paint_min - paint_max)
+        
         servo_angle = round(servo_angle)  # Round to nearest integer
         
         # Determine servo pin based on brush
@@ -330,6 +285,9 @@ class MachineControl:
         result = self.duet_client.send_command_and_wait(command)
         
         if result.get("status") == "success":
+            # Update brush state - paint is on if percentage > 0
+            self.brush_state[brush]["paint"] = percentage > 0
+            
             logger.info(f"Set brush {brush} paint flow to {percentage}% (servo angle: {servo_angle})")
             return {
                 "status": "success", 

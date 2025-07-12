@@ -1,200 +1,138 @@
-# Implementation Plan
+# Implementation Plan: JavaScript Architecture Refactoring
 
 ## Three-Component Architecture
 
 Our implementation follows a three-component architecture:
 
 1. **Inkscape Extension** - SVG processing and G-code generation (95% complete)
-2. **Web Controller** - Machine control and monitoring interface (85% complete)
-3. **Duet 2 WiFi Integration** - Hardware control and execution (15% complete)
+2. **Web Controller** - Machine control and monitoring interface (95% complete)
+3. **Duet 2 WiFi Integration** - Hardware control and execution (20% complete)
 
-## Implementation Priorities
+## Current Focus: JavaScript Architecture Refactoring
 
-### 1. Web Controller (Current Focus)
-- [x] Develop Flask-based web server
-- [x] Implement Duet communication client
-- [x] Create job management system
-- [x] Design responsive web UI
-- [ ] Complete testing and optimization
-- [ ] Create documentation and deployment guides
+The web controller JavaScript architecture needs refactoring to create a modular, maintainable system with clear separation of concerns.
 
-### 2. Inkscape Extension (Mostly Complete)
-- [x] Fix extension not appearing in Inkscape on Windows
-- [x] Implement proper SVG parsing with namespace handling
-- [x] Improve path processing for all SVG commands
-- [x] Ensure accurate coordinate transformation
-- [x] Implement hybrid approach with M400 commands in G-code generation
-- [ ] Create GitHub repository and documentation
+## Core Principles
 
-### 3. Duet 2 WiFi Integration
-- [x] Implement Telnet interface for G-code streaming
-- [x] Create HTTP API client for status monitoring
-- [x] Add WebSocket support for real-time updates
-- [x] Develop G-code command templates for brush control
-- [x] Implement G-code processing with M400 synchronization points
-- [ ] Test with real hardware
-- [ ] Calibrate brush parameters for optimal performance
+1. **Single Responsibility**: Each module has one clear responsibility
+2. **Clean Interfaces**: Modules communicate through well-defined APIs
+3. **State Centralization**: Machine state is managed in one place
+4. **Event-Based Communication**: Components communicate via events
+5. **Testability**: Code is structured to enable unit testing
+6. **Progressive Implementation**: Refactoring happens incrementally
 
-## Web Controller Implementation Status
+## Module Structure
 
-### Completed Components
-- [x] Project structure setup with Flask and WebSocket support
-- [x] Duet client with Telnet, HTTP, and WebSocket communication
-- [x] Job management system with file handling and job control
-- [x] Machine control interface with jog controls and brush commands
-- [x] Web UI with dashboard, control panel, and file management
-- [x] G-code processing with support for M400 synchronization points
+### 1. machine-state.js (IMPLEMENTED)
 
-### Remaining Tasks
+**Responsibility**: State management and synchronization
 
-#### 1. Testing and Optimization
-- Hardware testing with Duet 2 WiFi board
-- Performance optimization for real-time control
-- Error recovery mechanisms implementation
-- Comprehensive logging system
+- Singleton MachineState class with observable pattern
+- Methods for getting and updating machine state
+- Validation for all state changes
+- Event-based subscription system
+- Support for filtered listeners
+- Batch updates for efficient state synchronization
+- Comprehensive error handling
 
-#### 2. Documentation and Deployment
-- User guide creation
-- API documentation
-- Deployment instructions for various environments
-- Configuration examples
+### 2. command-engine.js (IMPLEMENTED)
 
-## Duet Communication Strategy
+**Responsibility**: Command abstraction and execution
 
-### Motion Synchronization (IMPLEMENTED)
-- Use `M400` command to wait for all buffered moves to complete
-- Implemented hybrid approach:
-  1. Insert `M400` after each complete stroke in G-code generation
-  2. Recognize `M400` as blocking synchronization points in controller
-  3. Inject additional `M400` for live-streamed operations
+- CommandEngine class for high-level command abstraction
+- Methods for movement, brush control, and motor operations
+- Command validation and error handling
+- Integration with MachineState for state updates
+- Servo angle calculation for paint flow control
+- Command queue tracking
 
-### Position Monitoring (IMPLEMENTED)
-- Use `M114` to query current position for UI updates
-- Implement polling mechanism for real-time position display
+### 3. websocket-client.js (IMPLEMENTED)
 
-### Implementation Pattern (IMPLEMENTED)
-```python
-# In duet_client.py
-def send_command_and_wait(self, command: str) -> Dict[str, Any]:
-    """Send command and wait for completion with M400"""
-    result = self.send_command(command)
-    if result["status"] == "error":
-        return result
-    
-    # Send M400 to wait for motion completion
-    return self.wait_for_motion_complete()
+**Responsibility**: Communication with server
 
-def wait_for_motion_complete(self) -> Dict[str, Any]:
-    """Send M400 to wait for all buffered moves to complete"""
-    return self.send_command("M400")
+- WebSocketClient class with robust connection management
+- Automatic reconnection with configurable retry parameters
+- Message queuing for offline scenarios
+- Standardized message format and error handling
+- Event-based communication system
+- Integration with MachineState for state updates
 
-def get_position(self) -> Dict[str, Any]:
-    """Get current position using M114"""
-    result = self.send_command("M114")
-    # Parse position response
-    # ...
+### 4. brush-controls.js (PLANNED)
 
-# In machine_control.py
-def process_gcode_file(self, filename: str) -> Dict[str, Any]:
-    """Process G-code with M400 synchronization awareness"""
-    # Read file line by line
-    for line in lines:
-        command = line.split(';')[0].strip()
-        
-        if command.upper().startswith("M400"):
-            # Wait for all previous commands to complete
-            result = self.duet_client.wait_for_motion_complete()
-        else:
-            # Send command without waiting
-            result = self.duet_client.send_command(command)
-```
+**Responsibility**: Brush-specific functionality
 
-## Implementation Timeline
+- UI event listeners for brush controls
+- Brush state management
+- Paint flow control
+- Integration with CommandEngine for execution
 
-### Week 1: Testing and Optimization
-- Day 1-2: Hardware testing setup and verification
-- Day 3-4: Performance profiling and optimization
-- Day 5-7: Error recovery implementation and testing
+### 5. movement-controls.js (PLANNED)
 
-### Week 2: Documentation and Integration Testing
-- Day 1-3: User guide and API documentation
-- Day 4-5: Deployment instructions and configuration examples
-- Day 6-7: End-to-end workflow testing and brush control verification
+**Responsibility**: Jog and positioning controls
 
-### Week 3: Final Integration and Release Preparation
-- Day 1-3: Hardware-specific documentation and testing
-- Day 4-5: Final bug fixes and optimizations
-- Day 6-7: GitHub repository setup and public release preparation
+- UI event listeners for movement controls
+- Axis movement and homing
+- Motor control
+- Integration with CommandEngine for execution
+
+### 6. visualization.js (PLANNED)
+
+**Responsibility**: Machine visualization
+
+- Canvas-based position visualization
+- Grid and scale indicators
+- Brush position display
+- Position text display
+
+### 7. settings-manager.js (PLANNED)
+
+**Responsibility**: Configuration management
+
+- Settings loading and saving
+- Configuration validation
+- UI synchronization with settings
+- API communication for settings persistence
+
+## Implementation Sequence
+
+1. **Core Infrastructure** (COMPLETED)
+   - ✅ Implement machine-state.js
+   - ✅ Implement command-engine.js
+   - ✅ Implement websocket-client.js
+
+2. **UI Components** (COMPLETED)
+   - ✅ Extract brush-controls.js
+   - ✅ Extract movement-controls.js
+   - ✅ Extract visualization.js
+
+3. **Settings Management** (NEXT)
+   - Create settings-manager.js
+   - Migrate settings handling
+
+4. **Integration and Testing** (FUTURE)
+   - Connect modules together
+   - Test each component in isolation
+   - Test integrated system
+
+5. **Cleanup and Optimization** (FUTURE)
+   - Remove duplicate code
+   - Optimize event listeners
+   - Improve error handling
 
 ## Testing Strategy
 
-### Unit Testing
-- Duet Client: Connection, commands, error handling
-- Job Manager: File upload, job control, error handling
-- Machine Control: Jog commands, brush control, maintenance routines
-- Configuration: Loading, saving, validation
+1. **Module Testing**: Test each module in isolation with mock dependencies
+2. **Integration Testing**: Test modules working together
+3. **UI Testing**: Test UI components with simulated user interactions
+4. **Error Handling Testing**: Test system behavior with simulated errors
 
-### Integration Testing
-- Component integration tests
-- API integration tests
-- UI integration tests with real-time updates
+## Migration Strategy
 
-### System Testing
-- End-to-end workflow from Inkscape to hardware
-- Performance testing for UI responsiveness and WebSocket latency
-- Security testing for authentication and input validation
+To minimize disruption, the refactoring follows these steps:
 
-### Testing Tools
-- pytest for unit and integration testing
-- pytest-cov for code coverage analysis
-- locust for performance testing
-- selenium for UI testing
+1. Create new modules alongside existing code
+2. Gradually migrate functionality to new modules
+3. Update references to use new modules
+4. Remove old code once migration is complete
 
-## Documentation Plan
-
-### User Guide
-- Installation and setup instructions
-- Web interface usage guide
-- Workflow guide from design to execution
-- Troubleshooting section
-
-### API Documentation
-- REST API endpoints
-- WebSocket events and message formats
-- Integration examples
-
-### Developer Guide
-- Architecture overview
-- Code structure explanation
-- Extension points
-- Development setup instructions
-
-## Key Technical Challenges
-
-1. **Real-time Control** (IMPLEMENTED)
-   - Ensuring responsive UI during long operations
-   - Handling WebSocket reconnection
-   - Managing concurrent operations
-   - Implemented proper motion synchronization with `M400`
-
-2. **Error Recovery** (CURRENT FOCUS)
-   - Connection loss detection and recovery
-   - Job recovery after interruption
-   - Robust error handling for hardware communication
-
-3. **Performance Optimization**
-   - WebSocket communication for low latency
-   - G-code parsing efficiency for large files
-   - Status updates throttling to reduce network traffic
-
-## Success Criteria
-
-- [x] Extension appears and functions in Inkscape on Windows
-- [x] SVG paths convert accurately to G-code
-- [x] Web controller provides intuitive machine interface
-- [x] System handles all SVG path types correctly
-- [x] Installation process works reliably across platforms
-- [x] Motion synchronization implemented with hybrid M400 approach
-- [ ] Real-time control and monitoring works smoothly
-- [x] G-code visualization accurately represents machine movements
-- [ ] Maintenance routines function correctly with real hardware 
+This approach allows for incremental testing and reduces the risk of breaking existing functionality. 

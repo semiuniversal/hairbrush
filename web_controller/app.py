@@ -13,6 +13,7 @@ import yaml
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_socketio import SocketIO
 import time
+from flask_autoindex import AutoIndex
 
 # Configure logging
 log_dir = os.path.join(os.path.dirname(__file__), 'logs')
@@ -48,7 +49,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload size
 app.config['TEMPLATES_AUTO_RELOAD'] = True  # Disable template caching
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable static file caching
-
+# AutoIndex(app, browse_root=os.path.curdir)
 # Add datetime.now to Jinja environment
 app.jinja_env.globals['now'] = datetime.datetime.now
 

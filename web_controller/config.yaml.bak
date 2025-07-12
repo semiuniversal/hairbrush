@@ -5,26 +5,27 @@ brushes:
     name: Black
     offset_x: 0
     offset_y: 0
+    paint_max: 67
+    paint_min: 71
     paint_off: M280 P0 S0
     paint_on: M280 P0 S90
-    paint_min: 0
-    paint_max: 90
   b:
     air_off: M42 P1 S0
     air_on: M42 P1 S1
     name: White
     offset_x: 100
     offset_y: 25
+    paint_max: 64
+    paint_min: 68
     paint_off: M280 P1 S0
     paint_on: M280 P1 S90
-    paint_min: 0
-    paint_max: 90
 connection:
   history:
+  - 192.168.86.26
   - 192.168.86.43
 duet:
   connect_timeout: 5
-  host: 192.168.86.43
+  host: 192.168.86.26
   http_port: 80
   password: ''
 machine:

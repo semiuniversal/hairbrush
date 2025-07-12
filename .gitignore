@@ -5,3 +5,9 @@ axidraw_code/
 .specstory/.what-is-this.md
 .cursorrules
 *.log
+venv_hairbrush/
+.cursor/
+node_modules/
+web_controller/static/js/node_modules/
+web_controller/static/js/coverage/
+.cursorignore
