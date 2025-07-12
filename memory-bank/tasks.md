@@ -91,6 +91,7 @@
   - [x] Fix WebSocket connection reliability issues
   - [x] Improve settings persistence reliability
   - [x] Fix tab-switching disconnection issues
+  - [x] Implement JavaScript testing framework with Vitest
   - [ ] Test endstop monitoring and homing procedures
 - [ ] Documentation and deployment
   - [x] Create endstop monitoring documentation
@@ -122,101 +123,62 @@
   - [ ] Test endstop monitoring during operation
 
 ## Next Steps
-1. Complete testing and optimization of the web controller
-2. Create comprehensive documentation for the web controller
-3. Perform integration testing with real hardware
-4. Prepare for GitHub repository setup and public release
+1. Integrate refactored JavaScript modules into the main application
+2. Remove static HTML test files (completed)
+3. Test with real hardware
+4. Create comprehensive documentation
+5. Prepare for GitHub repository setup and public release
 
-## Completed Tasks
-- [x] Set up development environment with uv and pyproject.toml
-- [x] Create modular architecture following AxiDraw model
-- [x] Implement SVG parsing with layer detection
-- [x] Create G-code generator with path handling
-- [x] Create diagnostic tools for extension troubleshooting
-- [x] Define three-component system architecture
-- [x] Document communication protocols between components
-- [x] Fix critical issue with G-code generation (no movement commands)
-- [x] Simplify G-code output for better readability
-- [x] Fix slanted drawing issues with proper X-Y plane alignment
-- [x] Implement Flask application structure with WebSocket support
-- [x] Create Duet client for HTTP API communication
-- [x] Implement job management system for G-code file handling
-- [x] Create machine control interface for manual operation
-- [x] Develop web UI with dashboard, control, and file management pages
-- [x] Implement hybrid approach for motion synchronization with M400 commands
-- [x] Add G-code file processing with M400 synchronization awareness
-- [x] Enhance Duet client with motion completion and position querying methods
-- [x] Migrate from Telnet to HTTP API for Duet communication
-- [x] Implement endstop monitoring using M119 command
-- [x] Add real-time endstop status display to machine control page
-- [x] Create documentation for endstop monitoring feature
-- [x] Improve machine control interface layout for better usability
-- [x] Fix JavaScript errors related to duplicate socket declaration
-- [x] Add missing helper functions for movement control
-- [x] Fix Z endstop status parsing to handle RepRapFirmware's Z probe information
-- [x] Update endstop monitoring documentation with Z probe information
-- [x] Fix endstop status indicator blinking during polling
-- [x] Fix "removeChild" error in command history
-- [x] Enhance command history with support for 100 entries
-- [x] Add command count badge and clear history button
-- [x] Fix jog controls to respect selected distance and speed settings
-- [x] Add Enable Motors button as toggle counterpart to Disable Motors
-- [x] Convert brush control buttons to toggle style for better state indication
-- [x] Add paint intensity sliders with percentage control for precise paint flow adjustment
-- [x] Improve paint control layout with full-width buttons and sliders below
-- [x] Disable jog and home buttons when motors are disabled
-- [x] Replace DOM/CSS visualization with Canvas implementation
-- [x] Add scale indicators to visualization with proper origin at center
-- [x] Add position and brush offset text display to visualization
-- [x] Implement settings persistence to config.yaml
-- [x] Connect settings changes to visualization updates
-- [x] Create settings.js to handle loading and saving settings
-- [x] Add API endpoints for getting and setting configuration
-- [x] Fix "DuetClient object has no attribute 'is_homed'" error by implementing the missing method
-- [x] Add error handling for machine status requests in both client and server code
-- [x] Improve JavaScript status notification with safe default values
-- [x] Remove Telnet port settings from UI and config.yaml (no longer needed with RepRap firmware)
-- [x] Implement calibrated paint flow control with min/max servo angle settings for each brush
-- [x] Add test buttons for min/max paint flow settings with real-time feedback
-- [x] Implement percentage-to-servo-angle scaling for intuitive user control
-- [x] Add safety features to reset servos to minimum position when saving settings
-- [x] Fix USB serial connection for device discovery
-- [x] Add reliable IP address detection via serial communication
-- [x] Implement background thread for capturing IP address from serial data
-- [x] Add hierarchical diagnostic command menu with commands from YAML file
-- [x] Fix connection history management and persistence
-- [x] Add automatic disconnection when leaving or reloading the page
-- [x] Improve error handling for serial communication
-- [x] Fix "Already connected" errors with proper resource management
+## JavaScript Architecture Refactoring
 
-## Future Improvements
+### Completed
+- [x] Create core modules with clear separation of concerns
+  - [x] Create machine-state.js for centralized state management
+  - [x] Create command-engine.js for hardware command abstraction
+  - [x] Create websocket-client.js for standardized communication
+  - [x] Create error-handler.js for standardized error handling
+- [x] Create UI components
+  - [x] Create brush-control.js for brush-specific functionality
+  - [x] Create movement-control.js for jog and positioning controls
+  - [x] Create visualization.js for machine visualization
+- [x] Implement automated testing with Vitest
+  - [x] Set up Vitest with JSDOM for browser environment simulation
+  - [x] Create tests for core modules (~84% coverage)
+  - [x] Create tests for UI components (~100% coverage)
+  - [x] Add test coverage reporting
 
-### JavaScript Architecture Refactoring
-- [ ] Eliminate global variable dependencies and improve module structure
-  - [ ] Implement proper dependency injection
-  - [ ] Create a module pattern for key components
+### In Progress
+- [ ] Create app.js as main application entry point
+- [ ] Integrate refactored modules into main application
+- [ ] Create settings-manager.js for configuration management
+- [ ] Implement proper dependency injection between modules
+- [ ] Replace global state with MachineState module
+- [ ] Replace direct WebSocket usage with WebSocketClient
+
+### To Do
+- [ ] Implement proper module interfaces
+  - [ ] Define clear APIs between modules
+  - [ ] Use event-based communication between modules
+  - [ ] Implement proper initialization order
+  - [ ] Add module lifecycle management (init/destroy)
+- [ ] Standardize UI component management
+  - [ ] Create component factory for consistent creation
+  - [ ] Implement component registration system
+  - [ ] Add UI state synchronization with machine state
+  - [ ] Create consistent event handling across components
+- [ ] Improve error handling and user feedback
+  - [ ] Implement error boundaries for components
+  - [ ] Create standardized error display system
+  - [ ] Implement graceful degradation for failures
+- [ ] Optimize performance and resource usage
+  - [ ] Implement proper cleanup for event listeners
+  - [ ] Use requestAnimationFrame for animations
+  - [ ] Batch DOM updates to reduce layout thrashing
+  - [ ] Optimize WebSocket message handling
+- [ ] Eliminate global variable dependencies
   - [ ] Reduce coupling between components
-- [ ] Consolidate duplicate event listeners and DOM setup
-  - [ ] Merge overlapping DOMContentLoaded event listeners
-  - [ ] Standardize command sending logic
+  - [ ] Consolidate duplicate event listeners and DOM setup
   - [ ] Create consistent initialization sequence
-- [ ] Implement proper error boundaries and state management
-  - [ ] Centralize state tracking (brush states, motor states)
-  - [ ] Implement consistent error handling patterns
-  - [ ] Improve UI state synchronization
-- [ ] Extract magic numbers and improve configuration management
-  - [ ] Create central configuration object for timeouts and intervals
-  - [ ] Move grid spacing and visualization parameters to config
-  - [ ] Make delay values configurable
-- [ ] Optimize DOM manipulation and reduce layout thrashing
-  - [ ] Batch DOM style changes
-  - [ ] Optimize endstop update logic
-  - [ ] Implement requestAnimationFrame for animations
-
-### Connection Handling Improvements
-- [ ] Implement proper IP address validation
-- [ ] Add cleanup for unmanaged event listeners and timeouts
-- [ ] Create a ConnectionManager class with proper dependency injection
 
 ## ⚠️ CRITICAL DEVELOPMENT REQUIREMENTS ⚠️
 - All command-line operations MUST be executed in WSL, NOT in Windows
