@@ -33,6 +33,8 @@ class GCodeGenerator:
         self.machine_origin_y = 0
         self.machine_origin_z = 0
         self.skip_homing = False
+        self.use_macros = False
+        self.current_brush = None
         
         # Z-axis behavior parameters
         self.z_min = 1.0  # Minimum Z height for drawing in mm
@@ -46,7 +48,6 @@ class GCodeGenerator:
         self.z_offset = 0.0  # Offset for Z values
         
         # Current brush tracking
-        self.current_brush = None
         self.current_z_height = None
         
     def add_header(self):
@@ -57,8 +58,6 @@ class GCodeGenerator:
             "G90 ; Set absolute positioning",
             "G21 ; Set units to millimeters",
             "G17 ; Set working plane to X-Y (G17 = X-Y, G18 = X-Z, G19 = Y-Z)",
-            "G28 ; Home all axes",
-            "G92 X0 Y0 Z0 ; Set current position as origin",
             "M84 S0 ; Disable stepper timeout",
             "; Coordinate system: X right, Y forward, Z up",
             ""
@@ -317,12 +316,6 @@ class GCodeGenerator:
         if not polyline:
             return
             
-        # Apply brush offset if configured
-        offset_x = 0
-        offset_y = 0
-        if brush in self.brush_config and "offset" in self.brush_config[brush]:
-            offset_x, offset_y = self.brush_config[brush]["offset"]
-        
         # Get brush index (0 for brush_a, 1 for brush_b) and label
         brush_index = 0 if brush == "brush_a" else 1
         brush_label = "Brush A (black)" if brush == "brush_a" else "Brush B (white)"
@@ -343,17 +336,28 @@ class GCodeGenerator:
         # STEP 2: Move XY to start point with Z raised (G0 for rapid movement)
         first_point = polyline[0]
         x, y = self.transform_coordinates(first_point[0], first_point[1])
-        self.output_lines.append("G0 X{:.2f} Y{:.2f} F3000".format(x + offset_x, y + offset_y))
+        self.output_lines.append("G0 X{:.2f} Y{:.2f} F3000".format(x, y))
         self.output_lines.append("M400 ; Wait for XY movement to complete")
         
         # STEP 3: Lower Z to drawing height (G1 for controlled movement)
         self.output_lines.append("G1 Z{:.2f} F1500".format(transformed_z))
         self.output_lines.append("M400 ; Wait for Z movement to complete")
         
-        # STEP 4: Turn on airbrush
+        # STEP 4: Turn on airbrush with stateless approach
         servo_angle = int((math.sqrt(paint_flow) * 170) + 10)  # Range 10-180
-        self.output_lines.append(f"M42 P{brush_index} S1 ; Air on")
-        self.output_lines.append(f"M280 P{brush_index} S{servo_angle} ; Trigger")
+        
+        # Ensure airbrush is in a known state before activating
+        self.output_lines.append(f"M42 P{brush_index} S0 ; Ensure {brush_label} air off before starting")
+        self.output_lines.append(f"M280 P{brush_index} S0 ; Ensure trigger off")
+        
+        # Now activate the airbrush
+        if self.use_macros:
+            brush_name = "a" if brush == "brush_a" else "b"
+            self.output_lines.append(f"M98 P\"{brush_name}-air-on.g\" ; Air on via macro")
+            self.output_lines.append(f"M98 P\"{brush_name}-flow-on.g\" S{servo_angle} ; Flow on via macro")
+        else:
+            self.output_lines.append(f"M42 P{brush_index} S1 ; Air on")
+            self.output_lines.append(f"M280 P{brush_index} S{servo_angle} ; Trigger on")
         
         # STEP 5: Set feedrate for drawing movements
         self.output_lines.append(f"G1 F{feedrate}")
@@ -361,14 +365,19 @@ class GCodeGenerator:
         # STEP 6: Draw path with XY movements only (Z remains constant)
         for point in polyline[1:]:
             x, y = self.transform_coordinates(point[0], point[1])
-            self.output_lines.append("G1 X{:.2f} Y{:.2f}".format(x + offset_x, y + offset_y))
+            self.output_lines.append("G1 X{:.2f} Y{:.2f}".format(x, y))
         
         # Add M400 after completing the drawing path
         self.output_lines.append("M400 ; Wait for drawing to complete")
         
         # STEP 7: Turn off airbrush
-        self.output_lines.append(f"M280 P{brush_index} S0 ; Release trigger")
-        self.output_lines.append(f"M42 P{brush_index} S0 ; Air off")
+        if self.use_macros:
+            brush_name = "a" if brush == "brush_a" else "b"
+            self.output_lines.append(f"M98 P\"{brush_name}-flow-off.g\" ; Flow off via macro")
+            self.output_lines.append(f"M98 P\"{brush_name}-air-off.g\" ; Air off via macro")
+        else:
+            self.output_lines.append(f"M280 P{brush_index} S0 ; Release trigger")
+            self.output_lines.append(f"M42 P{brush_index} S0 ; Air off")
         
         # STEP 8: Raise Z to travel height (G0 for rapid movement)
         self.output_lines.append("G0 Z{:.2f} F3000".format(travel_z))
@@ -390,6 +399,7 @@ class GCodeGenerator:
         self.output_lines.insert(0, f"; H.Airbrush Dual-Airbrush Plotter G-code")
         self.output_lines.insert(1, f"; Generated: {timestamp}")
         self.output_lines.insert(2, f"; CoreXY-H Plotter with Duet 2 WiFi")
+        self.output_lines.insert(3, f"; Implements Duet Plotter G-Code Reference v2")
         
         # Add header template if available
         if "header" in self.template:
@@ -732,16 +742,15 @@ class GCodeGenerator:
         self.output_lines.append("G90 ; Absolute positioning")
         
         # Home if not skipped
-        if not hasattr(self, 'skip_homing') or not self.skip_homing:
-            self.output_lines.append("G28 ; Home all axes")
+        if not self.skip_homing:
+            self.output_lines.append("G28 ; Home")
         
-        # Initialize coordinate system with minimal Z movements
+        # Initialize Z coordinate only - XY are handled by firmware in homeall.g
         self.output_lines.append("G0 Z10 F3000")
-        self.output_lines.append("G0 X0 Y0 F3000")
-        self.output_lines.append("G92 X0 Y0 Z10 ; Set origin")
+        
+        # Only reset Z, not XY
+        self.output_lines.append("G92 Z10 ; Set Z height")
         self.output_lines.append("G0 Z0 F1500")
-        self.output_lines.append("G92 Z0 ; Set Z=0")
-        self.output_lines.append("G0 Z10 F3000")
             
         # Disable stepper timeout
         self.output_lines.append("M84 S0 ; No stepper timeout")
@@ -791,11 +800,31 @@ class GCodeGenerator:
         self.output_lines.append(f"; Opacity: {stroke_opacity:.2f}")
         self.output_lines.append(f"; Brush: {brush} (index {brush_index})")
         
+        # Issue tool selection via T command if brush has changed
+        if brush_index != self.current_brush:
+            brush_name = "Brush A (Black)" if brush_index == 0 else "Brush B (White)"
+            self.output_lines.append(f"T{brush_index} ; Select {brush_name}")
+            self.current_brush = brush_index
+        
         # Add airbrush settings as comments
         self.output_lines.append(f"; ===== AIRBRUSH SETTINGS =====")
         self.output_lines.append(f"; Z-height: {z_height:.2f}mm")
         self.output_lines.append(f"; Paint flow: {paint_flow:.2f}")
         self.output_lines.append(f"; Feedrate: {feedrate:.0f}mm/min (factor: {speed_factor:.2f})")
+        self.output_lines.append(f"; Using brush: {brush} (tool {brush_index})")
         
         # Add the path directly
         self.add_path(path_data, brush, z_height, feedrate, curve_resolution=curve_resolution, paint_flow=paint_flow) 
+
+    def set_use_macros(self, use_macros=True):
+        """
+        Enable or disable the use of macros for brush control.
+        
+        When enabled, the generator will use M98 commands to call external macros
+        for brush air and flow control instead of direct M42/M280 commands.
+        
+        Args:
+            use_macros (bool): Whether to use macros
+        """
+        self.use_macros = use_macros
+        self.output_lines.append(f"; {'Using' if use_macros else 'Not using'} macros for brush control") 
